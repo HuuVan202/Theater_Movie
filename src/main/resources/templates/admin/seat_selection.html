@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Ghế - Admin</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/viewMember.css}" href="/css/viewMember.css">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        :root {
+            --primary-color: #032055;
+            --accent-color: #E50914;
+            --text-light: #F2F2F2;
+            --bg-dark: #0A1E3E;
+            --bg-light: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: #333;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+        }
+
+        .page-header {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .movie-info-card {
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .movie-detail {
+            padding: 1.5rem;
+        }
+
+        .movie-poster-small {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .seat-layout {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .screen {
+            height: 12px;
+            background: linear-gradient(to right, rgba(3,32,85,0.2), rgba(3,32,85,0.8), rgba(3,32,85,0.2));
+            border-radius: 50%;
+            margin: 0 auto 3rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            position: relative;
+            width: 80%;
+        }
+
+        .screen::after {
+            content: 'MÀN HÌNH';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .seat {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        .seat-available {
+            background-color: var(--bg-light);
+            border: 1px solid #dee2e6;
+            color: var(--primary-color);
+        }
+
+        .seat-available:hover {
+            transform: scale(1.1);
+            background-color: rgba(3,32,85,0.1);
+        }
+
+        .seat-selected {
+            background-color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            color: white;
+        }
+
+        .seat-occupied {
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            color: #adb5bd;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .seat-occupied::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #adb5bd;
+            transform: rotate(45deg);
+        }
+
+        .seat-row-label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .seat-legend {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 4px;
+        }
+
+        .summary-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .summary-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-label {
+            color: #6c757d;
+        }
+
+        .summary-value {
+            font-weight: 500;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-confirm {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background-color: #021a43;
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+
+        .btn-cancel:hover {
+            background-color: #f8f9fa;
+        }
+
+        .row-spacing {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .seat {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .seat-grid {
+                grid-template-columns: repeat(10, 1fr);
+                gap: 5px;
+            }
+
+            .seat {
+                width: 30px;
+                height: 30px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .seat {
+                width: 25px;
+                height: 25px;
+                font-size: 0.65rem;
+            }
+
+            .legend-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Sidebar styles */
+        .sidebar-custom {
+            width: 250px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar-link {
+            color: #495057;
+            padding: .5rem 1rem;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            color: var(--primary-color);
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .sidebar-link.active {
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        /* Adjust for the sidebar layout */
+        #page-content-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="bg-white border-end sidebar-custom">
+            <div class="sidebar-header p-3 border-bottom">
+                <h5 class="mb-0 fw-bold text-danger"><i class="bi bi-film me-2"></i>Cinema Admin</h5>
+            </div>
+            <ul class="list-unstyled components p-3 mb-0">
+                <li class="mb-2"><a th:href="@{/}" class="nav-link sidebar-link"><i
+                        class="bi bi-house-door me-2"></i>Trang chủ</a></li>
+                <li class="mb-2"><a th:href="@{/admin/employees}" class="nav-link sidebar-link"><i
+                        class="bi bi-person-badge me-2"></i>Nhân Viên</a></li>
+                <li class="mb-2"><a th:href="@{/admin/members}" class="nav-link sidebar-link"><i
+                        class="bi bi-people me-2"></i>Khách hàng</a></li>
+                <li class="mb-2"><a href="#" class="nav-link sidebar-link active"><i class="bi bi-calendar2-week me-2"></i>Lịch
+                    chiếu</a></li>
+                <li class="mb-2"><a href="#" class="nav-link sidebar-link"><i
+                        class="bi bi-ticket-perforated me-2"></i>Đặt vé</a></li>
+                <li class="mb-2"><a href="#" class="nav-link sidebar-link"><i class="bi bi-camera-reels me-2"></i>Doanh
+                    thu</a></li>
+                <li class="mb-2"><a href="#" class="nav-link sidebar-link"><i
+                        class="bi bi-bar-chart-line me-2"></i>Thống kê</a></li>
+                <li class="mb-2"><a th:href="@{/admin/promotions/list}" class="nav-link sidebar-link"><i
+                        class="bi bi-gift me-2"></i>Khuyến mãi</a></li>
+            </ul>
+            <div class="sidebar-footer p-3 border-top mt-auto">
+                <div class="mb-2 small"><i class="bi bi-person-circle me-2"></i>Admin</div>
+                <div class="mb-2 small"><i class="bi bi-gear me-2"></i>Cài đặt</div>
+                <div class="small"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</div>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" class="flex-grow-1">
+            <!-- Top Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-danger shadow-sm px-3">
+                <div class="container-fluid px-0">
+                    <span class="navbar-brand text-white fw-bold"><i class="bi bi-chair me-2"></i>Chọn Ghế</span>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="container py-4">
+        <!-- Movie Info Card -->
+        <div class="movie-info-card">
+            <div class="row g-0">
+                <div class="col-md-3">
+                    <img id="moviePoster" src="" alt="Movie Poster" class="movie-poster-small">
+                </div>
+                <div class="col-md-9">
+                    <div class="movie-detail">
+                        <h3 id="movieTitle" class="mb-3"></h3>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="info-label">Ngày Chiếu</p>
+                                <p id="movieDate"></p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="info-label">Giờ Chiếu</p>
+                                <p id="movieTime"></p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="info-label">Phòng Chiếu</p>
+                                <p id="movieHall"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="info-label">Thời Lượng</p>
+                                <p><span id="movieDuration"></span> phút</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="info-label">Thể Loại</p>
+                                <p id="movieGenre"></p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="info-label">Phân Loại</p>
+                                <p id="movieRating"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Seat Layout -->
+            <div class="col-lg-8">
+                <div class="seat-layout">
+                    <!-- Screen -->
+                    <div class="screen"></div>
+
+                    <!-- Legend -->
+                    <div class="seat-legend">
+                        <div class="legend-item">
+                            <div class="legend-box seat-available"></div>
+                            <span>Còn trống</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-box seat-selected"></div>
+                            <span>Đã chọn</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-box seat-occupied"></div>
+                            <span>Đã đặt</span>
+                        </div>
+                    </div>
+
+                    <!-- Seat Grid -->
+                    <div id="seatContainer">
+                        <!-- Seats will be added by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seat Selection Summary -->
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h4 class="summary-title">Thông Tin Ghế Đã Chọn</h4>
+
+                    <div class="summary-item">
+                        <span class="summary-label">Phim:</span>
+                        <span id="summaryMovieName" class="summary-value"></span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span class="summary-label">Ngày:</span>
+                        <span id="summaryDate" class="summary-value"></span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span class="summary-label">Suất chiếu:</span>
+                        <span id="summaryTime" class="summary-value"></span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span class="summary-label">Phòng chiếu:</span>
+                        <span id="summaryHall" class="summary-value"></span>
+                    </div>
+
+                    <hr>
+
+                    <!-- AC-01: Seat quantity selection combobox -->
+                    <div class="summary-item mb-3">
+                        <span class="summary-label">Số lượng ghế:</span>
+                        <select id="seatQuantity" class="form-select form-select-sm w-50">
+                            <option value="0">Chọn số lượng</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+
+                    <div class="summary-item">
+                        <span class="summary-label">Ghế đã chọn:</span>
+                        <span id="selectedSeats" class="summary-value">Chưa chọn ghế</span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span class="summary-label">Số lượng:</span>
+                        <span id="seatCount" class="summary-value">0</span>
+                    </div>
+
+                    <!-- AC-04/AC-05: Message for seat selection guidance -->
+                    <div id="seatSelectionMessage" class="alert alert-warning mt-3 d-none"></div>
+
+                    <div class="row row-spacing">
+                        <div class="col-12">
+                            <button id="confirmButton" class="btn action-btn btn-confirm" disabled>
+                                Xác Nhận Lựa Chọn
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <a th:href="@{/admin/showtimes}" href="movie_showtimes.html" class="btn action-btn btn-cancel">
+                                Quay Lại Lịch Chiếu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Parse URL parameters (from AC-03)
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('movieId');
+            const date = urlParams.get('date');
+            const showtimeId = urlParams.get('showtimeId');
+
+            // DOM elements
+            const movieTitle = document.getElementById('movieTitle');
+            const moviePoster = document.getElementById('moviePoster');
+            const movieDate = document.getElementById('movieDate');
+            const movieTime = document.getElementById('movieTime');
+            const movieHall = document.getElementById('movieHall');
+            const movieDuration = document.getElementById('movieDuration');
+            const movieGenre = document.getElementById('movieGenre');
+            const movieRating = document.getElementById('movieRating');
+            const seatContainer = document.getElementById('seatContainer');
+            const selectedSeats = document.getElementById('selectedSeats');
+            const seatCount = document.getElementById('seatCount');
+            const confirmButton = document.getElementById('confirmButton');
+            const summaryMovieName = document.getElementById('summaryMovieName');
+            const summaryDate = document.getElementById('summaryDate');
+            const summaryTime = document.getElementById('summaryTime');
+            const summaryHall = document.getElementById('summaryHall');
+            const seatQuantity = document.getElementById('seatQuantity');
+            const seatSelectionMessage = document.getElementById('seatSelectionMessage');
+
+            // Selected seats tracking
+            const selectedSeatsArray = [];
+            let requiredSeatCount = 0;
+
+            // In a real application, we would fetch movie and showtime details from an API
+            // For this demo, we'll use mock data based on the URL parameters
+            fetchMovieAndShowtimeDetails(movieId, date, showtimeId);
+
+            // AC-01, AC-03: Seat quantity selection event handler
+            seatQuantity.addEventListener('change', function() {
+                requiredSeatCount = parseInt(this.value);
+                updateSeatSelectionStatus();
+
+                // Reset seat selection if quantity changes
+                if (selectedSeatsArray.length > 0) {
+                    // Ask for confirmation only if seats are already selected
+                    if (confirm("Thay đổi số lượng ghế sẽ xóa các ghế đã chọn. Bạn có muốn tiếp tục?")) {
+                        resetSeatSelection();
+                    } else {
+                        // Revert back to previous value
+                        this.value = selectedSeatsArray.length > 0 ? selectedSeatsArray.length : 0;
+                        requiredSeatCount = parseInt(this.value);
+                    }
+                }
+            });
+
+            // Function to fetch movie and showtime details
+            function fetchMovieAndShowtimeDetails(movieId, date, showtimeId) {
+                // Mock data (in real app, this would be an API call)
+                const movieData = {
+                    id: 1,
+                    title: "Dune: Hành Tinh Cát - Phần Hai",
+                    duration: 166,
+                    genre: "Khoa Học Viễn Tưởng",
+                    rating: "PG-13",
+                    posterUrl: "https://m.media-amazon.com/images/M/MV5BN2QyY2I5OTMtMjA5OC00MDZiLWI1NzQtZmU1MTjlkMGM1YzhmXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_.jpg"
+                };
+
+                const showtimeData = {
+                    id: showtimeId,
+                    time: "17:45",
+                    hall: "HALL A",
+                    date: formatDate(date)
+                };
+
+                // Populate movie details
+                movieTitle.textContent = movieData.title;
+                moviePoster.src = movieData.posterUrl;
+                moviePoster.alt = movieData.title + " Poster";
+                movieDate.textContent = showtimeData.date;
+                movieTime.textContent = showtimeData.time;
+                movieHall.textContent = showtimeData.hall;
+                movieDuration.textContent = movieData.duration;
+                movieGenre.textContent = movieData.genre;
+                movieRating.textContent = movieData.rating;
+
+                // Populate summary details
+                summaryMovieName.textContent = movieData.title;
+                summaryDate.textContent = showtimeData.date;
+                summaryTime.textContent = showtimeData.time;
+                summaryHall.textContent = showtimeData.hall;
+
+                // Generate seat layout
+                generateSeatLayout();
+            }
+
+            // AC-02: Function to generate seat layout with checkboxes
+            function generateSeatLayout() {
+                const rows = 8; // A to H
+                const seatsPerRow = 10; // 1 to 10
+
+                // Generate random occupied seats (in real app, this would come from the database)
+                const occupiedSeats = generateRandomOccupiedSeats(rows, seatsPerRow, 15); // 15% seats are occupied
+
+                // Create the seat grid container
+                const seatGrid = document.createElement('div');
+                seatGrid.className = 'seat-grid';
+
+                // Add row labels (A-H) and seats
+                for (let i = 0; i < rows; i++) {
+                    const rowLetter = String.fromCharCode(65 + i); // A, B, C, ...
+
+                    // Add row label
+                    const rowLabel = document.createElement('div');
+                    rowLabel.className = 'seat-row-label';
+                    rowLabel.textContent = rowLetter;
+                    seatGrid.appendChild(rowLabel);
+
+                    // Add seats for this row
+                    for (let j = 1; j <= seatsPerRow; j++) {
+                        const seatId = rowLetter + j;
+
+                        // Create checkbox container
+                        const seatContainer = document.createElement('div');
+                        seatContainer.className = occupiedSeats.includes(seatId) ? 'seat seat-occupied' : 'seat seat-available';
+
+                        // For available seats, use a clickable div with checkbox functionality
+                        if (!occupiedSeats.includes(seatId)) {
+                            seatContainer.dataset.seatId = seatId;
+                            seatContainer.textContent = seatId;
+
+                            seatContainer.addEventListener('click', function() {
+                                // AC-03: Check if we can select/deselect based on quantity
+                                if (requiredSeatCount === 0) {
+                                    alert("Vui lòng chọn số lượng ghế trước khi chọn vị trí ghế.");
+                                    return;
+                                }
+
+                                if (!this.classList.contains('seat-selected') && selectedSeatsArray.length >= requiredSeatCount) {
+                                    // Already selected maximum seats
+                                    alert(`Bạn chỉ có thể chọn ${requiredSeatCount} ghế.`);
+                                    return;
+                                }
+
+                                toggleSeatSelection(this);
+                            });
+                        } else {
+                            seatContainer.textContent = seatId;
+                        }
+
+                        seatGrid.appendChild(seatContainer);
+                    }
+                }
+
+                seatContainer.appendChild(seatGrid);
+            }
+
+            // AC-03: Function to handle seat selection
+            function toggleSeatSelection(seatElement) {
+                const seatId = seatElement.dataset.seatId;
+
+                if (seatElement.classList.contains('seat-selected')) {
+                    // Deselect seat
+                    seatElement.classList.remove('seat-selected');
+                    seatElement.classList.add('seat-available');
+
+                    const index = selectedSeatsArray.indexOf(seatId);
+                    if (index !== -1) {
+                        selectedSeatsArray.splice(index, 1);
+                    }
+                } else {
+                    // Select seat
+                    seatElement.classList.remove('seat-available');
+                    seatElement.classList.add('seat-selected');
+                    selectedSeatsArray.push(seatId);
+                }
+
+                // Update selection summary
+                updateSelectionSummary();
+            }
+
+            // Reset all seat selections
+            function resetSeatSelection() {
+                // Reset visual selection
+                document.querySelectorAll('.seat-selected').forEach(seat => {
+                    seat.classList.remove('seat-selected');
+                    seat.classList.add('seat-available');
+                });
+
+                // Clear selected seats array
+                selectedSeatsArray.length = 0;
+
+                // Update UI
+                updateSelectionSummary();
+            }
+
+            // Function to update seat selection summary
+            function updateSelectionSummary() {
+                if (selectedSeatsArray.length === 0) {
+                    selectedSeats.textContent = "Chưa chọn ghế";
+                } else {
+                    // Sort seats for nicer display (A1, A2, B1, etc.)
+                    const sortedSeats = [...selectedSeatsArray].sort((a, b) => {
+                        if (a[0] === b[0]) {
+                            return parseInt(a.substring(1)) - parseInt(b.substring(1));
+                        }
+                        return a[0].localeCompare(b[0]);
+                    });
+
+                    selectedSeats.textContent = sortedSeats.join(', ');
+                }
+
+                seatCount.textContent = selectedSeatsArray.length;
+                updateSeatSelectionStatus();
+            }
+
+            // AC-04, AC-05, AC-06: Update status messages and button state
+            function updateSeatSelectionStatus() {
+                // Hide message by default
+                seatSelectionMessage.classList.add('d-none');
+
+                // Don't show messages if no quantity selected
+                if (requiredSeatCount === 0) {
+                    confirmButton.disabled = true;
+                    return;
+                }
+
+                const difference = requiredSeatCount - selectedSeatsArray.length;
+
+                if (difference > 0) {
+                    // AC-04: Show "select more seats" message
+                    seatSelectionMessage.textContent = `Vui lòng chọn thêm ${difference} ghế nữa`;
+                    seatSelectionMessage.classList.remove('d-none');
+                    seatSelectionMessage.classList.remove('alert-danger');
+                    seatSelectionMessage.classList.add('alert-warning');
+                    confirmButton.disabled = true;
+                } else if (difference < 0) {
+                    // AC-05: Show "too many seats selected" message
+                    seatSelectionMessage.textContent = `Vui lòng chỉ chọn ${requiredSeatCount} ghế`;
+                    seatSelectionMessage.classList.remove('d-none');
+                    seatSelectionMessage.classList.remove('alert-warning');
+                    seatSelectionMessage.classList.add('alert-danger');
+                    confirmButton.disabled = true;
+                } else {
+                    // AC-06: Perfect match, enable continue button
+                    seatSelectionMessage.classList.add('d-none');
+                    confirmButton.disabled = false;
+                }
+            }
+
+            // AC-07: Add event listener for the confirm button
+            confirmButton.addEventListener('click', function() {
+                // In a real app, this would submit the data to a backend API
+                const ticketData = {
+                    movieId: movieId,
+                    date: date,
+                    showtimeId: showtimeId,
+                    seats: selectedSeatsArray,
+                    quantity: selectedSeatsArray.length,
+                    movieTitle: movieTitle.textContent,
+                    showtime: movieTime.textContent,
+                    hall: movieHall.textContent
+                };
+
+                // For demo, show confirmation and log data
+                alert(`Đã chọn ${selectedSeatsArray.length} ghế: ${selectedSeatsArray.join(', ')}`);
+                console.log("Ticket data:", ticketData);
+
+                // Redirect to ticket information screen (in a real app)
+                // window.location.href = `ticket-information.html?seats=${selectedSeatsArray.join(',')}&movieId=${movieId}&date=${date}&showtimeId=${showtimeId}`;
+            });
+
+            // Helper function to generate random occupied seats
+            function generateRandomOccupiedSeats(rows, seatsPerRow, percentOccupied) {
+                const totalSeats = rows * seatsPerRow;
+                const numOccupied = Math.floor(totalSeats * (percentOccupied / 100));
+                const occupiedSeats = [];
+
+                while (occupiedSeats.length < numOccupied) {
+                    const row = String.fromCharCode(65 + Math.floor(Math.random() * rows));
+                    const seat = Math.floor(Math.random() * seatsPerRow) + 1;
+                    const seatId = row + seat;
+
+                    if (!occupiedSeats.includes(seatId)) {
+                        occupiedSeats.push(seatId);
+                    }
+                }
+
+                return occupiedSeats;
+            }
+
+            // Helper function to format date
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('vi-VN', options);
+            }
+        });
+    </script>
+        </div>
+    </div>
+</body>
+</html>

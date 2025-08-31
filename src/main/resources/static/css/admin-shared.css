@@ -1,0 +1,150 @@
+/* Shared Admin CSS for consistent styling across all admin pages */
+
+/* Admin sidebar styling */
+#sidebar {
+    min-width: 230px;
+    max-width: 230px;
+    min-height: 100vh;
+    transition: all 0.3s;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+    z-index: 100;
+}
+
+#sidebar .sidebar-header {
+    background: #fff;
+}
+
+#sidebar .components .nav-link.active,
+#sidebar .components .nav-link:hover {
+    background: #fde8e8;
+    color: #dc2626;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s, color 0.3s;
+}
+
+#sidebar .components .nav-link {
+    color: #333;
+    border-radius: 8px;
+    transition: background 0.3s, color 0.3s;
+}
+
+#sidebar .sidebar-footer {
+    font-size: 15px;
+    color: #555;
+}
+
+/* Admin content area styling */
+#page-content-wrapper {
+    background: #f4f6fb;
+    min-height: 100vh;
+    transition: padding 0.3s;
+}
+
+/* Card styling for content panels */
+.card {
+    border-radius: 16px;
+    box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.08);
+    border: none;
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.card-hover:hover {
+    box-shadow: 0 8px 32px 0 rgba(220, 38, 38, 0.16);
+    transform: translateY(-4px) scale(1.03);
+}
+
+/* Admin table styling */
+.admin-table th,
+.admin-table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.admin-table th {
+    background: #fde8e8;
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.admin-table tr {
+    background: #fff;
+}
+
+/* Button styling */
+.admin-btn {
+    min-width: 70px;
+}
+
+.admin-btn-info {
+    background: #38bdf8;
+    border: none;
+}
+
+.admin-btn-primary {
+    background: #dc2626;
+    border: none;
+}
+
+.admin-btn-danger {
+    background: #f87171;
+    border: none;
+}
+
+.admin-btn:hover {
+    opacity: 0.85;
+}
+
+/* Alert animation for success/error messages */
+.success-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    min-width: 350px;
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Admin content wrapper */
+.admin-content-wrapper {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Admin page title styling */
+.admin-page-title {
+    color: #dc2626;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #fde8e8;
+    padding-bottom: 0.75rem;
+}

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="Chi tiết thành viên">Chi tiết thành viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin/member/viewMember.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+
+    <style>
+        /* Base styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header navbar */
+        .navbar {
+            background: linear-gradient(90deg, #dc3545, #c82333);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .navbar-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white !important;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            padding: 2rem 1rem;
+        }
+
+        /* Main card container */
+        .member-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        /* Card header */
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0;
+        }
+
+        /* Card body */
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Member content layout */
+        .member-content {
+            display: flex;
+            gap: 2.5rem;
+            align-items: flex-start;
+        }
+
+        /* Avatar styling */
+        .avatar-container {
+            flex-shrink: 0;
+        }
+
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Member info */
+        .member-info {
+            flex: 1;
+        }
+
+        /* Info grid layout */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Info item styling giống form fields */
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            padding: 0.75rem 1rem;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #2d3748;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar-link {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0.75rem 1rem !important;
+            color: #212529 !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            border-radius: 0.5rem !important;
+            margin: 0.25rem 0 !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+        }
+
+        /* Special styling for status */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-inactive {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        /* Tier badge styling */
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .tier-bronze {
+            background: linear-gradient(135deg, #cd7f32, #b8660a);
+            color: white;
+        }
+
+        .tier-silver {
+            background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+            color: white;
+        }
+
+        .tier-gold {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #2d3748;
+        }
+
+        .tier-platinum {
+            background: linear-gradient(135deg, #e5e4e2, #b8b8b8);
+            color: #2d3748;
+        }
+
+        .tier-diamond {
+            background: linear-gradient(135deg, #b9f2ff, #0ea5e9);
+            color: white;
+        }
+
+        /* Score styling */
+        .score-value {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Action buttons */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-modern {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #495057, #343a40);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+
+        /* Email link styling */
+        .email-link {
+            color: #0ea5e9;
+            text-decoration: none;
+        }
+
+        .email-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Phone number styling */
+        .phone-value {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 44px;
+        }
+
+        .country-code {
+            background-color: #e9ecef;
+            color: #6c757d;
+            padding: 0.75rem;
+            border-right: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .phone-number {
+            padding: 0.75rem 1rem;
+            flex: 1;
+            font-size: 0.95rem;
+            color: #2d3748;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .member-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-modern {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .card-header {
+                padding: 1rem 1.5rem;
+                font-size: 1.1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .avatar-img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* Animation */
+        .member-card {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Long text handling */
+        .info-value {
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        /* Icon styling */
+        .info-icon {
+            margin-right: 0.5rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand">
+                <i class="bi bi-people-fill me-2"></i>
+                Chi tiết thành viên
+            </span>
+        </div>
+    </nav>
+</div>
+<div layout:fragment="content">
+    <div class="container">
+        <div class="card member-card">
+            <div class="card-header">
+                <i class="bi bi-person-circle me-2"></i>
+                Thông tin thành viên
+            </div>
+            <div class="card-body">
+                <div class="member-content">
+                    <!-- Avatar -->
+                    <div class="avatar-container">
+                        <img th:src="${accountDTO.avatarUrl} ?: 'https://res.cloudinary.com/dycfyoh8r/image/upload/v1752562591/f817d8af-14c5-4313-b349-8cb8eab0306b.png'"
+                             alt="Avatar"
+                             class="avatar-img" />
+                    </div>
+
+                    <!-- Member Information -->
+                    <div class="member-info">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-person info-icon"></i>Tên Đăng Nhập
+                                </label>
+                                <div class="info-value" th:text="${accountDTO.username} ?: 'N/A'">Username</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-person-badge info-icon"></i>Họ và Tên
+                                </label>
+                                <div class="info-value" th:text="${accountDTO.fullName} ?: 'N/A'">Tên</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-envelope info-icon"></i>Email
+                                </label>
+                                <div class="info-value">
+                                    <a class="email-link" th:href="'mailto:' + ${accountDTO.email}" th:text="${accountDTO.email} ?: 'N/A'">email@example.com</a>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-telephone info-icon"></i>Số Điện Thoại
+                                </label>
+                                <div class="phone-value" th:if="${accountDTO.getPhoneNumber()}">
+                                    <span class="country-code">+84</span>
+                                    <span class="phone-number" th:text="${accountDTO.getPhoneNumber()}">0369660091</span>
+                                </div>
+                                <div class="info-value" th:unless="${accountDTO.getPhoneNumber()}">N/A</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-geo-alt info-icon"></i>Địa Chỉ
+                                </label>
+                                <div class="info-value" th:text="${accountDTO.address} ?: 'N/A'">Địa chỉ</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-card-text info-icon"></i>CCCD
+                                </label>
+                                <div class="info-value" th:text="${accountDTO.identityCard} ?: 'N/A'">CCCD</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-calendar info-icon"></i>Ngày Sinh
+                                </label>
+                                <div class="info-value" th:text="${accountDTO.dateOfBirth != null} ? ${#temporals.format(accountDTO.dateOfBirth, 'dd/MM/yyyy')} : 'N/A'">Ngày sinh</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-gender-ambiguous info-icon"></i>Giới Tính
+                                </label>
+                                <div class="info-value" th:text="${accountDTO.gender == 'M' ? 'Nam' : (accountDTO.gender == 'F' ? 'Nữ' : 'Khác')}">Giới tính</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-calendar-check info-icon"></i>Ngày Đăng Ký
+                                </label>
+                                <div class="info-value" th:text="${accountDTO.registerDate != null} ? ${#temporals.format(accountDTO.registerDate, 'dd/MM/yyyy')} : 'N/A'">Ngày đăng ký</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-star info-icon"></i>Điểm Thành Viên
+                                </label>
+                                <div class="info-value">
+                                    <span class="score-value">
+                                        <i class="bi bi-trophy-fill"></i>
+                                        <span th:text="${member.score} ?: '0'">Điểm</span> điểm
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-award info-icon"></i>Cấp Bậc
+                                </label>
+                                <div class="info-value">
+                                    <span th:class="${
+                                                   (member.tier == 'Bạc' ? 'tier-badge tier-silver' :
+                                                   (member.tier == 'Vàng' ? 'tier-badge tier-gold' :
+                                                   (member.tier == 'Kim cương' ? 'tier-badge tier-diamond' : 'tier-badge tier-bronze')))}"
+                                          th:text="${member.tier} ?: 'Bạc'">
+                                        Cấp bậc
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">
+                                    <i class="bi bi-check-circle info-icon"></i>Trạng Thái
+                                </label>
+                                <div class="info-value">
+                                    <span th:class="${accountDTO.status == 1 ? 'status-badge status-active' : 'status-badge status-inactive'}"
+                                          th:text="${accountDTO.status == 1 ? 'Đang hoạt động' : (accountDTO.status == 0 ? 'Đã bị khóa' : 'N/A')}">
+                                        Trạng thái
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a th:href="@{/admin/members?page=0}" class="btn-modern btn-back">
+                                <i class="fas fa-arrow-left"></i>
+                                Quay Lại Danh Sách
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

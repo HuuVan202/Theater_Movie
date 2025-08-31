@@ -1,0 +1,136 @@
+/* Styling for promotion forms and details */
+.user-table-wrapper {
+    background: #fff;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+}
+
+.form-control, .form-select {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    height: 2rem;
+    border-radius: 0.25rem;
+}
+
+.form-control:disabled {
+    background-color: #e9ecef;
+    opacity: 0.7;
+}
+
+.form-control-static {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    min-height: 2rem;
+}
+
+.form-check-label {
+    font-size: 0.9rem;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+    line-height: 1.2;
+}
+
+.btn {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.25rem;
+}
+
+.btn-gradient {
+    background: linear-gradient(90deg, #ff4d4d, #ff7676);
+    color: #fff;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(90deg, #e63c3c, #e65c5c);
+}
+
+.image-section {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.image-section img {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.image-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.img-fluid {
+    width: 200px;
+    height: 200px;
+}
+
+.image-inputs .form-control {
+    width: 100%;
+}
+
+.promotion-image {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.badge-gradient {
+    background: linear-gradient(90deg, #ff4d4d, #ff7676);
+    color: #fff;
+    font-weight: 500;
+}
+
+.table th, .table td {
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.page-link {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.row.g-3 > .col-md-4, .row.g-3 > .col-md-6 {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.list-unstyled.components li {
+    margin-bottom: 0.5rem !important;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

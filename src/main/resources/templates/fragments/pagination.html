@@ -1,0 +1,11 @@
+<div th:fragment="pagination(currentPage, totalPages, baseUrl)" class="flex justify-center items-center space-x-2 mt-6">
+    <a th:href="@{${baseUrl}(comingSoonPage=${currentPage - 1})}"
+       th:class="${currentPage == 0} ? 'px-4 py-2 bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed' : 'px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300'"
+       th:disabled="${currentPage == 0}">Previous</a>
+    <span class="px-4 py-2 text-gray-700 font-semibold">
+        Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span>
+    </span>
+    <a th:href="@{${baseUrl}(comingSoonPage=${currentPage + 1})}"
+       th:class="${currentPage + 1 >= totalPages} ? 'px-4 py-2 bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed' : 'px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300'"
+       th:disabled="${currentPage + 1 >= totalPages}">Next</a>
+</div>

@@ -1,0 +1,1689 @@
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0f1f 0%, #1e1e3a 50%, #1a253f 100%);
+    color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Background effects */
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.floating-particles {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Movie Detail Section */
+.movie-detail-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    position: relative;
+
+}
+
+.movie-banner {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    overflow: hidden;
+    border-radius: 24px;
+    margin-bottom: 2rem;
+    z-index: 1;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.movie-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.5s ease;
+}
+
+.movie-banner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(to top, rgba(20, 20, 30, 0.85) 85%, transparent 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.movie-banner:hover img {
+    transform: scale(1.05);
+}
+
+.banner-overlay {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+}
+
+.banner-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.movie-hero {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 3.5rem;
+    align-items: start;
+    margin-bottom: 3.5rem;
+    padding: 2.5rem;
+    position: relative;
+    z-index: 2;
+    margin-top: -580px;
+}
+
+.movie-poster-container img {
+    position: relative;
+    height: fit-content;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+}
+
+.movie-poster {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.movie-poster:hover {
+    transform: scale(1.08);
+}
+
+.movie-info {
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.movie-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 5px 10px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+}
+
+.movie-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2rem;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.meta-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-right: 2rem;
+    position: relative;
+}
+
+.meta-group:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    height: 60%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.1rem;
+    color: #e5e5e5;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.8rem 1.2rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.3s StockOverflow ease;
+}
+
+.meta-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+}
+
+.meta-item i {
+    color: #ff7540;
+    font-size: 1.4rem;
+    min-width: 24px;
+}
+
+.movie-description {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 18px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 2.5rem;
+    margin-top: 2.5rem;
+}
+
+.movie-description h6 {
+    color: #ff7540;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.movie-description p {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    color: #d5d5d5;
+    text-align: justify;
+}
+
+/* Enhanced Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 2rem;
+}
+
+.btn-primary, .btn-danger {
+    background: linear-gradient(45deg, #ff7540, #ff9a40);
+    border: none;
+    padding: 1.1rem 2.8rem;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(255, 117, 64, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.btn-danger, .btn-secondary {
+    background: transparent;
+    border: 2px solid #ff7540;
+    color: #ff7540;
+    padding: 1.1rem 2.6rem;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+    transition: all 0.3s cubic-bezier(.4,2,.3,1);
+    box-shadow: none;
+    outline: none;
+}
+.btn-danger:focus, .btn-danger:hover,
+.btn-secondary:focus, .btn-secondary:hover {
+    background: linear-gradient(90deg, #ff7540 0%, #ff9a40 100%);
+    color: #fff;
+    border-color: #ff9a40;
+    box-shadow: 0 8px 30px rgba(255,117,64,0.25);
+    transform: scale(1.04) translateY(-2px);
+}
+.btn-danger:active, .btn-secondary:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: transparent;
+    color: #ff7540;
+    border-color: #ff7540;
+}
+
+.btn-secondary {
+    background: rgba(255,117,64,0.08);
+    border: 2px solid #ff7540;
+    color: #ff7540;
+    padding: 1.1rem 2.6rem;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+    transition: all 0.3s cubic-bezier(.4,2,.3,1);
+    box-shadow: 0 4px 18px rgba(255,117,64,0.12);
+    outline: none;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: #ff7540;
+    color: #fff;
+    border-color: #ff9a40;
+    transform: scale(1.04) translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,117,64,0.25);
+}
+.btn-secondary:active {
+    transform: scale(0.98);
+}
+
+.btn-danger .bi, .btn-secondary .bi {
+    font-size: 1.5rem;
+    margin-right: 0.7rem;
+    vertical-align: middle;
+    transition: transform 0.3s cubic-bezier(.4,2,.3,1);
+}
+.btn-secondary:hover .bi-play-circle {
+    transform: rotate(12deg) scale(1.2);
+}
+.btn-danger:hover .bi-ticket-perforated {
+    transform: scale(1.2);
+}
+
+/* Modal Enhancements */
+.modal-content {
+    background: linear-gradient(135deg, #1e1e3a 0%, #1a253f 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    backdrop-filter: blur(12px);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 1.8rem 2.5rem;
+}
+
+.modal-title {
+    color: #ffffff;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 2.5rem;
+}
+
+.form-label {
+    color: #ff7540;
+    font-size: 1.15rem;
+    margin-bottom: 1.2rem;
+}
+
+.date-btn, .location-btn, .version-btn, .time-btn {
+    border-radius: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    padding: 0.9rem 1.6rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 0.6rem;
+}
+
+.date-btn:hover, .location-btn:hover, .version-btn:hover, .time-btn:hover {
+    background: rgba(255, 117, 64, 0.25);
+    border-color: #ff7540;
+    transform: translateY(-3px);
+}
+
+.date-btn.active, .location-btn.active, .version-btn.active, .time-btn.active {
+    background: #ff7540;
+    border-color: #ff7540;
+    color: #ffffff;
+}
+
+.cinema-block {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 18px;
+    padding: 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .movie-hero {
+        grid-template-columns: 350px 1fr;
+        gap: 2.5rem;
+    }
+
+    .movie-banner {
+        height: 500px;
+    }
+}
+
+@media (max-width: 992px) {
+    .movie-hero {
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+    }
+
+    .movie-title {
+        font-size: 2.5rem;
+    }
+
+    .movie-banner {
+        height: 450px;
+    }
+
+    .movie-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .meta-group::after {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-hero {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .movie-poster-container {
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    .movie-title {
+        font-size: 2.2rem;
+    }
+
+    .movie-detail-container {
+        padding: 1.5rem;
+    }
+
+    .action-buttons {
+        justify-content: center;
+    }
+
+    .movie-meta {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .meta-group {
+        padding-right: 0;
+    }
+
+    .modal-dialog {
+        margin: 0.8rem;
+    }
+
+    .movie-banner {
+        height: 400px;
+    }
+}
+
+@media (max-width: 576px) {
+    .movie-title {
+        font-size: 1.9rem;
+    }
+
+    .btn-primary, .btn-danger {
+        padding: 0.9rem 1.8rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-secondary, .btn-outline {
+        padding: 0.9rem 1.8rem;
+        font-size: 1.1rem;
+    }
+
+    .movie-banner {
+        height: 300px;
+    }
+
+    .banner-title {
+        font-size: 2rem;
+    }
+}
+
+/* Animation for page load */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.movie-detail-container > * {
+    animation: fadeInUp 0.7s ease forwards;
+}
+
+.movie-detail-container > *:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.movie-detail-container > *:nth-child(3) {
+    animation-delay: 0.25s;
+}
+
+/* Ripple Effect */
+@keyframes ripple {
+    to {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Scroll Effect */
+.movie-hero.blurred {
+    filter: blur(10px);
+    opacity: 0.25;
+    transform: translateY(-60px);
+}
+
+/* Related Films & Hot Films Sections */
+.related-films-section, .hot-films-section {
+    margin-bottom: 4.5rem;
+    padding: 2.5rem 0;
+    min-width: 100%;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.section-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.section-title i {
+    color: #ff7540;
+}
+
+.section-nav {
+    display: flex;
+    gap: 1.2rem;
+}
+
+.nav-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.3rem;
+}
+
+.nav-btn:hover {
+    background: #ff7540;
+    border-color: #ff7540;
+    transform: translateY(-3px);
+}
+
+.nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.films-container {
+    display: flex;
+    gap: 2.5rem;
+    overflow-x: auto;
+    padding: 1.2rem 0;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.films-container::-webkit-scrollbar {
+    display: none;
+}
+
+.film-card {
+    flex: 0 0 300px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    position: relative;
+}
+
+.film-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.film-poster {
+    position: relative;
+    height: 420px;
+    overflow: hidden;
+}
+
+.film-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.film-card:hover .film-poster img {
+    transform: scale(1.12);
+}
+
+.film-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.85) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.film-card:hover .film-overlay {
+    opacity: 1;
+}
+
+.play-btn, .bookmark-btn {
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    color: #ffffff;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.6rem;
+    backdrop-filter: blur(12px);
+}
+
+.play-btn:hover {
+    background: #ff7540;
+    border-color: #ff7540;
+    transform: scale(1.15);
+}
+
+.bookmark-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: #ffffff;
+    transform: scale(1.15);
+}
+
+.film-info {
+    padding: 1.8rem;
+}
+
+.film-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff !important;
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.film-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.film-genre {
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+.film-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.film-duration {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #b5b5b5;
+    font-size: 0.95rem;
+}
+
+.film-duration i {
+    color: #ff7540;
+}
+
+/* Hot Films Specific Styles */
+.hot-film {
+    border: 2px solid rgba(255, 117, 64, 0.35);
+}
+
+.hot-film:hover {
+    border-color: #ff7540;
+    box-shadow: 0 25px 50px rgba(255, 117, 64, 0.25);
+}
+
+.hot-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(45deg, #ff7540, #ff9a40);
+    color: #ffffff;
+    padding: 0.4rem 1rem;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    z-index: 2;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+/* Responsive Design for Film Cards */
+@media (max-width: 768px) {
+    .film-card {
+        flex: 0 0 240px;
+    }
+
+    .film-poster {
+        height: 340px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .nav-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+
+    .section-nav {
+        gap: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .film-card {
+        flex: 0 0 200px;
+    }
+
+    .film-poster {
+        height: 290px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.2rem;
+    }
+
+    .films-container {
+        gap: 1.2rem;
+    }
+}
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Booking Button */
+.btn-booking {
+    background: transparent;
+    color: #ff6b6b !important;
+    border: 2px solid #ff6b6b !important;
+    border-radius: 25px !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center ;
+    justify-content: center;
+    min-width: 140px;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1 ) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-booking::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-booking:hover {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52) ;
+    color: white !important;
+    border-color: #ee5a52 !important;
+    transform: translateY(-2px) ;
+    box-shadow: 0 6px 20px rgba(238, 90, 82, 0.4);
+    text-decoration: none;
+}
+
+.btn-booking:hover::before {
+    left: 100%;
+}
+
+.btn-booking:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+}
+
+.btn-booking i {
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+/* Trailer Button */
+.btn-trailer {
+    background: transparent;
+    color: #74b9ff !important;
+    border: 2px solid #74b9ff !important;
+    border-radius: 25px !important;
+    padding: 12px 24px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(116, 185, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-trailer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-trailer:hover:not(:disabled) {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    color: white;
+    border-color: #0984e3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(9, 132, 227, 0.4);
+}
+
+.btn-trailer:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.btn-trailer:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(116, 185, 255, 0.3);
+}
+
+.btn-trailer i {
+    margin-right: 8px;
+    font-size: 1.2em;
+}
+
+/* Disabled Trailer Button */
+.btn-trailer:disabled {
+    background: linear-gradient(135deg, #ddd, #bbb);
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.btn-trailer:disabled::before {
+    display: none;
+}
+
+.btn-trailer:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .btn-booking,
+    .btn-trailer {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* Focus states for accessibility */
+.btn-booking:focus,
+.btn-trailer:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Loading state animation (optional) */
+.btn-booking.loading i,
+.btn-trailer.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+/* Enhanced Trailer Modal Styles */
+#trailerModal .modal-dialog {
+    max-width: 90vw;
+    width: 100%;
+    margin: 2rem auto;
+}
+
+#trailerModal .modal-content {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: none;
+    border-radius: 20px;
+    box-shadow:
+            0 25px 50px rgba(0, 0, 0, 0.8),
+            0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    position: relative;
+}
+
+#trailerModal .modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+    rgba(255, 107, 53, 0.1) 0%,
+    rgba(255, 193, 7, 0.1) 50%,
+    rgba(220, 53, 69, 0.1) 100%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+#trailerModal .modal-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 2rem;
+    position: relative;
+}
+
+#trailerModal .modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg,
+    #ff6b35 0%,
+    #ffc107 50%,
+    #dc3545 100%);
+    border-radius: 2px;
+}
+
+#trailerModal .modal-title {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#trailerModal .modal-title::before {
+    content: '🎬';
+    font-size: 1.75rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+#trailerModal .btn-close {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: none;
+    position: relative;
+    z-index: 2;
+}
+
+#trailerModal .btn-close::after {
+    content: '\00d7';
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+#trailerModal .btn-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#trailerModal .modal-body {
+    padding: 0;
+    position: relative;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+}
+
+#trailerModal .modal-body iframe {
+    width: 100%;
+    height: 60vh;
+    min-height: 400px;
+    border: none;
+    display: block;
+    border-radius: 0 0 20px 20px;
+}
+
+#trailerModal .modal-body .no-trailer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: #888;
+    font-size: 1.2rem;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#trailerModal .modal-body .no-trailer i {
+    font-size: 4rem;
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+#trailerModal .modal-footer {
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+#trailerModal .modal-footer .btn {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#trailerModal .modal-footer .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%);
+    transition: left 0.5s ease;
+}
+
+#trailerModal .modal-footer .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4);
+}
+
+#trailerModal .modal-footer .btn:hover::before {
+    left: 100%;
+}
+
+/* Loading overlay for iframe */
+#trailerModal .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    z-index: 10;
+    border-radius: 0 0 20px 20px;
+}
+
+#trailerModal .loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 107, 53, 0.2);
+    border-top: 4px solid #ff6b35;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #trailerModal .modal-dialog {
+        max-width: 95vw;
+        margin: 1rem auto;
+    }
+
+    #trailerModal .modal-header,
+    #trailerModal .modal-footer {
+        padding: 1rem;
+    }
+
+    #trailerModal .modal-title {
+        font-size: 1.25rem;
+    }
+
+    #trailerModal .modal-body iframe {
+        height: 40vh;
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    #trailerModal .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100vw - 1rem);
+    }
+
+    #trailerModal .modal-body iframe {
+        height: 35vh;
+        min-height: 200px;
+    }
+}
+
+/* Animation for modal appearance */
+#trailerModal.fade .modal-dialog {
+    transform: scale(0.8) translateY(-50px);
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+
+#trailerModal.fade.show .modal-dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* Custom backdrop */
+#trailerModal.modal {
+    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.8);
+}
+/* Enhanced Booking Modal Styles */
+
+/* Modal Overlay and Container */
+#bookingModal .modal-dialog {
+    max-width: 900px;
+    margin: 1.5rem auto;
+}
+
+#bookingModal .modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border: none;
+    border-radius: 20px;
+    box-shadow:
+            0 25px 50px rgba(0, 0, 0, 0.5),
+            0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Animated Background Pattern */
+#bookingModal .modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+            radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(40, 167, 69, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Modal Header */
+#bookingModal .modal-header {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+#bookingModal .modal-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 0;
+}
+
+#bookingModal .btn-close {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: none;
+    position: relative;
+    z-index: 2;
+}
+
+#bookingModal .btn-close::after {
+    content: '\00d7';
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+#bookingModal .btn-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Modal Body */
+#bookingModal .modal-body {
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+    color: #ffffff;
+}
+
+/* Section Labels */
+#bookingModal .form-label {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#bookingModal .form-label i {
+    color: #ff6b35;
+    font-size: 1.2rem;
+}
+
+/* Date Selection Buttons */
+.date-btn {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    min-width: 80px;
+    text-align: center;
+}
+
+.date-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s ease;
+}
+
+.date-btn:hover::before {
+    left: 100%;
+}
+
+.date-btn:hover {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+.date-btn.active {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+    border-color: #ff6b35;
+    color: #ffffff;
+    box-shadow:
+            0 8px 25px rgba(255, 107, 53, 0.4),
+            0 0 20px rgba(255, 107, 53, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Version Selection Buttons */
+.version-btn {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+    border: 2px solid rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.version-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.3), transparent);
+    transition: all 0.5s ease;
+}
+
+.version-btn:hover::before {
+    left: 100%;
+}
+
+.version-btn:hover {
+    background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
+    border-color: #ffc107;
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+}
+
+.version-btn.active {
+    background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
+    border-color: #ffc107;
+    color: #000;
+    box-shadow:
+            0 8px 25px rgba(255, 193, 7, 0.4),
+            0 0 20px rgba(255, 193, 7, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Time Selection Buttons */
+.time-btn {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+    border: 2px solid rgba(40, 167, 69, 0.3);
+    color: #28a745;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    min-width: 90px;
+    text-align: center;
+}
+
+.time-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(40, 167, 69, 0.3), transparent);
+    transition: all 0.5s ease;
+}
+
+.time-btn:hover::before {
+    left: 100%;
+}
+
+.time-btn:hover {
+    background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+    border-color: #28a745;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+}
+
+.time-btn.active {
+    background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+    border-color: #28a745;
+    color: #ffffff;
+    box-shadow:
+            0 8px 25px rgba(40, 167, 69, 0.4),
+            0 0 20px rgba(40, 167, 69, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Cinema Blocks and Showtime Blocks */
+.cinema-block,
+.showtime-block {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.showtime-block:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Button Groups */
+.d-flex.gap-2 {
+    gap: 0.8rem !important;
+}
+
+.d-flex.flex-wrap.gap-2 {
+    gap: 0.8rem !important;
+}
+
+/* Continue Booking Button */
+#bookingForm .btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+#bookingForm .btn-danger::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.6s ease;
+}
+
+#bookingForm .btn-danger:hover::before {
+    left: 100%;
+}
+
+#bookingForm .btn-danger:hover {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(220, 53, 69, 0.4);
+}
+
+#bookingForm .btn-danger:active {
+    transform: translateY(-1px);
+}
+
+/* Form Section Styling */
+.mb-4 {
+    margin-bottom: 2rem !important;
+}
+
+/* Text End Alignment */
+.text-end {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 1rem;
+}
+
+/* Animation for modal appearance */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+#bookingModal.show .modal-content {
+    animation: modalSlideIn 0.4s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #bookingModal .modal-dialog {
+        margin: 1rem;
+        max-width: none;
+    }
+
+    #bookingModal .modal-body {
+        padding: 1.5rem;
+    }
+
+    #bookingModal .modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .date-btn,
+    .version-btn,
+    .time-btn {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .d-flex.gap-2 {
+        gap: 0.5rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    #bookingModal .modal-title {
+        font-size: 1.2rem;
+    }
+
+    #bookingModal .form-label {
+        font-size: 1rem;
+    }
+
+    .date-btn,
+    .version-btn,
+    .time-btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    #bookingForm .btn-danger {
+        padding: 12px 24px;
+        font-size: 1rem;
+        width: 100%;
+    }
+}
+
+/* Disabled State for Buttons */
+.date-btn:disabled,
+.version-btn:disabled,
+.time-btn:disabled {
+    background: rgba(108, 117, 125, 0.2);
+    border-color: rgba(108, 117, 125, 0.3);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.date-btn:disabled::before,
+.version-btn:disabled::before,
+.time-btn:disabled::before {
+    display: none;
+}
+
+/* Loading State */
+.btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #ffffff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}

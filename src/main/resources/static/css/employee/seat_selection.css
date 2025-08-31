@@ -1,0 +1,250 @@
+.movie-info-card {
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: white;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+.movie-detail {
+    padding: 1.5rem;
+}
+
+.movie-poster-small {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.seat-layout {
+    background-color: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+.screen {
+    height: 12px;
+    background: linear-gradient(to right, rgba(3,32,85,0.2), rgba(3,32,85,0.8), rgba(3,32,85,0.2));
+    border-radius: 50%;
+    margin: 0 auto 3rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    position: relative;
+    width: 80%;
+}
+
+.screen::after {
+    content: 'MÀN HÌNH';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    font-weight: 600;
+    user-select: none;
+}
+
+.seat-available {
+    background-color: var(--bg-light);
+    border: 1px solid #dee2e6;
+    color: var(--primary-color);
+}
+
+.seat-available:hover {
+    transform: scale(1.1);
+    background-color: rgba(3,32,85,0.1);
+}
+
+.seat-selected {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    color: white;
+}
+
+.seat-occupied {
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    color: #adb5bd;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.seat-occupied::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #adb5bd;
+    transform: rotate(45deg);
+}
+
+.seat-row-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.seat-legend {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+}
+
+.legend-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 4px;
+}
+
+.summary-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.summary-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.summary-label {
+    flex: 0 0 100px; /* cố định độ rộng nhãn */
+    font-weight: bold;
+    color: #555;
+}
+
+.summary-value {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.action-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-confirm {
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+}
+
+.btn-confirm:hover {
+    background-color: #021a43;
+    transform: translateY(-2px);
+}
+
+.btn-cancel {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+}
+
+.btn-cancel:hover {
+    background-color: #f8f9fa;
+}
+
+.row-spacing {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .seat {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+@media (max-width: 768px) {
+    .seat-grid {
+        grid-template-columns: repeat(10, 1fr);
+        gap: 5px;
+    }
+
+    .seat {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+    }
+}
+
+.actor-ellipsis {
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+@media (max-width: 576px) {
+    .seat {
+        width: 25px;
+        height: 25px;
+        font-size: 0.65rem;
+    }
+
+    .legend-item {
+        font-size: 0.8rem;
+    }
+}

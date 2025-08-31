@@ -1,0 +1,153 @@
+body {
+    background-color: #0e1628;
+    color: white;
+    font-family: sans-serif;
+}
+
+.auth-container {
+    width: 360px;
+    margin: 60px auto;
+    position: relative;
+    z-index: 10;
+}
+
+.tab-select {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 2px solid #F59E0B;
+    color: #F59E0B;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+    backdrop-filter: blur(8px);
+}
+
+.tab-btn.active {
+    background: rgba(232, 65, 24, 0.9);
+    border-color: #ff9f43;
+
+}
+
+.form-block {
+    background: rgba(17, 26, 43, 0.85);
+    color: #FFF8E1;
+    border: 2px solid transparent;
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    display: none;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(1px);
+}
+
+.form-block.active {
+    display: block;
+    border-color: #F59E0B;
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #FFF8E1;
+    flex-wrap: nowrap; /* Không cho xuống dòng */
+}
+
+.form-options .remember-me {
+    display: inline-flex; /* đảm bảo không xuống dòng */
+    align-items: center;
+    white-space: nowrap; /* Không cho text tự động xuống dòng */
+    gap: 5px;
+}
+
+.form-options .forgot-password {
+    text-decoration: none;
+    color: #f90;
+    white-space: nowrap; /* Không cho text xuống dòng */
+}
+
+.form-options .forgot-password:hover {
+    text-decoration: underline;
+}
+
+.form-options a {
+    color: #f1c40f;
+    text-decoration: none;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 10px;
+    background: #e84118;
+    border: none;
+    border-radius: 6px;
+    color: #FFF8E1;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.social-title {
+    text-align: center;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.social-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.lantern {
+    z-index: 0; /* đèn lồng ở phía sau */
+    pointer-events: none;
+    position: absolute;
+}
+
+.error {
+    color: red;
+}
+
+.btn-content a {
+    color: #f1c40f;
+    text-decoration: none;
+}

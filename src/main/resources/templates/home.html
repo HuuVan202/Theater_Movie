@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/homeContent.css}">
+    <link rel="stylesheet" th:href="@{/css/lightMode/themeHomeContent.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities/back-to-top.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap" rel="stylesheet">
+    <script th:src="@{/js/translations.js}"></script>
+    <script th:src="@{/js/language.js}"></script>
+    <script th:src="@{/js/scroll-behavior.js}"></script>
+    <style>
+        .swiper-image {
+            width: 400px !important;
+            height: 350px !important;
+
+        }
+
+        .swiper-image_top {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
+
+        .banner-star1,
+        .banner-star2 {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .banner-star1 {
+            animation: zoom 3s infinite;
+        }
+
+        .banner-star2 {
+            animation: spin 4s infinite linear;
+        }
+
+        @keyframes zoom {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.5);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Lantern animations */
+        @keyframes lanternSway {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .hanging-lantern {
+            animation: lanternSway 3s ease-in-out infinite;
+        }
+
+        .central-moon {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+
+
+        .moon-content {
+            z-index: 10;
+            text-align: center;
+            pointer-events: auto;
+        }
+
+        .moon-content img {
+            width: 90px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.4));
+        }
+
+        .moon-content h1 {
+            font-family: 'Imperial Script', cursive;
+            color: #009994;
+            font-size: 5.2rem;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+            margin: 0 0 10px 0;
+            font-weight: normal; /* Imperial Script looks better without bold */
+        }
+
+        .moon-content p {
+            font-family: 'Imperial Script', cursive;
+            color: #009994;
+            font-size: 2.1rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: normal;
+        }
+
+        /* Responsive moon adjustments */
+        @media (max-width: 768px) {
+            .moon-circle {
+                width: 450px;
+                height: 450px;
+            }
+
+            .moon-content img {
+                width: 70px;
+                margin-bottom: 12px;
+            }
+
+            .moon-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .moon-content p {
+                font-size: 1rem;
+            }
+
+            .central-moon {
+                top: 38%;
+            }
+
+
+        }
+
+        @media (max-width: 576px) {
+            .moon-circle {
+                width: 350px;
+                height: 350px;
+            }
+
+            .moon-content img {
+                width: 60px;
+                margin-bottom: 10px;
+            }
+
+            .moon-content h1 {
+                font-size: 2rem;
+            }
+
+            .moon-content p {
+                font-size: 0.9rem;
+            }
+
+            .central-moon {
+                top: 35%;
+            }
+
+            .moon-crater1 { width: 12px; height: 12px; }
+            .moon-crater2 { width: 10px; height: 10px; }
+            .moon-crater3 { width: 8px; height: 8px; }
+        }
+
+        /* Cloud effects */
+        .night-clouds {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 2; /* Tăng z-index để hiển thị trên background */
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6); /* Tăng opacity để thấy rõ hơn */
+            border-radius: 50px;
+            animation: driftCloud 20s linear infinite;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* Thêm shadow để nổi bật */
+        }
+
+        .cloud:before,
+        .cloud:after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4); /* Tăng opacity cho phần mở rộng */
+            border-radius: 50px;
+        }
+
+        .cloud:nth-child(1) {
+            width: 150px;
+            height: 60px;
+            top: 20%;
+            left: -150px;
+            animation-duration: 25s;
+            background: rgba(255, 255, 255, 0.7); /* Làm mây đầu tiên rõ hơn */
+        }
+
+        .cloud:nth-child(1):before {
+            width: 75px;
+            height: 75px;
+            top: -35px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .cloud:nth-child(1):after {
+            width: 90px;
+            height: 60px;
+            top: -25px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .cloud:nth-child(2) {
+            width: 120px;
+            height: 45px;
+            top: 40%;
+            left: -120px;
+            animation-duration: 30s;
+            animation-delay: 5s;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .cloud:nth-child(2):before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .cloud:nth-child(2):after {
+            width: 75px;
+            height: 45px;
+            top: -20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Thêm mây thứ 3 và 4 để nhiều hơn */
+        .cloud:nth-child(3) {
+            width: 100px;
+            height: 40px;
+            top: 60%;
+            left: -100px;
+            animation-duration: 35s;
+            animation-delay: 10s;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .cloud:nth-child(3):before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .cloud:nth-child(3):after {
+            width: 60px;
+            height: 40px;
+            top: -15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .cloud:nth-child(4) {
+            width: 130px;
+            height: 50px;
+            top: 10%;
+            left: -130px;
+            animation-duration: 28s;
+            animation-delay: 15s;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .cloud:nth-child(4):before {
+            width: 65px;
+            height: 65px;
+            top: -30px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .cloud:nth-child(4):after {
+            width: 80px;
+            height: 50px;
+            top: -20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Cloud drifting animation */
+        @keyframes driftCloud {
+            0% {
+                transform: translate3d(-100px, 0, 0);
+            }
+            100% {
+                transform: translate3d(calc(100vw + 100px), 0, 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="moon-background bg-element-animate">
+        <div class="sky bg-element-animate animate-delay-1">
+        </div>
+        <div class="stars bg-element-animate animate-delay-2">
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+        </div>
+        <div class="night-clouds bg-element-animate animate-delay-3">
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+        </div>
+        <div class="night-overlay bg-element-animate animate-delay-4"></div>
+    </div>
+
+    <div class="floating-lanterns fade-in animate-delay-5">
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+    </div>
+
+    <!-- Background elements -->
+    <div class="background-elements"></div>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main layout:fragment="content" class="container py-5">
+        <section class="top-hero-section text-center mb-5 position-relative" style="overflow:visible;">
+
+
+            <!-- Large Central Moon -->
+            <div class="central-moon position-absolute moon-entrance animate-delay-6">
+                <img th:src="@{/img/banner/moon.png}" alt="Moon"
+                     style="width:500px;height:500px;object-fit:contain;opacity:0.95;filter:drop-shadow(0 0 120px rgba(238, 237, 217, 0.8));">
+
+                <!-- Content overlay on moon -->
+                <div class="moon-content bounce-in animate-delay-7" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;pointer-events:auto;">
+                    <img th:src="@{/img/logo.png}" alt="MoonCinema" class="zoom-in animate-delay-8" style="width:90px;margin-bottom:15px;filter:drop-shadow(0 3px 10px rgba(0, 0, 0, 0.4));">
+                    <h1 class="fw-bold mb-2 slide-up animate-delay-8">
+                        MoonCinema
+                    </h1>
+                    <p class="fade-in animate-delay-8">
+                        Premium Cinema Experience
+                    </p>
+                </div>
+            </div>
+
+            <!-- Decorative Banner Images with Parallax -->
+            <img src="/img/banner/bg-mountains.png" alt="Background Mountains" class="banner-img-entrance animate-delay-1"
+                style="position:absolute;left:0;bottom:70px;width:100vw;max-width:100%;height:45vh;object-fit:cover;z-index:1;pointer-events:none;">
+            <img src="/img/banner/building.png" alt="Banner Mountain" class="banner-img-entrance animate-delay-2"
+                style="position:absolute;left:0;bottom:70px;width:100vw;max-width:100%;height:50vh;object-fit:cover;z-index:2;pointer-events:none;">
+            <img src="/img/banner/lotus(1).png" alt="Lotus Left" class="slide-right animate-delay-3"
+                style="position:absolute;left:0;bottom:70px;width:340px;height:auto;max-height:50vh;object-fit:contain;z-index:4;pointer-events:none;">
+            <img src="/img/banner/lotus2.png" alt="Lotus Right" class="slide-left animate-delay-4"
+                style="position:absolute;right:0;bottom:70px;width:340px;height:auto;max-height:50vh;object-fit:contain;z-index:4;pointer-events:none;">
+            <img src="/img/banner/rabits.png" alt="Rabbit" class="bounce-in animate-delay-5"
+                style="position:absolute;left:50%;bottom:200px;width:120px;height:auto;max-height:20vh;object-fit:contain;z-index:5;transform:translateX(-50%);pointer-events:none;">
+
+            <!-- Star container for random stars -->
+            <div class="banner-stars-container position-absolute w-100 h-100" style="top:0;left:0;pointer-events:none;"></div>
+
+            <!-- Banner Content - Now Empty or Minimal -->
+            <div class="banner-content position-relative" style="z-index:10;margin-top:-20px;opacity:0;">
+                <!-- Content moved to moon -->
+            </div>
+        </section>
+
+        <section id="featured-movies" class="featured-movies mb-5 observe-animate">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold mb-2 section-header" style="color: #f9a825;" th:text="#{featured_movies}">Phim Nổi Bật</h2>
+                <p class="text-muted slide-up animate-delay-1" th:text="#{movie_desc}">Thưởng thức những bộ phim hay nhất tuần này. Tạo kỷ niệm
+                    đẹp cùng gia đình và bạn bè trong dịp Trung Thu.</p>
+            </div>
+            <div th:if="${featuredMoviesEmpty}" class="text-center text-white">Không có phim nào đang chiếu.</div>
+            <div th:unless="${featuredMoviesEmpty}" class="horizontal-scroll-container-wrapper position-relative observe-animate">
+                <button class="scroll-btn scroll-left fade-in animate-delay-2" aria-label="Scroll left"><i
+                        class="bi bi-chevron-left"></i></button>
+                <div class="horizontal-scroll-container">
+                    <div class="horizontal-scroll-list d-flex flex-nowrap">
+                        <div th:each="movie : ${featuredMovies}" class="movie-card-wrapper movie-card-entrance" th:if="${movie != null}" th:data-delay="${movieStat.index * 100}">
+                            <th:block
+                                th:replace="~{fragments/movie-card-home :: movieCardHome(movie=${movie}, actionLink=@{/book-ticket(movieId=${movie.movieId})}, actionText=${'buy_now'}, actionColor='danger', detailsLink=@{/detail/{movieId}(movieId=${movie.movieId})})}" />
+                        </div>
+                    </div>
+                </div>
+                <button class="scroll-btn scroll-right fade-in animate-delay-2" aria-label="Scroll right"><i
+                        class="bi bi-chevron-right"></i></button>
+            </div>
+            <div id="special_offers" class="text-center mt-4">
+                <a th:href="@{/nowShowing}" class="btn btn-warning px-4 py-2 fw-bold shadow bounce-in animate-delay-3" style="color: #7c4700;"
+                    th:text="#{view_all}">Xem Tất Cả Phim</a>
+            </div>
+        </section>
+        <!-- special-promotions -->
+        <section class="special-promotions py-5 observe-animate">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-[#f9a825] special-promo-title section-header">
+                        <i class="bi bi-lightbulb-fill me-2"></i>
+                        <span th:text="#{special_promotions}">Khuyến Mãi Đặc Biệt</span>
+                    </h2>
+                </div>
+                <div class="swiper special-promotions-swiper fade-in animate-delay-1">
+                    <div class="swiper-wrapper">
+                        <th:block th:each="promotion : ${latestPromotions}">
+                            <div class="swiper-slide">
+                                <div class="swiper-image card h-100 shadow-lg border-0 overflow-hidden zoom-in" th:data-delay="${promotionStat.index * 150}">
+                                    <img src th:src="${promotion.imageUrl}"
+                                        class=" card-img-top promo-img-link swiper-image_top" alt="Promotion Image"
+                                        th:onclick="|window.location.href='@{/promotion/{id}(id=${promotion.promotionId})}'|"
+                                        style="width: 100%; height: 250px; object-fit: contain; border-radius: 16px; display: block;" />
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div th:replace="~{fragments/back-to-top :: back-to-top}"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/back-to-top.js}"></script>
+    <script th:src="@{/js/scroll.js}"></script>
+    <script th:src="@{/js/chat.js}"></script>
+    <script th:src="@{/js/theme.js}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        var swiper = new Swiper('.special-promotions-swiper', {
+            slidesPerView: 3,
+            spaceBetween: 24,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: false,
+            },
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+            },
+            breakpoints: {
+                0: { slidesPerView: 1 },
+                576: { slidesPerView: 1 },
+                992: { slidesPerView: 3 },
+                1200: { slidesPerView: 3 }
+            }
+        });
+
+        const sky = document.querySelector('.sky');
+        const moonBackground = document.querySelector('.moon-background');
+        const NUM_STARS = 100;
+        const NUM_FOUR_POINTED_STARS = 5;
+        const NUM_RING_STARS = 3;
+
+        function randomPosition() {
+            return {
+                top: Math.random() * 100,
+                left: Math.random() * 100,
+                size: Math.random() * 3 + 1.5 // 1.5px - 4.5px
+            };
+        }
+
+        function randomStarPosition() {
+            return {
+                top: Math.random() * 80 + 10, // 10% - 90% để tránh rìa màn hình
+                left: Math.random() * 80 + 10, // 10% - 90% để tránh rìa màn hình
+                scale: Math.random() * 0.5 + 0.3 // 0.3 - 0.8 scale
+            };
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            sky.appendChild(star);
+
+            function twinkle() {
+                // Random vị trí & kích thước
+                const { top, left, size } = randomPosition();
+                star.style.top = `${top}%`;
+                star.style.left = `${left}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+
+                // Sáng lên
+                star.style.opacity = 1;
+
+                // Sau 1s: mờ đi
+                setTimeout(() => {
+                    star.style.opacity = 0;
+                }, 1000);
+
+                // Lặp lại với delay ngẫu nhiên 1–4 giây
+                const nextDelay = Math.random() * 3000 + 1000;
+                setTimeout(twinkle, nextDelay);
+            }
+
+            // Delay ban đầu để các sao không nhấp nháy cùng lúc
+            const initialDelay = Math.random() * 4000;
+            setTimeout(twinkle, initialDelay);
+        }
+
+        function createFourPointedStar() {
+            const star = document.createElement('div');
+            star.classList.add('four-pointed-star-v2');
+            star.style.position = 'absolute';
+            star.style.zIndex = '-1';
+            moonBackground.appendChild(star);
+
+            function twinkleAndMove() {
+                // Random vị trí & kích thước
+                const { top, left, scale } = randomStarPosition();
+                star.style.top = `${top}%`;
+                star.style.left = `${left}%`;
+                star.style.transform = `scale(${scale})`;
+
+                // Hiệu ứng xuất hiện
+                star.style.opacity = 0;
+                star.style.transition = 'opacity 1s ease-in-out';
+
+                setTimeout(() => {
+                    star.style.opacity = 1;
+                }, 100);
+
+                // Sau 3-5s: mờ đi
+                const visibleTime = Math.random() * 2000 + 3000; // 3-5 giây
+                setTimeout(() => {
+                    star.style.opacity = 0;
+                }, visibleTime);
+
+                // Lặp lại với delay ngẫu nhiên 2–6 giây
+                const nextDelay = Math.random() * 4000 + 2000;
+                setTimeout(twinkleAndMove, nextDelay + visibleTime);
+            }
+
+            // Delay ban đầu
+            const initialDelay = Math.random() * 5000;
+            setTimeout(twinkleAndMove, initialDelay);
+        }
+
+        function createRingStar() {
+            const star = document.createElement('div');
+            star.classList.add('ring-star-glowing');
+            star.style.position = 'absolute';
+            star.style.zIndex = '-1';
+
+            // Tạo ring-main bên trong
+            const ringMain = document.createElement('div');
+            ringMain.classList.add('ring-main');
+            star.appendChild(ringMain);
+
+            moonBackground.appendChild(star);
+
+            function twinkleAndMove() {
+                // Random vị trí & kích thước
+                const { top, left, scale } = randomStarPosition();
+                star.style.top = `${top}%`;
+                star.style.left = `${left}%`;
+                star.style.transform = `scale(${scale})`;
+
+                // Hiệu ứng xuất hiện
+                star.style.opacity = 0;
+                star.style.transition = 'opacity 1.5s ease-in-out';
+
+                setTimeout(() => {
+                    star.style.opacity = 1;
+                }, 100);
+
+                // Sau 4-6s: mờ đi
+                const visibleTime = Math.random() * 2000 + 4000; // 4-6 giây
+                setTimeout(() => {
+                    star.style.opacity = 0;
+                }, visibleTime);
+
+                // Lặp lại với delay ngẫu nhiên 3–7 giây
+                const nextDelay = Math.random() * 4000 + 3000;
+                setTimeout(twinkleAndMove, nextDelay + visibleTime);
+            }
+
+            // Delay ban đầu
+            const initialDelay = Math.random() * 6000;
+            setTimeout(twinkleAndMove, initialDelay);
+        }
+
+        // Tạo các ngôi sao thường
+        for (let i = 0; i < NUM_STARS; i++) {
+            createStar();
+        }
+
+        // Tạo các ngôi sao 4 cánh
+        for (let i = 0; i < NUM_FOUR_POINTED_STARS; i++) {
+            createFourPointedStar();
+        }
+
+        // Tạo các ngôi sao vòng tròn
+        for (let i = 0; i < NUM_RING_STARS; i++) {
+            createRingStar();
+        }
+
+        // Intersection Observer for Scroll Animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -100px 0px',
+            threshold: 0.1
+        };
+
+        const animationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+
+                    // Trigger staggered animations for movie cards
+                    const movieCards = entry.target.querySelectorAll('.movie-card-wrapper');
+                    movieCards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.style.animationDelay = `${index * 0.1}s`;
+                            card.classList.add('movie-card-entrance');
+                        }, index * 100);
+                    });
+
+                    // Trigger staggered animations for promotion cards
+                    const promoCards = entry.target.querySelectorAll('.swiper-slide .card');
+                    promoCards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.style.animationDelay = `${index * 0.15}s`;
+                            card.classList.add('zoom-in');
+                        }, index * 150);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements with observe-animate class
+        document.querySelectorAll('.observe-animate').forEach(el => {
+            animationObserver.observe(el);
+        });
+
+        // Enhanced loading animation
+        window.addEventListener('load', () => {
+            // Add staggered delays to movie cards
+            const movieCards = document.querySelectorAll('.movie-card-wrapper');
+            movieCards.forEach((card, index) => {
+                card.style.animationDelay = `${0.5 + (index * 0.1)}s`;
+            });
+
+            // Add staggered delays to promotion cards
+            const promoCards = document.querySelectorAll('.swiper-slide .card');
+            promoCards.forEach((card, index) => {
+                card.style.animationDelay = `${0.3 + (index * 0.15)}s`;
+            });
+
+            // Trigger entrance animation for elements with custom delays
+            const elementsWithDelay = document.querySelectorAll('[data-delay]');
+            elementsWithDelay.forEach(element => {
+                const delay = parseInt(element.getAttribute('data-delay'));
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0) scale(1)';
+                }, delay);
+            });
+        });
+
+        // Add hover effects for interactive elements
+        document.addEventListener('DOMContentLoaded', () => {
+            // Enhanced button hover effects
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    button.style.transform = 'translateY(-2px) scale(1.05)';
+                });
+
+                button.addEventListener('mouseleave', () => {
+                    button.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Movie card enhanced animations
+            const movieCards = document.querySelectorAll('.movie-card-wrapper');
+            movieCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px) scale(1.02)';
+                    card.style.zIndex = '10';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                    card.style.zIndex = '1';
+                });
+            });
+
+            // Add ripple effect to clickable elements
+            const clickableElements = document.querySelectorAll('.btn, .card, .movie-card-wrapper');
+            clickableElements.forEach(element => {
+                element.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s ease-out;
+                        pointer-events: none;
+                        z-index: 1000;
+                    `;
+
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+
+        // Add ripple animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>

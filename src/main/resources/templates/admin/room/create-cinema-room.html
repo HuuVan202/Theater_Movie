@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE - Cinema Admin">Thêm Phòng Chiếu</title>
+    <!-- CSS trang cụ thể -->
+    <link rel="stylesheet" th:href="@{/css/admin/crud-room/crud-room.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        #page-content-wrapper {
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Header Fragment -->
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-danger shadow-sm px-3">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand text-white fw-bold"><i class="bi bi-door-open me-2"></i>Thêm phòng chiếu</span>
+        </div>
+    </nav>
+</div>
+
+<!-- Content Fragment -->
+<main layout:fragment="content" class="container-fluid py-4">
+    <div class="user-table-wrapper p-3 p-md-4 rounded-4 shadow-lg animate-fade-in">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold mb-0">Thông tin phòng chiếu</h3>
+            <a th:href="@{/admin/cinema-room}" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Quay lại</a>
+        </div>
+
+        <div th:if="${error != null}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
+
+        <form th:object="${cinemaRoomDTO}" th:action="@{/admin/cinema-room/save-seat-map}" method="post" id="cinemaRoomForm" class="row g-3">
+            <div class="col-md-6">
+                <label for="roomName" class="form-label">Tên phòng:</label>
+                <input type="text" th:field="*{roomName}" id="roomName" class="form-control" required/>
+                <span th:if="${#fields.hasErrors('roomName')}" th:errors="*{roomName}" class="error"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label for="type" class="form-label">Loại phòng:</label>
+                <select th:field="*{type}" id="type" class="form-select" required>
+                    <option th:each="roomType : ${roomTypes}" th:value="${roomType}" th:text="${roomType}"></option>
+                </select>
+                <span th:if="${#fields.hasErrors('type')}" th:errors="*{type}" class="error"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Trạng thái:</label>
+                <div class="d-flex gap-4">
+                    <div class="form-check">
+                        <input type="radio" th:field="*{status}" id="statusInactive" value="0" required class="form-check-input"/>
+                        <label for="statusInactive" class="form-check-label">Không hoạt động</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" th:field="*{status}" id="statusActive" value="1" class="form-check-input"/>
+                        <label for="statusActive" class="form-check-label">Hoạt động</label>
+                    </div>
+                </div>
+                <span th:if="${#fields.hasErrors('status')}" th:errors="*{status}" class="error"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="seatQuantity" class="form-label">Số lượng ghế:</label>
+                <input type="number" th:field="*{seatQuantity}" id="seatQuantity" class="form-control" readonly/>
+                <span th:if="${#fields.hasErrors('seatQuantity')}" th:errors="*{seatQuantity}" class="error"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label for="rows" class="form-label">Số hàng ghế:</label>
+                <input type="number" th:field="*{seatMap.rows}" id="rows" min="1" required class="form-control"/>
+                <span th:if="${#fields.hasErrors('seatMap.rows')}" th:errors="*{seatMap.rows}" class="error"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label for="cols" class="form-label">Số cột ghế:</label>
+                <input type="number" th:field="*{seatMap.cols}" id="cols" min="1" required class="form-control"/>
+                <span th:if="${#fields.hasErrors('seatMap.cols')}" th:errors="*{seatMap.cols}" class="error"></span>
+            </div>
+
+            <div class="col-12 mt-4">
+                <div class="instructions">
+                    <h5><i class="bi bi-info-circle me-2"></i>Hướng dẫn sử dụng</h5>
+                    <ul>
+                        <li><strong>Click trái:</strong> Chuyển ghế từ Thường → VIP → Thường</li>
+                        <li><strong>Click phải:</strong> Chuyển ghế thành Empty hoặc khôi phục</li>
+                        <li><strong>Ctrl + Click:</strong> Tạo ghế đôi (tự động chọn ghế kề bên)</li>
+                        <li><strong>Nút hàng:</strong> Áp dụng loại ghế cho cả hàng</li>
+                        <li><strong>Cầu thang:</strong> Chọn cột làm lối đi</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-bold">Sơ đồ ghế:</label>
+                <div class="card p-3">
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-seat seat-normal"></div>
+                            <span>Ghế thường</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat seat-vip"></div>
+                            <span>Ghế VIP</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat seat-couple"></div>
+                            <span>Ghế đôi</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat seat-staircase"></div>
+                            <span>Cầu thang</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat seat-empty"></div>
+                            <span>Trống</span>
+                        </div>
+                    </div>
+
+                    <div class="seat-container">
+                        <div class="screen">
+                            <i class="bi bi-display me-2"></i>MÀN HÌNH
+                        </div>
+                        <div id="seatLayout" class="seat-layout"></div>
+                    </div>
+
+                    <div class="staircase-controls">
+                        <strong>Chọn cột cầu thang:</strong>
+                        <div id="staircaseToggles" class="staircase-toggles"></div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span id="countNormal" class="stat-number text-info">0</span>
+                        <span class="stat-label">Ghế thường</span>
+                    </div>
+                    <div class="stat-item">
+                        <span id="countVIP" class="stat-number text-warning">0</span>
+                        <span class="stat-label">Ghế VIP</span>
+                    </div>
+                    <div class="stat-item">
+                        <span id="countCouple" class="stat-number text-danger">0</span>
+                        <span class="stat-label">Ghế đôi</span>
+                    </div>
+                    <div class="stat-item">
+                        <span id="countStaircase" class="stat-number text-secondary">0</span>
+                        <span class="stat-label">Cầu thang</span>
+                    </div>
+                    <div class="stat-item">
+                        <span id="countEmpty" class="stat-number text-muted">0</span>
+                        <span class="stat-label">Trống</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-4" id="priceInputs">
+                <label class="form-label fw-bold">Giá ghế (VNĐ):</label>
+                <div id="priceFields"></div>
+                <div th:if="${#fields.hasErrors()}" class="alert alert-danger mt-2">
+                    <p th:each="err : ${#fields.errors()}" th:text="${err}"></p>
+                </div>
+            </div>
+
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Lưu phòng chiếu</button>
+                <a th:href="@{/admin/cinema-room}" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Hủy</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const rowsInput = document.getElementById('rows');
+        const colsInput = document.getElementById('cols');
+        const seatLayout = document.getElementById('seatLayout');
+        const seatQuantityInput = document.getElementById('seatQuantity');
+        const staircaseToggles = document.getElementById('staircaseToggles');
+        const form = document.getElementById('cinemaRoomForm');
+        const typeSelect = document.getElementById('type');
+        const priceFields = document.getElementById('priceFields');
+
+        // Configuration for room types
+        const ROOM_TYPE_CONFIG = {
+            '2D': {min: 120, max: 250, default: 120},
+            '3D': {min: 100, max: 200, default: 100},
+            'IMAX': {min: 300, max: 450, default: 300},
+            '4DX': {min: 80, max: 120, default: 80}
+        };
+
+        // Seat state management
+        let seatData = [];
+        let staircaseColumns = new Set();
+
+        // Warning div for seat quantity
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'text-warning mt-2';
+        seatQuantityInput.parentElement.appendChild(warningDiv);
+
+        function generateColumnLabels(cols) {
+            const labels = [];
+            for (let i = 0; i < cols; i++) {
+                if (i < 26) {
+                    labels.push(String.fromCharCode(65 + i)); // A, B, C...
+                } else {
+                    labels.push(String.fromCharCode(65 + Math.floor(i / 26) - 1) + String.fromCharCode(65 + (i % 26))); // AA, AB...
+                }
+            }
+            return labels;
+        }
+
+        function generateSeatGrid() {
+            const rows = parseInt(rowsInput.value) || 1;
+            const cols = parseInt(colsInput.value) || 1;
+
+            if (rows > 20 || cols > 30) {
+                alert('Số hàng tối đa 20, số cột tối đa 30');
+                return;
+            }
+
+            // Initialize seat data with respect to staircase columns
+            seatData = Array(rows).fill().map((_, i) =>
+                Array(cols).fill().map((_, j) =>
+                    staircaseColumns.has(j) ? 'Staircase' : 'Normal'
+                )
+            );
+
+            // Clear previous grid
+            seatLayout.innerHTML = '';
+
+            // Generate column headers
+            const colHeader = document.createElement('div');
+            colHeader.className = 'col-header';
+            const columnLabels = generateColumnLabels(cols);
+
+            columnLabels.forEach(label => {
+                const colLabel = document.createElement('div');
+                colLabel.className = 'col-label';
+                colLabel.textContent = label;
+                colHeader.appendChild(colLabel);
+            });
+            seatLayout.appendChild(colHeader);
+
+            // Generate seat rows
+            for (let i = 0; i < rows; i++) {
+                const seatRow = document.createElement('div');
+                seatRow.className = 'seat-row';
+
+                // Row label
+                const rowLabel = document.createElement('div');
+                rowLabel.className = 'row-label';
+                rowLabel.textContent = i + 1;
+                seatRow.appendChild(rowLabel);
+
+                // Seat grid for this row
+                const seatGrid = document.createElement('div');
+                seatGrid.className = 'seat-grid';
+
+                for (let j = 0; j < cols; j++) {
+                    const seat = document.createElement('div');
+                    seat.className = 'seat seat-normal';
+                    seat.dataset.row = i;
+                    seat.dataset.col = j;
+
+                    // Hidden input for form submission
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `seatMap.seatTypes[${i}][${j}]`;
+                    hiddenInput.value = 'Normal';
+                    seat.appendChild(hiddenInput);
+
+                    // Event listeners
+                    seat.addEventListener('click', handleSeatClick);
+                    seat.addEventListener('contextmenu', handleSeatRightClick);
+
+                    seatGrid.appendChild(seat);
+                }
+                seatRow.appendChild(seatGrid);
+
+                // Row controls
+                const rowControls = document.createElement('div');
+                rowControls.className = 'row-controls';
+
+                const normalBtn = document.createElement('button');
+                normalBtn.type = 'button';
+                normalBtn.className = 'row-control-btn btn-normal';
+                normalBtn.textContent = 'Thường';
+                normalBtn.onclick = () => setRowType(i, 'Normal');
+
+                const vipBtn = document.createElement('button');
+                vipBtn.type = 'button';
+                vipBtn.className = 'row-control-btn btn-vip';
+                vipBtn.textContent = 'VIP';
+                vipBtn.onclick = () => setRowType(i, 'VIP');
+
+                const coupleBtn = document.createElement('button');
+                coupleBtn.type = 'button';
+                coupleBtn.className = 'row-control-btn btn-couple';
+                coupleBtn.textContent = 'Đôi';
+                coupleBtn.onclick = () => setRowType(i, 'Couple');
+
+                rowControls.appendChild(normalBtn);
+                rowControls.appendChild(vipBtn);
+                rowControls.appendChild(coupleBtn);
+                seatRow.appendChild(rowControls);
+
+                seatLayout.appendChild(seatRow);
+            }
+
+            generateStaircaseToggles();
+            updateSeatQuantity();
+            generatePriceFields();
+        }
+
+        function generateStaircaseToggles() {
+            const cols = parseInt(colsInput.value) || 1;
+            staircaseToggles.innerHTML = '';
+
+            const columnLabels = generateColumnLabels(cols);
+
+            for (let i = 0; i < cols; i++) {
+                const toggle = document.createElement('div');
+                toggle.className = 'staircase-toggle';
+                toggle.textContent = `Cột ${columnLabels[i]}`;
+                toggle.dataset.col = i;
+
+                toggle.addEventListener('click', () => {
+                    if (staircaseColumns.has(i)) {
+                        staircaseColumns.delete(i);
+                        toggle.classList.remove('active');
+                        resetColumnSeats(i);
+                    } else {
+                        staircaseColumns.add(i);
+                        toggle.classList.add('active');
+                        setColumnStaircase(i);
+                    }
+                    updateSeatDisplay();
+                });
+
+                staircaseToggles.appendChild(toggle);
+            }
+        }
+
+        function resetColumnSeats(col) {
+            const rows = parseInt(rowsInput.value) || 1;
+            for (let i = 0; i < rows; i++) {
+                seatData[i][col] = 'Normal';
+            }
+        }
+
+        function setColumnStaircase(col) {
+            const rows = parseInt(rowsInput.value) || 1;
+            for (let i = 0; i < rows; i++) {
+                seatData[i][col] = 'Staircase';
+            }
+        }
+
+        function handleSeatClick(e) {
+            if (e.ctrlKey) {
+                handleCtrlClick(e);
+            } else {
+                handleNormalClick(e);
+            }
+        }
+
+        function handleCtrlClick(e) {
+            const seat = e.target;
+            const row = parseInt(seat.dataset.row);
+            const col = parseInt(seat.dataset.col);
+            const cols = parseInt(colsInput.value) || 1;
+
+            if (staircaseColumns.has(col)) return;
+
+            if (seatData[row][col] === 'Couple') {
+                let pairCol;
+
+                if (col + 1 < cols && seatData[row][col + 1] === 'Couple') {
+                    pairCol = col + 1;
+                } else if (col - 1 >= 0 && seatData[row][col - 1] === 'Couple') {
+                    pairCol = col - 1;
+                }
+
+                if (pairCol !== undefined) {
+                    seatData[row][col] = 'Normal';
+                    seatData[row][pairCol] = 'Normal';
+                } else {
+                    seatData[row][col] = 'Normal';
+                }
+                updateSeatDisplay();
+                return;
+            }
+
+            let pairCol = -1;
+
+            if (col % 2 === 0) {
+                if (col + 1 < cols && !staircaseColumns.has(col + 1) && seatData[row][col + 1] !== 'Couple') {
+                    pairCol = col + 1;
+                } else if (col - 1 >= 0 && !staircaseColumns.has(col - 1) && seatData[row][col - 1] !== 'Couple') {
+                    pairCol = col - 1;
+                }
+            } else {
+                if (col - 1 >= 0 && !staircaseColumns.has(col - 1) && seatData[row][col - 1] !== 'Couple') {
+                    pairCol = col - 1;
+                } else if (col + 1 < cols && !staircaseColumns.has(col + 1) && seatData[row][col + 1] !== 'Couple') {
+                    pairCol = col + 1;
+                }
+            }
+
+            if (pairCol >= 0 && pairCol < cols) {
+                if (seatData[row][col] !== 'Staircase' && seatData[row][pairCol] !== 'Staircase') {
+                    if ((seatData[row][col] === 'Normal' || seatData[row][col] === 'VIP') &&
+                        (seatData[row][pairCol] === 'Normal' || seatData[row][pairCol] === 'VIP')) {
+                        seatData[row][col] = 'Couple';
+                        seatData[row][pairCol] = 'Couple';
+                        updateSeatDisplay();
+                    }
+                }
+            }
+        }
+
+        function handleNormalClick(e) {
+            const seat = e.target;
+            const row = parseInt(seat.dataset.row);
+            const col = parseInt(seat.dataset.col);
+
+            if (staircaseColumns.has(col)) return;
+
+            const currentType = seatData[row][col];
+            let newType;
+
+            if (currentType === 'Normal') {
+                newType = 'VIP';
+            } else if (currentType === 'VIP') {
+                newType = 'Normal';
+            } else {
+                return;
+            }
+
+            seatData[row][col] = newType;
+            updateSeatDisplay();
+        }
+
+        function handleSeatRightClick(e) {
+            e.preventDefault();
+            const seat = e.target;
+            const row = parseInt(seat.dataset.row);
+            const col = parseInt(seat.dataset.col);
+
+            if (staircaseColumns.has(col)) return;
+
+            const currentType = seatData[row][col];
+            const newType = (currentType === 'Empty') ? 'Normal' : 'Empty';
+
+            seatData[row][col] = newType;
+            updateSeatDisplay();
+        }
+
+        function setRowType(row, type) {
+            const cols = parseInt(colsInput.value) || 1;
+
+            if (type === 'Couple') {
+                let availableSeats = 0;
+                for (let j = 0; j < cols; j++) {
+                    if (!staircaseColumns.has(j)) {
+                        availableSeats++;
+                    }
+                }
+
+                if (availableSeats % 2 !== 0) {
+                    alert('Không thể tạo ghế đôi cho hàng có số ghế lẻ!');
+                    return;
+                }
+            }
+
+            for (let j = 0; j < cols; j++) {
+                if (!staircaseColumns.has(j)) {
+                    seatData[row][j] = type;
+                }
+            }
+
+            updateSeatDisplay();
+        }
+
+        function updateSeatDisplay() {
+            const rows = parseInt(rowsInput.value) || 1;
+            const cols = parseInt(colsInput.value) || 1;
+
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const seat = document.querySelector(`.seat[data-row="${i}"][data-col="${j}"]`);
+                    if (seat) {
+                        seat.classList.remove('seat-normal', 'seat-vip', 'seat-couple', 'seat-staircase', 'seat-empty');
+                        seat.classList.add(`seat-${seatData[i][j].toLowerCase()}`);
+
+                        const hiddenInput = seat.querySelector('input');
+                        if (hiddenInput) {
+                            hiddenInput.value = seatData[i][j];
+                        }
+                    }
+                }
+            }
+
+            updateSeatQuantity();
+            generatePriceFields();
+        }
+
+        function updateSeatQuantity() {
+            let countNormal = 0;
+            let countVIP = 0;
+            let countCouple = 0;
+            let countStaircase = 0;
+            let countEmpty = 0;
+
+            for (let i = 0; i < seatData.length; i++) {
+                for (let j = 0; j < seatData[i].length; j++) {
+                    switch (seatData[i][j]) {
+                        case 'Normal':
+                            countNormal++;
+                            break;
+                        case 'VIP':
+                            countVIP++;
+                            break;
+                        case 'Couple':
+                            countCouple++;
+                            break;
+                        case 'Staircase':
+                            countStaircase++;
+                            break;
+                        case 'Empty':
+                            countEmpty++;
+                            break;
+                    }
+                }
+            }
+
+            document.getElementById('countNormal').textContent = countNormal;
+            document.getElementById('countVIP').textContent = countVIP;
+            document.getElementById('countCouple').textContent = countCouple;
+            document.getElementById('countStaircase').textContent = countStaircase;
+            document.getElementById('countEmpty').textContent = countEmpty;
+
+            const totalSeats = countNormal + countVIP + countCouple;
+            seatQuantityInput.value = totalSeats;
+
+            const type = typeSelect.value;
+            const config = ROOM_TYPE_CONFIG[type];
+            if (config && (totalSeats < config.min || totalSeats > config.max)) {
+                warningDiv.innerHTML = `⚠️ Khuyến nghị số ghế cho phòng ${type} là từ ${config.min} đến ${config.max} ghế.`;
+            } else {
+                warningDiv.innerHTML = '';
+            }
+        }
+
+        function generatePriceFields() {
+            const priceFieldsDiv = document.getElementById('priceFields');
+            priceFieldsDiv.innerHTML = '';
+
+            const uniqueSeatTypes = [...new Set(seatData.flat())].filter(type => ['Normal', 'VIP', 'Couple'].includes(type));
+
+            uniqueSeatTypes.forEach(type => {
+                const div = document.createElement('div');
+                div.className = 'mb-3';
+
+                const label = document.createElement('label');
+                label.className = 'form-label';
+                label.textContent = `Giá ghế ${type.toLowerCase()} (VNĐ):`;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'form-control';
+                input.name = `seatPrices[${type.toLowerCase()}]`;
+                input.min = '0';
+                input.step = '1000';
+                input.required = true;
+
+                const errorSpan = document.createElement('span');
+                errorSpan.className = 'error text-danger';
+
+                div.appendChild(label);
+                div.appendChild(input);
+                div.appendChild(errorSpan);
+                priceFieldsDiv.appendChild(div);
+            });
+        }
+
+        form.addEventListener('submit', (e) => {
+            const inputs = priceFields.querySelectorAll('input[name^="seatPrices"]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                if (!input.value.trim() || parseFloat(input.value) < 0) {
+                    isValid = false;
+                    input.classList.add('is-invalid');
+                    input.nextElementSibling.textContent = 'Giá phải lớn hơn hoặc bằng 0 và không được để trống';
+                } else {
+                    input.classList.remove('is-invalid');
+                    input.nextElementSibling.textContent = '';
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Vui lòng nhập giá hợp lệ cho tất cả các loại ghế!');
+            }
+        });
+
+        rowsInput.addEventListener('change', () => {
+            generateSeatGrid();
+        });
+
+        colsInput.addEventListener('change', () => {
+            generateSeatGrid();
+        });
+
+        typeSelect.addEventListener('change', () => {
+            updateSeatQuantity();
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            typeSelect.value = '2D';
+            typeSelect.dispatchEvent(new Event('change'));
+            generateSeatGrid();
+        });
+    </script>
+</main>
+</body>
+</html>

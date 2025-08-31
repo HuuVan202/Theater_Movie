@@ -1,0 +1,168 @@
+<div th:fragment="header" xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta name="_csrf" th:content="${_csrf != null} ? ${_csrf.token} : ''"/>
+        <meta name="_csrf_header" th:content="${_csrf != null} ? ${_csrf.headerName} : ''"/>
+        <meta name="account-id" th:content="${accountId != null} ? ${accountId} : ''"/>
+        <link rel="stylesheet" th:href="@{/css/layout/websocketNotifications.css}" />
+    </head>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a th:href="@{/}" class="logo-link">
+                    <img th:src="@{/img/logo.png}" alt="MoonCinema">
+                    <span>MoonCinema</span>
+                </a>
+            </div>
+
+            <button class="hamburger-btn" aria-label="Menu">
+                <i class="fa fa-bars"></i>
+            </button>
+
+            <nav class="main-nav">
+                <a th:href="@{/}" class="nav-link" th:text="#{home}">Trang Chủ</a>
+                <div class="dropdown">
+                    <a class="dropdown-toggle" id="movieDropdown" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false" onclick="event.preventDefault();">
+                        <span th:text="#{movies}">Phim</span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="movieDropdown">
+                        <li><a class="dropdown-item" th:href="@{/nowShowing}" th:text="#{now_showing}">Phim đang chiếu</a></li>
+                        <li><a class="dropdown-item" th:href="@{/comingSoon}" th:text="#{coming_soon}">Phim sắp chiếu</a></li>
+                    </ul>
+                </div>
+
+                <a th:href="@{/news}" class="nav-link" th:text="#{news}">Tin Tức & Khuyến Mãi</a>
+                <a th:href="@{/showtime}" class="nav-link" th:text="#{show_time}">Showtime</a>
+            </nav>
+
+            <div class="header-right">
+                <form class="language-switcher" method="get">
+                    <select name="lang" onchange="this.form.submit()">
+                        <option value="en" th:selected="${#locale.language == 'en'}">🇺🇸 English</option>
+                        <option value="vi" th:selected="${#locale.language == 'vi'}">🇻🇳 Tiếng Việt</option>
+                        <option value="ja" th:selected="${#locale.language == 'ja'}">🇯🇵 日本語</option>
+                    </select>
+                </form>
+
+                <div class="notification-bell" onclick="toggleNotifications()" sec:authorize="isAuthenticated()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge"
+                          th:if="${countUnRead != null and countUnRead > 0}"
+                          th:text="${countUnRead}">0</span>
+
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h4>Notifications</h4>
+                            <button class="mark-all-read" onclick="markAllAsRead(event)" >Mark all as read</button>
+                        </div>
+                        <div class="notification-list">
+                            <div class="notification-item"
+                                 th:each="notification : ${notifications}"
+                                 th:classappend="${notification.status} ? '' : 'unread'"
+                                 th:attr="data-notification-id=${notification.notification_Id},data-notification-title=${notification.title},data-notification-message=${notification.message},data-notification-date=${#temporals.format(notification.date, 'HH:mm dd/MM/yyyy')},data-notification-status=${notification.status}"
+                                 onclick="showNotificationPopup(this)">
+                                <div class="notification-icon success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-title" th:text="${notification.title}">Booking Confirmed</div>
+                                    <div class="notification-message" th:text="${notification.message}">Your ticket has been confirmed.</div>
+                                    <div class="notification-time-container">
+                                        <span class="delete-notification" onclick="deleteNotification(event, this)">Delete</span>
+                                        <div class="notification-time" th:text="${#temporals.format(notification.date, 'HH:mm dd/MM/yyyy')}">2 minutes ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-empty" th:unless="${not #lists.isEmpty(notifications)}">
+                            <p>Hiện tại không có thông báo</p>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="/notifications/n"  th:unless="${#lists.isEmpty(notifications)}" class="view-all-notifications">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anonymous-only" sec:authorize="isAnonymous()">
+                    <a th:href="@{/auth}" class="login-btn">
+                        <i class="fas fa-user"></i>
+                        <span th:text="#{login}">Đăng Nhập</span>
+                    </a>
+                </div>
+
+                <div class="authenticated-only user-dropdown" sec:authorize="isAuthenticated()">
+                    <div class="user-avatar" onclick="toggleDropdown()" id="userAvatar">
+                        <img th:src="${#authentication.principal.avatarUrl != null} ? ${#authentication.principal.avatarUrl} :
+                        'http://res.cloudinary.com/dycfyoh8r/image/upload/v1753341911/avatars/avatar_default'"
+                             alt="User Avatar"
+                             class="avatar-image">
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <p class="user-name" sec:authentication="principal.username"></p>
+                            <p class="user-email" th:text="${#authentication.principal.email} ?: 'example@gmail.com'"></p>
+                        </div>
+
+                        <!-- Dành riêng cho admin -->
+                        <div sec:authorize="hasRole('ROLE_ADMIN')">
+                            <a href="/admin/stats/all" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </div>
+
+                        <!-- Dành riêng cho role employees -->
+                        <div sec:authorize="hasRole('ROLE_EMPLOYEE')">
+                            <a href="/employee/showtime" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </div>
+
+                        <a href="/profile" class="dropdown-item">
+                            <i class="fas fa-user-circle"></i>
+                            <span th:text="#{profile}">Hồ Sơ</span>
+                        </a>
+
+                        <a href="/notifications/n" class="dropdown-item">
+                            <i class="fas fa-bell"></i>
+                            <span>Thông Báo</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <form id="logoutForm" method="post" th:action="@{/logout}" class="dropdown-item">
+                            <input type="hidden" th:name="${_csrf != null} ? ${_csrf.parameterName} : ''" th:value="${_csrf != null} ? ${_csrf.token} : ''"/>
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Đăng Xuất</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Popup -->
+        <div class="overlay" id="notificationPopupOverlay"></div>
+        <div class="notification-popup" id="notificationPopup">
+            <div class="notification-popup-header">
+                <h4 id="popupTitle"></h4>
+                <button class="notification-popup-close" onclick="closeNotificationPopup()">&times;</button>
+            </div>
+            <div class="notification-popup-content">
+                <p id="popupMessage"></p>
+                <p id="popupTime"></p>
+            </div>
+            <div class="notification-popup-footer">
+                <button id="markReadButton" onclick="markNotificationAsRead()">Mark as Read</button>
+            </div>
+        </div>
+    </header>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:src="@{/js/websocketNotifications.js}"></script>
+</div>

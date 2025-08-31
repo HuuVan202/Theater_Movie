@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Yêu Cầu Hỗ Trợ Mới</title>
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        /* Reset default styles for email clients */
+        body, table, td, p, h2 {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', sans-serif;
+            color: #ffffff;
+        }
+        body {
+            background-color: #1c2526;
+            padding: 20px;
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%; /* Prevent iOS font scaling */
+            -ms-text-size-adjust: 100%; /* Prevent Windows font scaling */
+        }
+        /* Container for centering content */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            background: #2e3539; /* Fallback for gradient */
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #1c2526;
+            border-bottom: 3px solid #d4af37;
+        }
+        .header h2 {
+            color: #d4af37;
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding-bottom: 8px;
+        }
+        /* Table styles */
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .content-table td {
+            padding: 15px;
+            border: 1px solid #3a444a;
+            vertical-align: top;
+            font-size: 16px;
+        }
+        .content-table .label {
+            color: #d4af37;
+            font-weight: 600;
+            width: 30%;
+        }
+        .content-table .value {
+            color: #ffffff;
+        }
+        .content-table .description {
+            color: #ff6f61;
+            font-style: italic;
+            line-height: 1.6;
+        }
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #a3b1b8;
+            font-size: 14px;
+            font-style: italic;
+            background-color: #1c2526;
+        }
+        /* Responsive design */
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .header h2 {
+                font-size: 20px;
+            }
+            .content-table td {
+                font-size: 14px;
+                padding: 10px;
+            }
+            .content-table .label {
+                width: 40%;
+            }
+        }
+        /* Outlook compatibility */
+        .mso .container {
+            width: 600px !important;
+        }
+        .mso .content-table td {
+            mso-border-alt: none !important;
+            border: 1px solid #3a444a !important;
+        }
+    </style>
+</head>
+<body>
+<!-- Container -->
+<table role="presentation" class="container" cellpadding="0" cellspacing="0" align="center">
+    <tr>
+        <td>
+            <!-- Header -->
+            <table role="presentation" class="header" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td>
+                        <h2>Yêu Cầu Hỗ Trợ Mới</h2>
+                    </td>
+                </tr>
+            </table>
+            <!-- Content Table -->
+            <table role="presentation" class="content-table" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td class="label"><b>Họ và tên:</b></td>
+                    <td class="value">{fullName}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>Số điện thoại:</b></td>
+                    <td class="value">{phoneNumber}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>Email:</b></td>
+                    <td class="value">{email}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>Chủ đề hỗ trợ:</b></td>
+                    <td class="value">{supportTopic}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>Tiêu đề:</b></td>
+                    <td class="value">{subject}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>Mô tả:</b></td>
+                    <td class="value description">{description}</td>
+                </tr>
+            </table>
+            <!-- Footer -->
+            <table role="presentation" class="footer" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td>
+                        Email được gửi tự động từ hệ thống Top1Cinema. Vui lòng không trả lời trực tiếp.
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

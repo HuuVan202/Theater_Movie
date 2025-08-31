@@ -1,0 +1,65 @@
+<div th:fragment="showtimeModal">
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="background-color: #202435; color: #fff;">
+                <div class="modal-header border-bottom-0">
+                    <h5 id="bookingModalLabel" class="modal-title fw-bold text-danger">
+                        <i class="bi bi-ticket-perforated me-2"></i>
+                        <span id="modalMovieTitle">Suất Chiếu</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+
+                <div class="modal-body px-4">
+                    <p class="fw-semibold text-warning mb-4">
+                        <i class="bi bi-film me-2"></i>
+                        Thông tin phim đang chọn:
+                    </p>
+
+                    <!-- Chọn ngày chiếu -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold mb-2">
+                            <i class="bi bi-calendar3 me-2 text-info"></i>Chọn ngày chiếu:
+                        </label>
+                        <div class="d-flex flex-wrap gap-2" id="dateContainer">
+                        </div>
+                    </div>
+
+                    <!-- Phiên bản -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold mb-2">
+                            <i class="bi bi-translate me-2 text-warning"></i>Phiên bản:
+                        </label>
+                        <div id="versionContainer" class="d-flex flex-wrap gap-2">
+                            <!-- js render buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Suất chiếu -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold mb-2">
+                            <i class="bi bi-clock-history me-2 text-success"></i>Suất chiếu:
+                        </label>
+                        <div id="showtimeContainer">
+                            <!-- js render buttons -->
+                            <p class="text-muted">Vui lòng chọn ngày và phiên bản để xem suất chiếu.</p>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="selectedVersionId" />
+                    <input type="hidden" id="selectedScheduleId" />
+                    <input type="hidden" id="selectedMovieId" />
+
+                    <!-- Nút xác nhận -->
+                    <form th:action="@{/selectSeats}" method="get" class="text-end" id="bookingForm">
+                        <input type="hidden" id="selectedVersionIdInput" name="versionId" value="1" />
+                        <input type="hidden" id="selectedScheduleIdInput" name="scheduleId" value="1" />
+                        <input type="hidden" id="selectedMovieIdInput" name="movieId" />
+
+                        <button type="submit" class="btn btn-danger px-4">Đặt Vé Ngay</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

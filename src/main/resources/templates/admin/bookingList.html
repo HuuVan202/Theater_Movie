@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - Cinema Admin">Quản Lý Booking</title>
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --text-light: #F2F2F2;
+            --bg-dark: #2c3e50;
+            --bg-light: #f5f7fa;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --border-radius: 12px;
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: #333;
+            overflow-y: auto; /* Ensure page scrolling */
+        }
+
+        .container {
+            max-width: 1400px;
+            overflow-y: auto; /* Ensure container scrolling */
+        }
+
+        .booking-management {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            /* Removed overflow: hidden */
+        }
+
+        .management-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .management-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .total-count {
+            background: var(--primary-color);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-secondary {
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+            background: white;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #f8f9fa;
+            color: black;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: var(--text-light);
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .stats-grid {
+            display: flex;
+            gap: 2%;
+            padding: 1.5rem 2rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .stat-card {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-weight: 600;
+        }
+
+        .text-primary { color: var(--primary-color) !important; }
+        .text-success { color: #28a745 !important; }
+        .text-warning { color: #ffc107 !important; }
+        .text-danger { color: #dc3545 !important; }
+        .text-muted { color: #6c757d !important; }
+
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .booking-table th {
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+
+        .booking-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+        .booking-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .booking-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /*.table-container {*/
+        /*    overflow-x: auto;*/
+        /*    overflow-y: auto; !* Enable vertical scrolling for table *!*/
+        /*    max-height: 500px; !* Adjust as needed *!*/
+        /*    padding: 1.5rem 2rem;*/
+        /*}*/
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+        }
+
+        .modal-content {
+            border: 0;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+        }
+
+        .modal-header {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            color: #374151;
+        }
+
+        .modal-footer {
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+        }
+
+        .detail-section {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #F5F7EB;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .pagination-container {
+            padding: 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .pagination-info {
+            color: #6b7280;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .pagination {
+            margin: 0;
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+            border-radius: 6px;
+            margin: 0 3px;
+            transition: var(--transition);
+        }
+
+        .pagination .page-link:hover {
+            background: #f8f9fa;
+            color: #c0392b;
+        }
+
+        .pagination .active .page-link {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .sidebar, .nav, .navbar-nav, .nav-link {
+            font-size: 1rem !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                overflow-y: auto; /* Ensure scrolling on mobile */
+            }
+
+            .management-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: space-between;
+            }
+
+            .stats-grid {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .booking-table th,
+            .booking-table td {
+                padding: 0.5rem;
+            }
+
+            .pagination-container {
+                gap: 0.5rem;
+            }
+
+            .pagination-controls {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+            }
+
+            .pagination-info {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header Fragment -->
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-danger shadow-sm px-2">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand text-white fw-bold"><i class="bi bi-ticket-detailed me-2"></i>Quản Lý Booking</span>
+        </div>
+    </nav>
+</div>
+
+<!-- Content Fragment -->
+<main layout:fragment="content" class="container">
+    <div class="booking-management">
+        <div th:with="
+                totalBooking=${allBookings.size()},
+                confirmed=${#lists.size(allBookings.?[status == 1])},
+                pending=${#lists.size(allBookings.?[status == 0])},
+                cancelled=${#lists.size(allBookings.?[status == -1])}
+            " class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number text-primary" th:text="${totalBooking}">0</div>
+                <div class="text-muted">Tổng booking</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number text-success" th:text="${confirmed}">0</div>
+                <div class="text-muted">Đã xác nhận</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number text-danger" th:text="${pending}">0</div>
+                <div class="text-muted">Chờ xác nhận</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number text-danger" th:text="${cancelled}">0</div>
+                <div class="text-muted">Đã hủy</div>
+            </div>
+        </div>
+
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Hiển thị <span th:text="${bookings.size()}">0</span> trong số <span th:text="${totalBookings}">0</span> bookings
+            </div>
+            <form th:action="@{/admin/bookingList}" method="get" class="d-flex gap-2 flex-wrap">
+                <input type="date" name="date" class="form-control" placeholder="Chọn ngày" th:value="${date}">
+                <input type="text" name="movieName" class="form-control" placeholder="Tên phim" th:value="${movieName}">
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="" th:selected="${status == null or status == ''}">Tất cả trạng thái</option>
+                    <option value="0" th:selected="${status == '0'}">Chờ xác nhận</option>
+                    <option value="1" th:selected="${status == '1'}">Đã xác nhận</option>
+                    <option value="-1" th:selected="${status == '-1'}">Đã hủy</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Tìm
+                </button>
+                <a th:href="@{/admin/bookingList}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> Xóa bộ lọc
+                </a>
+            </form>
+            <div class="pagination-controls" th:if="${totalBookings > 0}">
+                <nav aria-label="Booking pagination">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/bookingList(page=${currentPage - 1}, startId=${prevStartId}, date=${date}, movieName=${movieName}, status=${status})}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${i == currentPage} ? 'active'">
+                            <a class="page-link"
+                               th:href="@{/admin/bookingList(page=${i}, startId=${startIds[i-1] != null ? startIds[i-1] : 0}, date=${date}, movieName=${movieName}, status=${status})}"
+                               th:text="${i}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/bookingList(page=${currentPage + 1}, startId=${nextStartId}, date=${date}, movieName=${movieName}, status=${status})}"
+                               aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="table table-hover booking-table">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên</th>
+                    <th>Phim</th>
+                    <th>Suất chiếu</th>
+                    <th>Ghế</th>
+                    <th>Thanh toán</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+<!--                    <th>Thao tác</th>-->
+                </tr>
+                </thead>
+                <tbody id="bookingTableBody">
+                <tr th:each="booking, iterStat : ${bookings}">
+                    <td th:text="${iterStat.index + 1 + (currentPage - 1) * 15}">1</td>
+                    <td th:text="${booking.fullName != null ? booking.fullName : 'Khách'}">Khách</td>
+                    <td th:text="${booking.movieName != null ? booking.movieName : 'Không xác định'}">Tên phim</td>
+                    <td th:text="${booking.bookingDate != null ? #temporals.format(booking.bookingDate.toLocalDateTime(), 'yyyy-MM-dd HH:mm') : 'Không xác định'}">2025-08-01 19:00</td>
+                    <td th:text="${booking.seatNumber != null ? booking.seatNumber : 'Không có'}">A1, A2</td>
+                    <td th:text="${booking.paymentMethod != null ? booking.paymentMethod : 'Không xác định'}">VNPay</td>
+                    <td th:text="${booking.totalAmount != null ? #numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">100,000 đ</td>
+                    <td>
+                        <span th:if="${booking.status == 0}" class="text-warning">Chờ xác nhận</span>
+                        <span th:if="${booking.status == 1}" class="text-success">Đã xác nhận</span>
+                        <span th:if="${booking.status == -1}" class="text-danger">Đã hủy</span>
+                    </td>
+<!--                    <td>-->
+<!--                        <a th:href="@{/admin/bookingList/details(id=${booking.invoiceId})}" class="btn btn-sm btn-primary" onclick="showBookingDetails(event, ${booking})">-->
+<!--                            <i class="bi bi-eye"></i> Xem-->
+<!--                        </a>-->
+<!--                        <a th:if="${booking.status != -1}" th:href="@{/admin/bookingList/cancel(id=${booking.invoiceId})}" class="btn btn-sm btn-danger" title="Hủy booking" onclick="return confirm('Bạn có chắc chắn muốn hủy booking ' + ${booking.invoiceId} + '?')">-->
+<!--                            <i class="bi bi-x"></i> Hủy-->
+<!--                        </a>-->
+<!--                    </td>-->
+                </tr>
+                <tr th:if="${bookings.isEmpty()}">
+                    <td colspan="9" class="text-center text-danger">Không tìm thấy booking nào phù hợp với bộ lọc.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal for Booking Details -->
+        <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-labelledby="bookingDetailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bookingDetailModalLabel">
+                            <i class="bi bi-info-circle me-2"></i>Chi tiết Booking
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="detail-section">
+                                    <h6 style="color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">Thông tin khách hàng</h6>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Booking ID:</span>
+                                        <span class="detail-value" id="modalBookingId">BK2025001</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Tên khách hàng:</span>
+                                        <span class="detail-value" id="modalCustomerName">Nguyễn Văn A</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">CMND/CCCD:</span>
+                                        <span class="detail-value" id="modalIdentityCard">123456789012</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Số điện thoại:</span>
+                                        <span class="detail-value" id="modalPhoneNumber">+84 901 234 567</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Email:</span>
+                                        <span class="detail-value" id="modalEmail">nguyenvana@email.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Điểm sử dụng:</span>
+                                        <span class="detail-value" id="modalUsedScore">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-section">
+                                    <h6 style="color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">Thông tin Booking</h6>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Tên phim:</span>
+                                        <span class="detail-value" id="modalMovieTitle">Avatar: The Way of Water</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Suất chiếu:</span>
+                                        <span class="detail-value" id="modalShowtime">21/07/2025 19:30</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Phòng chiếu:</span>
+                                        <span class="detail-value" id="modalCinemaHall">Hall A - Screen 1</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Ghế:</span>
+                                        <span class="detail-value" id="modalSeats">A1, A2, A3</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Tổng tiền:</span>
+                                        <span class="detail-value" id="modalTotalPrice" style="color: var(--primary-color);">450,000 VNĐ</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Trạng thái:</span>
+                                        <span class="detail-value" id="modalStatus">
+                                            <span class="badge" id="modalStatusBadge">Pending</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" id="modalConfirmBtn" onclick="confirmBookingFromModal()">Xác nhận Booking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        let allBookings = /*[[${allBookings}]]*/ [];
+        let currentPage = /*[[${currentPage}]]*/ 1;
+        let totalPages = /*[[${totalPages}]]*/ 1;
+        let startIds = /*[[${startIds}]]*/ [];
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN').format(price) + ' VNĐ';
+        }
+
+        function showBookingDetails(event, booking) {
+            event.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('bookingDetailModal'));
+
+            document.getElementById('modalBookingId').textContent = booking.invoiceId || 'Không xác định';
+            document.getElementById('modalCustomerName').textContent = booking.fullName || 'Khách';
+            document.getElementById('modalIdentityCard').textContent = booking.identityCard || 'Không có';
+            document.getElementById('modalPhoneNumber').textContent = booking.phoneNumber || 'Không có';
+            document.getElementById('modalEmail').textContent = booking.email || 'Không có';
+            document.getElementById('modalUsedScore').textContent = booking.useScore || '0';
+            document.getElementById('modalMovieTitle').textContent = booking.movieName || 'Không xác định';
+            document.getElementById('modalShowtime').textContent = booking.bookingDate ? new Date(booking.bookingDate).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : 'Không xác định';
+            document.getElementById('modalCinemaHall').textContent = booking.roomName || 'Hall A - Screen 1';
+            document.getElementById('modalSeats').textContent = booking.seatNumber || 'Không có';
+            document.getElementById('modalTotalPrice').textContent = booking.totalAmount ? formatPrice(booking.totalAmount) : '0 VNĐ';
+
+            const statusBadge = document.getElementById('modalStatusBadge');
+            if (booking.status === 0) {
+                statusBadge.textContent = 'Chờ xác nhận';
+                statusBadge.style.background = '#fef3c7';
+                statusBadge.style.color = '#d97706';
+            } else if (booking.status === 1) {
+                statusBadge.textContent = 'Đã xác nhận';
+                statusBadge.style.background = '#d4edda';
+                statusBadge.style.color = '#28a745';
+            } else if (booking.status === -1) {
+                statusBadge.textContent = 'Đã hủy';
+                statusBadge.style.background = '#f8d7da';
+                statusBadge.style.color = '#dc3545';
+            }
+
+            document.getElementById('modalConfirmBtn').setAttribute('data-booking-id', booking.invoiceId);
+            modal.show();
+        }
+
+        function confirmBookingFromModal() {
+            const bookingId = document.getElementById('modalConfirmBtn').getAttribute('data-booking-id');
+            if (confirm(`Bạn có chắc chắn muốn xác nhận booking ${bookingId}?`)) {
+                window.location.href = `/admin/bookingList/confirm?id=${bookingId}`;
+            }
+        }
+
+        function updateBookingTable(bookings) {
+            const tbody = document.getElementById('bookingTableBody');
+            tbody.innerHTML = '';
+            if (bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-danger">Không tìm thấy booking nào phù hợp với bộ lọc.</td></tr>';
+                return;
+            }
+            bookings.forEach((booking, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1 + (currentPage - 1) * 15}</td>
+                    <td>${booking.fullName || 'Khách'}</td>
+                    <td>${booking.movieName || 'Không xác định'}</td>
+                    <td>${booking.bookingDate ? new Date(booking.bookingDate).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : 'Không xác định'}</td>
+                    <td>${booking.seatNumber || 'Không có'}</td>
+                    <td>${booking.paymentMethod || 'Không xác định'}</td>
+                    <td>${booking.totalAmount ? new Intl.NumberFormat('vi-VN').format(booking.totalAmount) + ' đ' : '0 đ'}</td>
+                    <td>
+                        ${booking.status === 0 ? '<span class="text-warning">Chờ xác nhận</span>' :
+                    booking.status === 1 ? '<span class="text-success">Đã xác nhận</span>' :
+                        '<span class="text-danger">Đã hủy</span>'}
+                    </td>
+                    <td>
+                        <a href="/admin/bookingList/details?id=${booking.invoiceId}" class="btn btn-sm btn-primary" onclick="showBookingDetails(event, ${JSON.stringify(booking)})">
+                            <i class="bi bi-eye"></i> Xem
+                        </a>
+                        ${booking.status !== -1 ? `<a href="/admin/bookingList/cancel?id=${booking.invoiceId}" class="btn btn-sm btn-danger" title="Hủy booking" onclick="return confirm('Bạn có chắc chắn muốn hủy booking ${booking.invoiceId}?')">
+                            <i class="bi bi-x"></i> Hủy
+                        </a>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updatePagination(page, pages, ids, totalBookings) {
+            currentPage = page;
+            totalPages = pages;
+            startIds = ids;
+
+            const date = document.querySelector('input[name="date"]').value || '';
+            const movieName = document.querySelector('input[name="movieName"]').value || '';
+            const status = document.querySelector('select[name="status"]').value || '';
+
+            const pagination = document.querySelector('.pagination');
+            pagination.innerHTML = totalBookings > 0 ? `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="/admin/bookingList?page=${currentPage - 1}&startId=${startIds[currentPage - 2] || 0}&date=${encodeURIComponent(date)}&movieName=${encodeURIComponent(movieName)}&status=${encodeURIComponent(status)}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                ${Array.from({length: totalPages}, (_, i) => `
+                    <li class="page-item ${i + 1 === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="/admin/bookingList?page=${i + 1}&startId=${startIds[i] || 0}&date=${encodeURIComponent(date)}&movieName=${encodeURIComponent(movieName)}&status=${encodeURIComponent(status)}">${i + 1}</a>
+                    </li>
+                `).join('')}
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="/admin/bookingList?page=${currentPage + 1}&startId=${startIds[currentPage] || 0}&date=${encodeURIComponent(date)}&movieName=${encodeURIComponent(movieName)}&status=${encodeURIComponent(status)}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            ` : '';
+            const paginationInfo = document.querySelector('.pagination-info');
+            paginationInfo.innerHTML = `Hiển thị ${bookings.length} trong số ${totalBookings} bookings`;
+        }
+
+        // Ensure body overflow is restored when modal is closed
+        document.getElementById('bookingDetailModal').addEventListener('hidden.bs.modal', function () {
+            document.body.style.overflow = 'auto';
+        });
+    </script>
+</main>
+</body>
+</html>

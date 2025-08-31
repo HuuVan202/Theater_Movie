@@ -1,0 +1,2380 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutEmployee}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Ghế - Nhân Viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Root Variables */
+        :root {
+            --primary-color: #28a745;
+            --accent-color: #E50914;
+            --text-light: #F2F2F2;
+            --bg-dark: #0A1E3E;
+            --bg-light: #F8F9FA;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+            --transition: all 0.2s ease;
+        }
+
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: #333;
+        }
+
+        /* Movie Information Section - Enhanced Styling */
+        .movie-info-card {
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid #e9ecef;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .movie-info-card:hover {
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .movie-poster-small {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-poster-small:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-detail {
+            padding: 2rem;
+            background: white;
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .movie-detail h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            line-height: 1.3;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .info-label::before {
+            content: "▪";
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        .movie-detail p {
+            font-size: 1rem;
+            color: #495057;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+
+        .movie-detail .row:last-child {
+            margin-bottom: 0;
+        }
+
+        .movie-detail .col-md-4,
+        .movie-detail .col-md-6,
+        .movie-detail .col-md-12 {
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .movie-detail .col-md-4:hover,
+        .movie-detail .col-md-6:hover {
+            background: rgba(40, 167, 69, 0.05);
+            border-radius: 6px;
+            transform: translateY(-1px);
+        }
+
+        .actor-ellipsis {
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #movieRating {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tab Navigation */
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+            background: #f8f9fa;
+            border-radius: 0;
+            margin: 0;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 0;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border-color: transparent;
+            color: var(--primary-color);
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: white;
+            border-color: transparent;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .nav-tabs .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        /* Seat Layout */
+        .seat-layout {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .screen {
+            height: 10px;
+            background: linear-gradient(to right, rgba(3, 32, 85, 0.2), rgba(3, 32, 85, 0.8), rgba(3, 32, 85, 0.2));
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            width: 80%;
+        }
+
+        .screen::after {
+            content: 'MÀN HÌNH';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .seat-grid {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+        }
+
+        .seat {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8rem;
+            font-weight: 600;
+            user-select: none;
+            border: 1px solid #dee2e6;
+        }
+
+        .seat-available {
+            background-color: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        .seat-available:hover {
+            transform: scale(1.1);
+            background-color: rgba(3, 32, 85, 0.1);
+        }
+
+        .seat-selected {
+            background-color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            color: white;
+        }
+
+        .seat-occupied {
+            background-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .seat-occupied::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #adb5bd;
+            transform: rotate(45deg);
+        }
+
+        .seat.vip {
+            background-color: gold;
+        }
+
+        .seat.vip:hover {
+            background-color: #ffe066;
+            transform: scale(1.1);
+        }
+
+        .seat.couple {
+            background-color: pink;
+        }
+
+        .seat.couple:hover {
+            background-color: #ffc2d1;
+            transform: scale(1.05);
+        }
+
+        .seat.couple-selected {
+            background-color: #17a2b8;
+            border: 1px solid #17a2b8;
+            color: white;
+        }
+
+        .seat.standard-selected {
+            background-color: #1dd1a1;
+        }
+
+        .seat.vip-selected {
+            background-color: #1dd1a1;
+        }
+
+        .seat-row-label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: bold;
+            width: 40px;
+            margin-right: 10px;
+        }
+
+        .seat-legend {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .stats-grid {
+            display: flex;
+            padding-bottom: 2%;
+        }
+
+        .legend-box.seat-available {
+            background-color: var(--bg-light);
+        }
+
+        .legend-box.seat-selected {
+            background-color: #1dd1a1;
+        }
+
+        .legend-box.seat-occupied {
+            background-color: #e9ecef;
+        }
+
+        .legend-box.vip {
+            background-color: gold;
+            border: 1px solid #d4af37;
+        }
+
+        .legend-box.Couple {
+            background-color: pink;
+            border: 1px solid #ff8fa3;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .summary-value {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-confirm {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+
+        .btn-cancel:hover {
+            background-color: #f8f9fa;
+        }
+
+        .row-spacing {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .seat-qty-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.9rem;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .seat-qty-btn:hover {
+            background-color: rgba(40, 167, 69, 0.1);
+            transform: scale(1.05);
+        }
+
+        .seat-qty-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #resetSeatQtyBtn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        #resetSeatQtyBtn:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            transform: scale(1.05);
+        }
+
+        /* Special Seat Types */
+        .seat.staircase {
+            background-color: #333;
+            color: #ffd700;
+            cursor: not-allowed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #666;
+        }
+
+        .seat.disabled {
+            background-color: #e9ecef !important;
+            color: #adb5bd !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+
+        .couple-seat-container {
+            display: flex;
+            gap: 4px;
+            border-radius: 8px;
+            padding: 4px;
+            background-color: rgba(155, 89, 182, 0.2);
+            position: relative;
+            margin: 2px;
+        }
+
+        .couple-seat-container .seat {
+            margin: 0;
+        }
+
+        .couple-seat-container:hover .seat:not(.reserved):not(.selected) {
+            background-color: #b070c8;
+        }
+
+        .couple-seat-container.selected .seat {
+            background-color: #1dd1a1;
+            border: none;
+            box-shadow: none;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: 0;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .modal-footer .btn-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .modal-footer .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        /* Booking Table */
+        .booking-table {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .booking-table .table {
+            margin-bottom: 0;
+        }
+
+        .booking-table .table th {
+            background-color: #f8f9fa;
+            border: none;
+            color: #495057;
+            font-weight: 600;
+            padding: 1rem;
+        }
+        .btn-cancel{
+            margin-left: 0px !important;
+        }
+        .booking-table .table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Định dạng tổng thể modal */
+        .booking-summary-modal .modal-content {
+            background-color: #f9f2f2;
+            color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .booking-summary-modal .modal-header {
+            background-color: #ff9800;
+            color: #fff;
+            border-bottom: none;
+            padding: 1rem 1.5rem;
+        }
+
+        .booking-summary-modal .modal-title {
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .booking-summary-modal .btn-close {
+            filter: invert(1); /* làm nút đóng màu trắng */
+        }
+
+        /* Body */
+        .booking-summary-modal .modal-body {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .booking-summary-modal .booking-poster {
+            width: 250px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .booking-summary-modal .booking-details {
+            flex: 1;
+        }
+
+        .booking-summary-modal .booking-details h5 {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ff9800;
+        }
+
+        /* Danh sách thông tin */
+        .booking-summary-modal .list-group-item {
+            background: transparent;
+            border: none;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            color: #130606;
+        }
+
+        .booking-summary-modal .list-group-item strong {
+            font-weight: bold;
+            color: #0a0505;
+        }
+
+        .booking-summary-modal .list-group-item.total strong {
+            font-size: 1.05rem;
+            color: #ff9800;
+        }
+
+        .booking-summary-modal .list-group-item.total span {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #ff9800;
+        }
+
+        /* Footer */
+        .booking-summary-modal .modal-footer {
+            border-top: none;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Nút */
+        .booking-summary-modal .btn-warning {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .booking-summary-modal .btn-secondary {
+            font-weight: bold;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .booking-summary-modal .modal-body {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .booking-summary-modal .booking-poster {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .booking-summary-modal .booking-details {
+                width: 100%;
+            }
+        }
+
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .movie-info-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .seat {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .movie-info-card .row {
+                flex-direction: column;
+            }
+
+            .movie-poster-small {
+                height: 200px;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .movie-detail {
+                padding: 1.5rem;
+                border-radius: 0 0 12px 12px;
+            }
+
+            .movie-detail h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .movie-detail .col-md-4,
+            .movie-detail .col-md-6,
+            .movie-detail .col-md-12 {
+                margin-bottom: 0.75rem;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .seat-grid {
+                gap: 5px;
+            }
+
+            .seat {
+                width: 30px;
+                height: 30px;
+                font-size: 0.7rem;
+            }
+
+            .stats-grid {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .movie-detail {
+                padding: 1rem;
+            }
+
+            .movie-detail h3 {
+                font-size: 1.3rem;
+            }
+
+            .movie-detail p {
+                font-size: 0.9rem;
+            }
+
+            .info-label {
+                font-size: 0.8rem;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .seat {
+                width: 25px;
+                height: 25px;
+                font-size: 0.65rem;
+            }
+
+            .legend-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* User Table Wrapper */
+        .user-table-wrapper {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Additional Utility Classes */
+        /*.text-primary { color: var(--primary-color) !important; }*/
+        .text-success { color: #28a745 !important; }
+        .text-warning { color: #ffc107 !important; }
+        .text-danger { color: #dc3545 !important; }
+
+        .bg-primary { background-color: var(--primary-color) !important; }
+        .bg-success { background-color: #28a745 !important; }
+        .bg-warning { background-color: #ffc107 !important; }
+        .bg-danger { background-color: #dc3545 !important; }
+    </style>
+</head>
+
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Select Seat', '	bi-ticket-perforated')}"></div>
+</div>
+
+<div layout:fragment="content">
+    <div class="user-table-wrapper p-3 rounded-4 shadow animate-fade-in bg-white">
+        <div class="container py-4">
+            <div class="movie-info-card" th:if="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty()}">
+                <div class="row g-0">
+                    <div class="col-md-3">
+                        <img id="moviePoster"
+                             th:src="${listShowtimeMovie.get(0).getLargeImageUrl() ?: '/images/placeholder.jpg'}"
+                             th:alt="${listShowtimeMovie.get(0).getMovieName() ?: 'Poster'} + ' Poster'"
+                             class="movie-poster-small" />
+                    </div>
+                    <div class="col-md-9">
+                        <div class="movie-detail">
+                            <h3 id="movieTitle" class="mb-3" th:text="${listShowtimeMovie.get(0).getMovieName() ?: 'Tên phim không khả dụng'}">Tên phim</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info-label">Đạo diễn:</p>
+                                    <p th:text="${listShowtimeMovie.get(0).getDirector() ?: 'Không xác định'}"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <p class="info-label">Diễn viên:</p>
+                                    <p>
+                                        <span class="actor-ellipsis"
+                                              th:text="${listShowtimeMovie.get(0).getActor() ?: 'Không xác định'}"
+                                              th:title="${listShowtimeMovie.get(0).getActor() ?: 'Không xác định'}">
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p class="info-label">Ngày Chiếu:</p>
+                                    <p id="movieDate"
+                                       th:text="${listShowtimeMovie.get(0).getShowtimes() != null ? #temporals.format(listShowtimeMovie.get(0).getShowtimes().get(0).getShowDate(), 'dd-MM-yyyy') : 'Không xác định'}">
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="info-label">Giờ Chiếu:</p>
+                                    <p id="movieTime"
+                                       th:data-time="${listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).scheduleTime : ''}"
+                                       th:data-duration="${listShowtimeMovie.get(0).duration ?: 0}">
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="info-label">Phòng Chiếu:</p>
+                                    <p id="movieHall" th:text="${listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).getRoomName() : 'HALL A'}">HALL A</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p class="info-label">Thời Lượng:</p>
+                                    <p><span id="movieDuration" th:text="${listShowtimeMovie.get(0).duration ?: 120}">120</span> phút</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="info-label">Phân Loại:</p>
+                                    <p id="movieRating" th:text="${listShowtimeMovie.get(0).getMovieAgeRating() != null ? listShowtimeMovie.get(0).getMovieAgeRating().getRatingName() : 'PG-13'}">PG-13</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="info-label">Phiên bản:</p>
+                                    <p th:if="${listShowtimeMovie.get(0).getVersions() != null}">
+                                        <span th:each="ver, iterStat : ${listShowtimeMovie.get(0).getVersions()}"
+                                              th:text="${ver.versionName + (iterStat.last ? '' : ', ')}">
+                                        </span>
+                                    </p>
+                                    <p th:unless="${listShowtimeMovie.get(0).getVersions() != null}">Không xác định</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="seat-tab" data-bs-toggle="tab" data-bs-target="#seat-selection"
+                                type="button" role="tab" aria-controls="seat-selection" aria-selected="true">
+                            <i class="bi bi-layout-sidebar me-2"></i>
+                            Chọn Ghế
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="booking-tab" data-bs-toggle="tab" data-bs-target="#booking-management"
+                                type="button" role="tab" aria-controls="booking-management" aria-selected="false">
+                            <i class="bi bi-list-ul me-2"></i>
+                            Quản Lý Booking
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div th:unless="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty()}" class="alert alert-warning">
+                Không có thông tin phim. Vui lòng kiểm tra lại lịch chiếu.
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="seat-selection" role="tabpanel" aria-labelledby="seat-tab">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="seat-layout">
+                                <div class="summary-item mb-3">
+                                    <span class="summary-label">Số lượng ghế:</span>
+                                    <div class="d-flex ms-2 gap-1 align-items-center">
+                                        <button type="button" id="qty1" class="btn btn-outline-primary seat-qty-btn" data-value="1">1</button>
+                                        <button type="button" id="qty2" class="btn btn-outline-primary seat-qty-btn" data-value="2">2</button>
+                                        <button type="button" id="qty3" class="btn btn-outline-primary seat-qty-btn" data-value="3">3</button>
+                                        <button type="button" id="qty4" class="btn btn-outline-primary seat-qty-btn" data-value="4">4</button>
+                                        <button type="button" id="resetSeatQtyBtn" class="btn btn-outline-danger ms-2" title="Reset số lượng ghế">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="seatQuantity" value="0"/>
+                                </div>
+                                <div class="screen"></div>
+
+                                <div class="seat-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-box seat-available"></div>
+                                        <span>Ghế thường</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-box seat-selected"></div>
+                                        <span>Đã chọn</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-box seat-occupied"></div>
+                                        <span>Đã đặt</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-box vip"></div>
+                                        <span>Ghế VIP</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-box Couple"></div>
+                                        <span>Ghế Couple</span>
+                                    </div>
+                                </div>
+
+                                <div id="seatContainer"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="summary-card">
+                                <h4 class="summary-title">Thông Tin Ghế Đã Chọn</h4>
+                                <div class="summary-item">
+                                    <span class="summary-label">Phim:</span>
+                                    <span id="summaryMovieName" th:text="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() ? listShowtimeMovie.get(0).getMovieName() : 'Tên phim'}"
+                                          class="summary-value">Tên phim</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Ngày:</span>
+                                    <span id="summaryDate"
+                                          th:text="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? #temporals.format(listShowtimeMovie.get(0).getShowtimes().get(0).getShowDate(), 'dd-MM-yyyy') : 'Không xác định'}"
+                                          class="summary-value"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Suất chiếu:</span>
+                                    <span id="summaryTime"
+                                          th:data-time="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).scheduleTime : ''}"
+                                          th:data-duration="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() ? listShowtimeMovie.get(0).duration : 0}"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Phòng chiếu:</span>
+                                    <span id="summaryHall" th:text="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).getRoomName() : 'HALL A'}"
+                                          class="summary-value">HALL A</span>
+                                </div>
+                                <hr>
+
+                                <div class="summary-item">
+                                    <span class="summary-label">Ghế đã chọn:</span>
+                                    <span id="selectedSeats" class="summary-value">Chưa chọn ghế</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Số lượng:</span>
+                                    <span id="seatCount" class="summary-value">0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Tổng tiền:</span>
+                                    <span id="totalPrice" class="summary-value">0 VNĐ</span>
+                                </div>
+                                <div id="seatSelectionMessage" class="alert alert-warning mt-3 d-none"></div>
+
+                                <div class="mt-3">
+                                    <label class="form-label">Loại người đặt vé:</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="userType" id="memberRadio" autocomplete="off" checked>
+                                        <label class="btn btn-outline-danger" for="memberRadio">Hội viên</label>
+                                        <input type="radio" class="btn-check" name="userType" id="guestRadio" autocomplete="off">
+                                        <label class="btn btn-outline-secondary" for="guestRadio">Khách</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="memberInputGroup">
+                                    <label for="memberInput" class="form-label">SĐT hoặc CCCD hoặc Email:</label>
+                                    <div class="input-group">
+                                        <input type="text" id="memberInput" class="form-control" placeholder="Nhập mã hội viên hoặc CCCD hoặc Email">
+                                        <button class="btn btn-outline-danger" id="checkMemberBtn">Kiểm Tra</button>
+                                    </div>
+                                </div>
+                                <div id="memberInfo" class="d-none border rounded p-2 bg-white">
+                                    <p><strong>Mã hội viên:</strong> <span id="memberId"></span></p>
+                                    <p><strong>Họ tên:</strong> <span id="memberName"></span></p>
+                                    <p><strong>CCCD:</strong> <span id="memberCCCD"></span></p>
+                                    <p><strong>SĐT:</strong> <span id="memberPhone"></span></p>
+                                    <p><strong>Điểm số hiện có:</strong> <span id="memberScore"></span></p>
+                                    <div class="mb-2">
+                                        <label for="usedScoreInput" class="form-label">Sử dụng điểm (1 điểm = 1,000 VNĐ):</label>
+                                        <input type="number" id="usedScoreInput" class="form-control" min="0" placeholder="Nhập số điểm muốn dùng" disabled>
+                                        <div id="usedScoreMessage" class="text-danger mt-1 d-none"></div>
+                                    </div>
+                                </div>
+                                <div id="memberNotFound" class="alert alert-danger d-none mt-2">Không tìm thấy hội viên!</div>
+                                <div id="guestForm" class="mt-3 d-none border rounded p-3 bg-white">
+                                    <div class="mb-2">
+                                        <label for="guestName" class="form-label">Họ tên:</label>
+                                        <input type="text" id="guestName" class="form-control" placeholder="Nhập họ tên khách">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="guestAge" class="form-label">Tuổi:</label>
+                                        <input type="number" id="guestAge" class="form-control" min="0" placeholder="Nhập tuổi">
+                                    </div>
+                                </div>
+
+                                <div class="row row-spacing">
+                                    <div class="col-12">
+                                        <button id="confirmBookingBtn" class="btn action-btn btn-confirm" disabled>
+                                            Xác Nhận Đặt Vé
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row row-spacing">
+                                    <div class="col-12">
+                                        <a th:href="@{/employee/showtime(showDate=${showDate ?: ''})}" class="btn action-btn btn-cancel">
+                                            Quay Lại Lịch Chiếu
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="booking-management" role="tabpanel" aria-labelledby="booking-tab">
+                    <div th:with="
+         totalBooking=${listInvoice.size()},
+         confirmed=${#lists.size(listInvoice.?[status == 1])},
+         pending=${#lists.size(listInvoice.?[status == 0])},
+         cancelled=${#lists.size(listInvoice.?[status == -1])}
+     " class="stats-grid">
+
+                        <div class="stat-card">
+                            <div class="stat-number text-primary" th:text="${totalBooking}">0</div>
+                            <div class="text-muted">Tổng booking</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-number text-success" th:text="${confirmed}">0</div>
+                            <div class="text-muted">Đã xác nhận</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-number text-warning" th:text="${pending}">0</div>
+                            <div class="text-muted">Chờ xử lý</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-number text-danger" th:text="${cancelled}">0</div>
+                            <div class="text-muted">Đã hủy</div>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Tìm kiếm theo booking ID, CMND, số điện thoại, tên phim..." id="searchBooking">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="confirmed">Đã xác nhận</option>
+                                <option value="pending">Chờ xử lý</option>
+                                <option value="cancelled">Đã hủy</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary w-100" onclick="refreshBookingList()">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Làm mới
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="booking-table">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên</th>
+                                <th>CMND/CCCD</th>
+                                <th>Số điện thoại</th>
+                                <th>Ghế</th>
+                                <th>Phương thức thanh toán</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+
+                            </tr>
+                            </thead>
+                            <tbody id="bookingTableBody">
+                            <tr th:each="booking, iterStat : ${listInvoice}">
+                                <td th:text="${iterStat.index + 1}">1</td>
+                                <td th:text="${booking.fullName != null ? booking.fullName : 'guest'}">1</td>
+                                <td th:text="${booking.identityCard != null ? booking.identityCard : 'guest'}">0123456789</td>
+                                <td th:text="${booking.phoneNumber != null ? booking.phoneNumber : 'guest'}">0901234567</td>
+                                <td th:text="${booking.seatNumber}">A1, A2</td>
+                                <td th:text="${booking.paymentMethod}">VNPay</td>
+                                <td th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">100.000 đ</td>
+                                <td>
+                                    <span th:if="${booking.status == 0}" class="text-warning">Chờ xác nhận</span>
+                                    <span th:if="${booking.status == 1}" class="text-success">Đã xác nhận</span>
+                                    <span th:if="${booking.status == -1}" class="text-danger">Đã huỷ</span>
+                                </td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div class="text-center mt-4">
+                        <button class="btn btn-outline-primary" onclick="backToSeatSelection()">
+                            <i class="bi bi-arrow-left me-1"></i>Quay lại chọn ghế
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-labelledby="bookingDetailModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px;">
+                        <div class="modal-header" style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                            <h5 class="modal-title" id="bookingDetailModalLabel" style="color: #6366f1; font-weight: 600;">
+                                <i class="fas fa-info-circle me-2"></i>Booking Details
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: none;"></button>
+                        </div>
+                        <div class="modal-body" style="padding: 2rem; color: #374151;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="detail-section" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 1rem;">
+                                        <h6 style="color: #6366f1; font-weight: 600; margin-bottom: 1rem;">Customer Information</h6>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Booking ID:</span>
+                                            <span class="detail-value" id="modalBookingId" style="color: #374151; font-weight: 600;">BK2025001</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Customer Name:</span>
+                                            <span class="detail-value" id="modalCustomerName" style="color: #374151; font-weight: 600;">Nguyễn Văn A</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Identity Card:</span>
+                                            <span class="detail-value" id="modalIdentityCard" style="color: #374151; font-weight: 600;">123456789012</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Phone Number:</span>
+                                            <span class="detail-value" id="modalPhoneNumber" style="color: #374151; font-weight: 600;">+84 901 234 567</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0; padding: 0.5rem 0;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Email:</span>
+                                            <span class="detail-value" id="modalEmail" style="color: #374151; font-weight: 600;">nguyenvana@email.com</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-section" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 1rem;">
+                                        <h6 style="color: #6366f1; font-weight: 600; margin-bottom: 1rem;">Booking Information</h6>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Movie Title:</span>
+                                            <span class="detail-value" id="modalMovieTitle" style="color: #374151; font-weight: 600;">Avatar: The Way of Water</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Showtime:</span>
+                                            <span class="detail-value" id="modalShowtime" style="color: #374151; font-weight: 600;">21/07/2025 19:30</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Cinema Hall:</span>
+                                            <span class="detail-value" id="modalCinemaHall" style="color: #374151; font-weight: 600;">Hall A - Screen 1</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Seats:</span>
+                                            <span class="detail-value" id="modalSeats" style="color: #374151; font-weight: 600;">A1, A2, A3</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Total Price:</span>
+                                            <span class="detail-value" id="modalTotalPrice" style="color: #ef4444; font-weight: 700; font-size: 1.1rem;">450,000 VND</span>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; justify-content: space-between; margin-bottom: 0; padding: 0.5rem 0;">
+                                            <span class="detail-label" style="color: #6b7280; font-weight: 500;">Status:</span>
+                                            <span class="detail-value" id="modalStatus" style="color: #f59e0b; font-weight: 600;">
+                                                <span class="badge" style="background: #fef3c7; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 12px;">Pending</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="background: #f8fafc; border-top: 1px solid #e5e7eb; padding: 1rem 2rem;">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border: 1px solid #d1d5db; color: #6b7280; background: white;">Close</button>
+                            <button type="button" class="btn btn-primary" id="modalConfirmBtn" onclick="confirmBookingFromModal()">
+                                <i class="fas fa-check me-1"></i>Confirm Booking
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade booking-summary-modal" id="bookingSummaryModal" tabindex="-1" aria-labelledby="bookingSummaryLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="bookingSummaryLabel">Xác Nhận Đặt Vé</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img id="summaryPoster"
+                                 th:src="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() ? listShowtimeMovie.get(0).getLargeImageUrl() : '/images/placeholder.jpg'}"
+                                 th:alt="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() ? listShowtimeMovie.get(0).getMovieName() : 'Poster'} + ' Poster'"
+                                 class="booking-poster" />
+                            <div class="booking-details">
+                                <h5>Thông Tin Vé</h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <strong>Phim:</strong>
+                                        <span id="summaryMovie"
+                                              th:text="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() ? listShowtimeMovie.get(0).getMovieName() : 'Tên phim'}"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Ngày chiếu:</strong>
+                                        <span id="summaryDateModal"
+                                              th:text="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? #temporals.format(listShowtimeMovie.get(0).getShowtimes().get(0).getShowDate(), 'dd-MM-yyyy') : 'Không xác định'}"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Suất chiếu:</strong>
+                                        <span id="summaryTimeModal"
+                                              th:data-time="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).scheduleTime : ''}"
+                                              th:data-duration="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() ? listShowtimeMovie.get(0).duration : 0}"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Phòng chiếu:</strong>
+                                        <span id="summaryHallModal"
+                                              th:text="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).getRoomName() : 'HALL A'}"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Ghế:</strong>
+                                        <span id="summarySeats"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Số lượng:</strong>
+                                        <span id="summaryQuantity"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Người đặt:</strong>
+                                        <span id="summaryBooker"></span>
+                                    </li>
+                                    <li class="list-group-item" id="summaryUsedScore" style="display: none;">
+                                        <strong>Điểm sử dụng:</strong>
+                                        <span id="summaryUsedScoreValue"></span>
+                                    </li>
+                                    <li class="list-group-item total">
+                                        <strong>Tổng tiền:</strong>
+                                        <span id="summaryPrice"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <form id="onlinePaymentForm" action="/api/payment/create_payment" method="get">
+                                <input type="hidden" name="amount" id="amount"/>
+                                <input type="hidden" name="orderInfo" id="orderInfo"/>
+                                <input type="hidden" name="movieName" id="movieName"/>
+                                <input type="hidden" name="promotionId" id="selectedPromotionId" value=""/>
+                                <input type="hidden" name="finalTotal" id="finalTotalHidden"/>
+                                <input type="hidden" name="usedScore" id="usedScoreHidden" value="0"/>
+                                <input type="hidden" name="bookingDate" id="bookingDate"
+                                       th:value="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).getShowDate() : ''}"/>
+                                <input type="hidden" name="scheduleId" id="scheduleIdHidden"
+                                       th:value="${listShowtimeMovie != null and !listShowtimeMovie.isEmpty() and listShowtimeMovie.get(0).getShowtimes() != null ? listShowtimeMovie.get(0).getShowtimes().get(0).getShowtimeId() : ''}"/>
+                                <div id="seatIdContainer"></div>
+                                <button type="submit" class="btn btn-warning">💳 Thanh Toán Online</button>
+                            </form>
+                            <form id="offlinePaymentForm" action="/employee/bookingOff" method="get">
+                                <input type="hidden" name="amount" id="offlineAmount" />
+                                <input type="hidden" name="orderInfo" id="offlineOrderInfo" />
+                                <input type="hidden" name="movieName" id="offlineMovieName" />
+                                <input type="hidden" name="promotionId" id="offlinePromotionId" />
+                                <input type="hidden" name="finalTotal" id="offlineFinalTotal" />
+                                <input type="hidden" name="usedScore" id="offlineUsedScore" />
+                                <input type="hidden" name="bookingDate" id="offlineBookingDate" />
+                                <input type="hidden" name="scheduleId" id="offlineScheduleId" />
+                                <div id="offlineSeatIdContainer"></div>
+                                <button type="submit" class="btn btn-secondary" id="payOfflineBtn">💰 Thanh Toán Offline</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        window.seatData = window.seatData || /*[[${seats}]]*/ [];
+        console.log("Seat data from Thymeleaf at", new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }), ":", window.seatData);
+
+        const coupleSeatsData = /*[[${mapSeatsCouple}]]*/ {};
+
+        // DOM elements
+        const seatContainer = document.getElementById('seatContainer');
+        const selectedSeatsElement = document.getElementById('selectedSeats');
+        const seatCountElement = document.getElementById('seatCount');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const confirmBookingBtn = document.getElementById('confirmBookingBtn');
+        const seatQuantityInput = document.getElementById('seatQuantity');
+        const seatSelectionMessage = document.getElementById('seatSelectionMessage');
+        const memberRadio = document.getElementById('memberRadio');
+        const guestRadio = document.getElementById('guestRadio');
+        const memberInputGroup = document.getElementById('memberInputGroup');
+        const memberInfo = document.getElementById('memberInfo');
+        const memberNotFound = document.getElementById('memberNotFound');
+        const guestForm = document.getElementById('guestForm');
+        const checkMemberBtn = document.getElementById('checkMemberBtn');
+
+        // Selected seats tracking
+        const selectedSeats = [];
+        let desiredQuantity = 0;
+        const selectedGroups = new Map();
+        const MAX_SEATS = 8;
+        let segmentCache = null; // Cache cho phân đoạn ghế
+
+        // Seat info map
+        const seatInfoMap = {};
+        window.seatData.forEach(seat => {
+            if (seat.seatColumn && seat.seatRow) {
+                const code = seat.seatColumn + seat.seatRow;
+                seatInfoMap[code] = seat;
+            }
+        });
+
+        // Couple seat pairs
+        const coupleSeatPairs = {};
+        Object.keys(coupleSeatsData).forEach(key => {
+            const seat = coupleSeatsData[key];
+            const index = parseInt(key);
+            const isOdd = index % 2 === 1;
+            const pairIndex = isOdd ? index + 1 : index - 1;
+            const seatCode = seat.seatColumn + seat.seatRow;
+            coupleSeatPairs[seatCode] = {
+                seatId: seat.seatId,
+                pairSeatId: null, // Khởi tạo pairSeatId là null
+                code: seatCode,
+                pairCode: null
+            };
+
+            // Tìm cặp ghế dựa trên khóa liền kề
+            const pairKey = Object.keys(coupleSeatsData).find(k => parseInt(k) === pairIndex);
+            if (pairKey) {
+                const pairSeat = coupleSeatsData[pairKey];
+                const pairCode = pairSeat.seatColumn + pairSeat.seatRow;
+                coupleSeatPairs[seatCode].pairSeatId = pairSeat.seatId;
+                coupleSeatPairs[seatCode].pairCode = pairCode;
+                coupleSeatPairs[pairCode] = {
+                    seatId: pairSeat.seatId,
+                    pairSeatId: seat.seatId,
+                    code: pairCode,
+                    pairCode: seatCode
+                };
+            }
+        });
+
+        // New function to disable couple seats when desired quantity is not 2
+        function updateCoupleSeatsAvailability() {
+            const coupleSeats = document.querySelectorAll('.seat.couple');
+            const coupleContainers = document.querySelectorAll('.couple-seat-container');
+            if (desiredQuantity === 0) {
+                // Khi chưa chọn số lượng ghế, giữ màu bình thường và cho phép tương tác
+                coupleSeats.forEach(seat => {
+                    if (!seat.classList.contains('seat-selected') && !seat.classList.contains('seat-occupied')) {
+                        seat.classList.remove('disabled');
+                        seat.style.pointerEvents = 'auto';
+                    }
+                });
+                coupleContainers.forEach(container => {
+                    if (!container.classList.contains('selected')) {
+                        container.classList.remove('disabled');
+                        container.style.pointerEvents = 'auto';
+                    }
+                });
+            } else if (desiredQuantity !== 2) {
+                // Khi số lượng ghế không phải 2, vô hiệu hóa ghế đôi
+                coupleSeats.forEach(seat => {
+                    if (!seat.classList.contains('seat-selected') && !seat.classList.contains('seat-occupied')) {
+                        seat.classList.add('disabled');
+                        seat.style.pointerEvents = 'none';
+                    }
+                });
+                coupleContainers.forEach(container => {
+                    if (!container.classList.contains('selected')) {
+                        container.classList.add('disabled');
+                        container.style.pointerEvents = 'none';
+                    }
+                });
+            } else {
+                // Khi số lượng ghế là 2, cho phép chọn ghế đôi
+                coupleSeats.forEach(seat => {
+                    if (!seat.classList.contains('seat-selected') && !seat.classList.contains('seat-occupied')) {
+                        seat.classList.remove('disabled');
+                        seat.style.pointerEvents = 'auto';
+                    }
+                });
+                coupleContainers.forEach(container => {
+                    if (!container.classList.contains('selected')) {
+                        container.classList.remove('disabled');
+                        container.style.pointerEvents = 'auto';
+                    }
+                });
+            }
+        }
+
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('movieId');
+        const showDate = urlParams.get('showDate');
+        const showtimeId = urlParams.get('showtimeId');
+
+        // Format price
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN').format(price) + ' VNĐ';
+        }
+
+        // Format time range
+        function formatTimeRange(elementId) {
+            const el = document.getElementById(elementId);
+            const startTime = el.getAttribute("data-time");
+            const duration = parseInt(el.getAttribute("data-duration"));
+
+            if (!startTime || isNaN(duration)) {
+                el.textContent = "Không xác định";
+                return;
+            }
+
+            const [hours, minutes] = startTime.split(":").map(Number);
+            const startDate = new Date(0, 0, 0, hours, minutes);
+            startDate.setMinutes(startDate.getMinutes() + duration);
+
+            const endHour = startDate.getHours().toString().padStart(2, "0");
+            const endMin = startDate.getMinutes().toString().padStart(2, "0");
+
+            el.textContent = `${startTime} - ${endHour}:${endMin}`;
+        }
+
+        // Show popup message
+        function showPopup(message, isSuccess = false) {
+            seatSelectionMessage.textContent = message;
+            seatSelectionMessage.classList.remove('d-none', isSuccess ? 'alert-warning' : 'alert-success');
+            seatSelectionMessage.classList.add(isSuccess ? 'alert-success' : 'alert-warning');
+            setTimeout(() => seatSelectionMessage.classList.add('d-none'), 3000);
+        }
+
+        // Generate seat layout
+        function generateSeatLayout() {
+            seatContainer.innerHTML = '';
+            if (!window.seatData || !Array.isArray(window.seatData) || window.seatData.length === 0) {
+                seatContainer.innerHTML = '<p class="text-danger">Không có dữ liệu ghế!</p>';
+                showPopup("Không có dữ liệu ghế để hiển thị!");
+                return;
+            }
+
+            // Kiểm tra dữ liệu ghế
+            if (!window.seatData.every(s => s.seatRow && s.seatColumn && s.seatTypeId !== undefined)) {
+                seatContainer.innerHTML = '<p class="text-danger">Dữ liệu ghế không hợp lệ!</p>';
+                showPopup("Dữ liệu ghế không hợp lệ! Vui lòng kiểm tra dữ liệu từ server.");
+                return;
+            }
+
+            const validSeatData = window.seatData.filter(s => s.seatRow && s.seatColumn);
+            if (validSeatData.length === 0) {
+                seatContainer.innerHTML = '<p class="text-danger">Dữ liệu ghế không hợp lệ!</p>';
+                showPopup("Dữ liệu ghế không hợp lệ!");
+                return;
+            }
+
+            const rows = [...new Set(validSeatData.map(s => s.seatRow))].sort((a, b) => parseInt(a) - parseInt(b));
+            const columns = [...new Set(validSeatData.map(s => s.seatColumn))].sort();
+
+            // Create header row
+            const headerRow = document.createElement('div');
+            headerRow.className = 'seat-grid';
+            headerRow.style.marginBottom = '6px';
+            const emptyCell = document.createElement('div');
+            emptyCell.style.width = '40px';
+            emptyCell.style.marginRight = '10px';
+            headerRow.appendChild(emptyCell);
+            columns.forEach(col => {
+                const colLabel = document.createElement('div');
+                colLabel.textContent = col;
+                colLabel.style.width = '40px';
+                colLabel.style.textAlign = 'center';
+                colLabel.style.color = '#ffd700';
+                colLabel.style.fontWeight = 'bold';
+                headerRow.appendChild(colLabel);
+            });
+            seatContainer.appendChild(headerRow);
+
+            // Create seat rows
+            const processedCodes = new Set();
+            rows.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'seat-grid';
+                rowDiv.style.marginBottom = '6px';
+
+                const rowLabel = document.createElement('div');
+                rowLabel.textContent = row;
+                rowLabel.className = 'seat-row-label';
+                rowDiv.appendChild(rowLabel);
+
+                columns.forEach(col => {
+                    const code = col + row;
+                    if (processedCodes.has(code)) return;
+
+                    const seat = seatInfoMap[code];
+                    const seatDiv = document.createElement('div');
+                    seatDiv.className = 'seat';
+                    seatDiv.dataset.seatId = code;
+
+                    if (!seat) {
+                        seatDiv.className += ' empty';
+                        seatDiv.style.backgroundColor = '#f0f0f0';
+                        seatDiv.style.cursor = 'not-allowed';
+                    } else if (seat.seatTypeId === 4) {
+                        seatDiv.className += ' empty';
+                        seatDiv.style.pointerEvents = 'none';
+                    } else if (seat.seatTypeId === 5) {
+                        seatDiv.className += ' staircase';
+                        seatDiv.textContent = '⇅';
+                        seatDiv.title = 'Lối đi - Cầu thang';
+                        seatDiv.style.pointerEvents = 'none';
+                    } else if (seat.isBooked) {
+                        seatDiv.className += ' seat-occupied';
+                    } else {
+                        seatDiv.className += ' seat-available';
+                        if (seat.seatTypeName.toLowerCase() === 'vip') seatDiv.className += ' vip';
+                        else if (seat.seatTypeName.toLowerCase() === 'couple') seatDiv.className += ' couple';
+                        seatDiv.addEventListener('click', () => selectSeat(seatDiv, code));
+                        seatDiv.addEventListener('contextmenu', (e) => {
+                            e.preventDefault();
+                            deselectSeat(seatDiv, code);
+                        });
+                    }
+
+                    seatDiv.textContent = seatDiv.className.includes('staircase') ? '⇅' : code;
+                    seatDiv.title = seat ? `Ghế ${code} - ${seat.seatTypeName}` : '';
+
+                    if (seat && seat.seatTypeName.toLowerCase() === 'couple') {
+                        const coupleInfo = coupleSeatPairs[code];
+                        if (!coupleInfo || !coupleInfo.pairCode || processedCodes.has(coupleInfo.pairCode)) {
+                            rowDiv.appendChild(seatDiv);
+                            return;
+                        }
+
+                        const pairCode = coupleInfo.pairCode;
+                        processedCodes.add(code);
+                        processedCodes.add(pairCode);
+
+                        const container = document.createElement("div");
+                        container.classList.add("couple-seat-container");
+                        container.setAttribute("data-seats", `${code},${pairCode}`);
+
+                        const seatDiv1 = seatDiv;
+                        const pairSeat = seatInfoMap[pairCode];
+                        const seatDiv2 = document.createElement("div");
+                        seatDiv2.className = 'seat couple';
+                        seatDiv2.dataset.seatId = pairCode;
+                        seatDiv2.textContent = pairCode;
+                        seatDiv2.title = `Ghế ${pairCode} - ${pairSeat.seatTypeName}`;
+                        if (pairSeat.isBooked) {
+                            seatDiv2.className += ' seat-occupied';
+                        } else {
+                            seatDiv2.addEventListener('click', () => selectSeat(seatDiv2, pairCode));
+                            seatDiv2.addEventListener('contextmenu', (e) => {
+                                e.preventDefault();
+                                deselectSeat(seatDiv2, pairCode);
+                            });
+                        }
+
+                        container.appendChild(seatDiv1);
+                        container.appendChild(seatDiv2);
+                        rowDiv.appendChild(container);
+                    } else {
+                        rowDiv.appendChild(seatDiv);
+                    }
+                });
+                seatContainer.appendChild(rowDiv);
+            });
+
+            // Dynamic grid styling
+            const gridStyle = document.createElement('style');
+            gridStyle.textContent = `
+            .seat-grid {
+                grid-template-columns: 50px repeat(${columns.length}, 40px);
+            }
+            @media (max-width: 768px) {
+                .seat-grid {
+                    grid-template-columns: 50px repeat(${columns.length}, 30px);
+                }
+            }
+            @media (max-width: 576px) {
+                .seat-grid {
+                    grid-template-columns: 50px repeat(${columns.length}, 25px);
+                }
+            }
+            .seat.disabled {
+                background-color: #e9ecef !important;
+                color: #adb5bd !important;
+                cursor: not-allowed !important;
+                pointer-events: none !important;
+            }
+        `;
+            document.head.appendChild(gridStyle);
+
+            updateQuantityButtons();
+            updateCoupleSeatsAvailability(); // Thêm để cập nhật trạng thái ghế đôi
+        }
+
+        // Select seat with group selection
+        function selectSeat(seatElement, seatId) {
+            if (desiredQuantity <= 0) {
+                showPopup("Vui lòng chọn số lượng ghế trước!");
+                return;
+            }
+
+            const seat = seatInfoMap[seatId];
+            if (!seat || seat.isBooked || seat.seatTypeId === 4 || seat.seatTypeId === 5 || selectedSeats.includes(seatId)) {
+                return;
+            }
+
+            let selectedGroup = [];
+            const isCoupleSeat = seat.seatTypeName.toLowerCase() === 'couple';
+
+            if (isCoupleSeat) {
+                const coupleInfo = coupleSeatPairs[seatId];
+                if (!coupleInfo || !coupleInfo.pairCode) {
+                    showPopup("Không tìm thấy ghế đôi tương ứng!");
+                    return;
+                }
+
+                const pairCode = coupleInfo.pairCode;
+                const pairSeat = seatInfoMap[pairCode];
+
+                if (!pairSeat || pairSeat.isBooked || selectedSeats.includes(pairCode)) {
+                    showPopup("Ghế đôi tương ứng không khả dụng!");
+                    return;
+                }
+
+                if (desiredQuantity !== 2) {
+                    showPopup("Ghế đôi yêu cầu chọn 2 ghế!");
+                    return;
+                }
+
+                selectedGroup = [seatId, pairCode];
+                const container = document.querySelector(`.couple-seat-container[data-seats="${seatId},${pairCode}"]`) ||
+                    document.querySelector(`.couple-seat-container[data-seats="${pairCode},${seatId}"]`);
+                if (container) {
+                    container.classList.add("selected");
+                }
+            } else {
+                const row = seat.seatRow;
+                const seatsInRow = window.seatData
+                    .filter(s => s.seatRow === row && !s.isBooked && s.seatTypeId !== 4 && s.seatTypeId !== 5)
+                    .sort((a, b) => a.seatColumn.charCodeAt(0) - b.seatColumn.charCodeAt(0));
+                const colList = seatsInRow.map(s => s.seatColumn);
+                const clickedIndex = colList.indexOf(seat.seatColumn);
+
+                function isValidGroup(group) {
+                    if (group.length !== desiredQuantity) return false;
+                    for (let i = 0; i < group.length; i++) {
+                        const code = group[i] + row;
+                        const s = seatInfoMap[code];
+                        if (!s || s.isBooked || s.seatTypeId === 4 || s.seatTypeId === 5 || selectedSeats.includes(code)) {
+                            return false;
+                        }
+                        if (s.seatTypeName.toLowerCase() === 'couple') {
+                            return false;
+                        }
+                        if (i > 0) {
+                            const prevChar = group[i - 1].charCodeAt(0);
+                            const currChar = group[i].charCodeAt(0);
+                            if (currChar !== prevChar + 1) return false;
+                            const inBetweenCode = String.fromCharCode(prevChar + 1) + row;
+                            if (seatInfoMap[inBetweenCode]?.seatTypeId === 5) return false;
+                        }
+                    }
+                    return true;
+                }
+
+                for (let i = clickedIndex - desiredQuantity + 1; i <= clickedIndex; i++) {
+                    if (i < 0) continue;
+                    const group = colList.slice(i, i + desiredQuantity);
+                    if (isValidGroup(group)) {
+                        selectedGroup = group;
+                        break;
+                    }
+                }
+
+                if (selectedGroup.length === 0) {
+                    for (let i = clickedIndex + 1; i <= colList.length - desiredQuantity; i++) {
+                        const group = colList.slice(i, i + desiredQuantity);
+                        if (isValidGroup(group)) {
+                            selectedGroup = group;
+                            break;
+                        }
+                    }
+                }
+
+                if (selectedGroup.length === 0) {
+                    showPopup(`Không tìm thấy ${desiredQuantity} ghế liền kề khả dụng.`);
+                    return;
+                }
+
+                selectedGroup = selectedGroup.map(col => col + row);
+            }
+
+            if (selectedSeats.length + selectedGroup.length > MAX_SEATS) {
+                showPopup(`Bạn chỉ được chọn tối đa ${MAX_SEATS} ghế!`);
+                return;
+            }
+
+            selectedGroup.forEach(code => {
+                selectedSeats.push(code);
+                const seatDiv = document.querySelector(`.seat[data-seat-id="${code}"]`);
+                if (seatDiv) {
+                    seatDiv.classList.remove('seat-available');
+                    seatDiv.classList.add('seat-selected');
+                    if (seatInfoMap[code].seatTypeName.toLowerCase() === 'vip') {
+                        seatDiv.classList.add('vip-selected');
+                    } else if (seatInfoMap[code].seatTypeName.toLowerCase() === 'couple') {
+                        seatDiv.classList.add('couple-selected');
+                    } else {
+                        seatDiv.classList.add('standard-selected');
+                    }
+                }
+            });
+
+            selectedGroups.set(selectedGroup[0], selectedGroup);
+            showPopup(`Đã chọn nhóm ${selectedGroup.join(", ")}`, true);
+            updateSelectionSummary();
+            validateSeatSelection();
+            updateQuantityButtons();
+
+            if (selectedSeats.length === MAX_SEATS) {
+                lockInvalidRows(0);
+            } else {
+                lockInvalidRows(desiredQuantity);
+            }
+        }
+
+        // Deselect seat with right-click
+        function deselectSeat(seatElement, seatId) {
+            let groupKey = null;
+            for (const [key, group] of selectedGroups.entries()) {
+                if (group.includes(seatId)) {
+                    groupKey = key;
+                    break;
+                }
+            }
+
+            if (groupKey) {
+                const group = selectedGroups.get(groupKey);
+                group.forEach(code => {
+                    const seatDiv = document.querySelector(`.seat[data-seat-id="${code}"]`);
+                    if (seatDiv) {
+                        seatDiv.classList.remove('seat-selected', 'standard-selected', 'vip-selected', 'couple-selected');
+                        seatDiv.classList.add('seat-available');
+                        if (seatInfoMap[code].seatTypeName.toLowerCase() === 'vip') {
+                            seatDiv.classList.add('vip');
+                        } else if (seatInfoMap[code].seatTypeName.toLowerCase() === 'couple') {
+                            seatDiv.classList.add('couple');
+                        }
+                    }
+                    const container = document.querySelector(`.couple-seat-container[data-seats*="${code}"]`);
+                    if (container) {
+                        container.classList.remove("selected");
+                    }
+                    selectedSeats.splice(selectedSeats.indexOf(code), 1);
+                });
+                selectedGroups.delete(groupKey);
+                showPopup(`Bỏ chọn nhóm ghế ${group.join(", ")}`);
+                updateSelectionSummary();
+                validateSeatSelection();
+                updateQuantityButtons();
+                lockInvalidRows(desiredQuantity);
+                updateCoupleSeatsAvailability();
+            }
+        }
+
+        // Lock invalid rows based on desired quantity
+        function lockInvalidRows(qty) {
+            const rows = [...new Set(window.seatData.map(s => s.seatRow))];
+            rows.forEach(row => {
+                const seatsInRow = window.seatData
+                    .filter(s => s.seatRow === row)
+                    .sort((a, b) => a.seatColumn.charCodeAt(0) - b.seatColumn.charCodeAt(0));
+                let segments = [], currentSegment = [];
+                for (const seat of seatsInRow) {
+                    const code = seat.seatColumn + seat.seatRow;
+                    if (seat.isBooked || seat.seatTypeId === 4 || seat.seatTypeId === 5 || selectedSeats.includes(code)) {
+                        if (currentSegment.length) segments.push(currentSegment);
+                        currentSegment = [];
+                    } else {
+                        currentSegment.push(seat);
+                    }
+                }
+                if (currentSegment.length) segments.push(currentSegment);
+                let validCodes = new Set();
+                segments.forEach(segment => {
+                    if (segment.length < qty) return;
+                    for (let i = 0; i <= segment.length - qty; i++) {
+                        const group = segment.slice(i, i + qty);
+                        let isValid = true;
+                        for (let j = 0; j < group.length; j++) {
+                            const seat = group[j];
+                            const code = seat.seatColumn + seat.seatRow;
+                            if (seat.isBooked || seat.seatTypeId === 4 || seat.seatTypeId === 5) {
+                                isValid = false;
+                                break;
+                            }
+                            if (j > 0) {
+                                const prevChar = group[j - 1].seatColumn.charCodeAt(0);
+                                const currChar = seat.seatColumn.charCodeAt(0);
+                                if (currChar !== prevChar + 1) {
+                                    isValid = false;
+                                    break;
+                                }
+                                const inBetweenCode = String.fromCharCode(prevChar + 1) + row;
+                                if (seatInfoMap[inBetweenCode]?.seatTypeId === 5) {
+                                    isValid = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isValid) {
+                            group.forEach(s => validCodes.add(s.seatColumn + s.seatRow));
+                        }
+                    }
+                });
+                selectedSeats.forEach(code => validCodes.add(code));
+                seatsInRow.forEach(seat => {
+                    const code = seat.seatColumn + seat.seatRow;
+                    const seatDiv = document.querySelector(`.seat[data-seat-id="${code}"]`);
+                    if (!seatDiv) return;
+                    if (qty === 0 || validCodes.has(code)) {
+                        seatDiv.classList.remove("disabled");
+                        seatDiv.style.pointerEvents = "auto";
+                    } else {
+                        seatDiv.classList.add("disabled");
+                        seatDiv.style.pointerEvents = "none";
+                    }
+                });
+            });
+            updateCoupleSeatsAvailability();
+        }
+
+        // Update selection summary
+        function updateSelectionSummary() {
+            if (selectedSeats.length === 0) {
+                selectedSeatsElement.textContent = "Chưa chọn ghế";
+                seatCountElement.textContent = "0";
+                totalPriceElement.textContent = "0 VNĐ";
+            } else {
+                const sortedSeats = [...selectedSeats].sort((a, b) => {
+                    if (a[0] === b[0]) return parseInt(a.substring(1)) - parseInt(b.substring(1));
+                    return a[0].localeCompare(b[0]);
+                });
+                selectedSeatsElement.textContent = sortedSeats.join(', ');
+                seatCountElement.textContent = selectedSeats.length;
+                let total = selectedSeats.reduce((sum, code) => {
+                    const seatPrice = seatInfoMap[code]?.seatPrice || 80000;
+                    const adjustedPrice = seatInfoMap[code]?.seatTypeName.toLowerCase() === 'couple' ? seatPrice / 2 : seatPrice;
+                    return sum + adjustedPrice;
+                }, 0);
+
+                // Trừ điểm (1 điểm = 1,000 VNĐ), giới hạn tối đa 50% tổng giá
+                const usedScore = parseInt(document.getElementById('usedScoreInput').value) || 0;
+                const maxDiscount = total * 0.5; // Giới hạn tối đa 50% tổng giá
+                const discount = Math.min(usedScore * 1000, maxDiscount); // Lấy giá trị nhỏ hơn
+                const adjustedUsedScore = Math.min(usedScore, Math.floor(maxDiscount / 1000)); // Điều chỉnh số điểm hiển thị
+                total = Math.max(0, total - discount); // Đảm bảo tổng tiền không âm
+                totalPriceElement.textContent = formatPrice(total);
+
+                // Cập nhật input usedScore nếu vượt giới hạn
+                document.getElementById('usedScoreInput').value = adjustedUsedScore;
+            }
+            validateSeatSelection();
+            updateCoupleSeatsAvailability();
+        }
+
+        // Validate seat selection
+        function validateSeatSelection() {
+            seatSelectionMessage.classList.add('d-none');
+            if (desiredQuantity === 0) {
+                confirmBookingBtn.disabled = true;
+                return;
+            }
+
+            seatSelectionMessage.classList.add('d-none');
+            confirmBookingBtn.disabled = !isUserInfoValid();
+        }
+
+        // Validate user info
+        function isUserInfoValid() {
+            if (memberRadio.checked) {
+                return !memberInfo.classList.contains('d-none');
+            } else if (guestRadio.checked) {
+                const guestName = document.getElementById('guestName').value.trim();
+                const guestAge = document.getElementById('guestAge').value.trim();
+                return guestName && guestAge;
+            }
+            return false;
+        }
+
+        // Set desired quantity
+        function setQuantity(qty) {
+            const remaining = MAX_SEATS - selectedSeats.length;
+            if (qty > remaining) {
+                showPopup(`Chỉ còn được chọn tối đa ${remaining} ghế nữa!`);
+                return;
+            }
+            desiredQuantity = qty;
+            seatQuantityInput.value = qty;
+            document.querySelectorAll('.seat-qty-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.getAttribute('data-value')) === qty) {
+                    btn.classList.add('active');
+                }
+            });
+            showPopup(`Chọn ${qty} ghế. Click vào 1 ghế để tự động chọn liền kề.`);
+            lockInvalidRows(qty);
+            validateSeatSelection();
+            updateQuantityButtons();
+            updateCoupleSeatsAvailability();
+        }
+
+        // Update quantity buttons
+        function updateQuantityButtons() {
+            const remaining = MAX_SEATS - selectedSeats.length;
+            document.querySelectorAll('.seat-qty-btn').forEach(btn => {
+                const qty = parseInt(btn.getAttribute('data-value'));
+                if (isNaN(qty)) return;
+                btn.disabled = qty > remaining;
+            });
+        }
+
+        // Reset seat selection
+        function resetSeatSelection() {
+            selectedSeats.forEach(code => {
+                const seatDiv = document.querySelector(`.seat[data-seat-id="${code}"]`);
+                if (seatDiv) {
+                    seatDiv.classList.remove('seat-selected', 'standard-selected', 'vip-selected', 'couple-selected', 'disabled');
+                    seatDiv.classList.add('seat-available');
+                    seatDiv.style.pointerEvents = 'auto';
+                    if (seatInfoMap[code].seatTypeName.toLowerCase() === 'vip') {
+                        seatDiv.classList.add('vip');
+                    } else if (seatInfoMap[code].seatTypeName.toLowerCase() === 'couple') {
+                        seatDiv.classList.add('couple');
+                    }
+                }
+            });
+            selectedSeats.length = 0;
+            selectedGroups.clear();
+            desiredQuantity = 0;
+            seatQuantityInput.value = 0;
+            document.querySelectorAll('.seat-qty-btn').forEach(btn => btn.classList.remove('active'));
+            updateSelectionSummary();
+            lockInvalidRows(0);
+            validateSeatSelection();
+            updateQuantityButtons();
+            showPopup("Đã reset chọn ghế");
+            segmentCache = null; // Reset cache
+            updateCoupleSeatsAvailability();
+        }
+
+        // Handle user type toggle
+        function toggleUserType() {
+            if (memberRadio.checked) {
+                memberInputGroup.classList.remove('d-none');
+                guestForm.classList.add('d-none');
+                memberInfo.classList.add('d-none');
+                memberNotFound.classList.add('d-none');
+            } else {
+                memberInputGroup.classList.add('d-none');
+                guestForm.classList.remove('d-none');
+                memberInfo.classList.add('d-none');
+                memberNotFound.classList.add('d-none');
+            }
+            validateSeatSelection();
+        }
+
+        // Check member via API
+        async function checkMember() {
+            const input = document.getElementById('memberInput').value.trim();
+            if (!input) {
+                memberNotFound.textContent = 'Vui lòng nhập SĐT, CCCD hoặc Email!';
+                memberNotFound.classList.remove('d-none');
+                memberInfo.classList.add('d-none');
+                document.getElementById('usedScoreInput').disabled = true; // Vô hiệu hóa input điểm
+                return;
+            }
+
+            try {
+                const response = await fetch(`/employee/check?keyword=${encodeURIComponent(input)}`);
+                if (response.ok) {
+                    const member = await response.json();
+                    document.getElementById('memberId').textContent = member.memberId || '';
+                    document.getElementById('memberName').textContent = member.fullName || '';
+                    document.getElementById('memberCCCD').textContent = member.identityCard || '';
+                    document.getElementById('memberPhone').textContent = member.phoneNumber || '';
+                    document.getElementById('memberScore').textContent = member.score || '0';
+                    document.getElementById('usedScoreInput').disabled = false; // Kích hoạt input điểm
+                    document.getElementById('usedScoreInput').setAttribute('max', member.score || 0); // Đặt giới hạn tối đa
+                    memberInfo.classList.remove('d-none');
+                    memberNotFound.classList.add('d-none');
+                    validateSeatSelection();
+                } else {
+                    memberInfo.classList.add('d-none');
+                    memberNotFound.textContent = 'Không tìm thấy hội viên!';
+                    memberNotFound.classList.remove('d-none');
+                    document.getElementById('usedScoreInput').disabled = true; // Vô hiệu hóa input điểm
+                    validateSeatSelection();
+                }
+            } catch (error) {
+                console.error('Error checking member:', error);
+                memberInfo.classList.add('d-none');
+                memberNotFound.textContent = 'Lỗi khi kiểm tra hội viên!';
+                memberNotFound.classList.remove('d-none');
+                document.getElementById('usedScoreInput').disabled = true; // Vô hiệu hóa input điểm
+                validateSeatSelection();
+            }
+        }
+
+        // Handle confirm booking
+        function confirmBooking() {
+            if (selectedSeats.length === 0) {
+                showPopup("Vui lòng chọn ghế!");
+                return;
+            }
+
+            // Xác thực số điểm sử dụng
+            if (memberRadio.checked && !validateUsedScore()) {
+                showPopup("Số điểm sử dụng không hợp lệ!");
+                return;
+            }
+
+            const scheduleSeatIds = selectedSeats.map(code => seatInfoMap[code]?.scheduleSeatId).filter(id => id);
+            const totalPriceValue = selectedSeats.reduce((sum, code) => sum + (seatInfoMap[code]?.seatPrice || 80000), 0);
+            const usedScore = memberRadio.checked ? (parseInt(document.getElementById('usedScoreInput').value) || 0) : 0;
+            const discount = usedScore * 1000; // 1 điểm = 1,000 VNĐ
+            const finalTotal = Math.max(0, totalPriceValue - discount); // Tổng tiền sau khi trừ
+            const movieName = document.getElementById('movieTitle').textContent.trim();
+            const scheduleId = document.getElementById('scheduleIdHidden').value || '';
+            const bookingDate = document.getElementById('bookingDate').value || '';
+
+            // Populate online payment form
+            const onlineForm = document.getElementById('onlinePaymentForm');
+            onlineForm.querySelector('#amount').value = totalPriceValue;
+            onlineForm.querySelector('#finalTotalHidden').value = finalTotal;
+            onlineForm.querySelector('#movieName').value = movieName;
+            onlineForm.querySelector('#orderInfo').value = `Đặt vé phim ${movieName}`;
+            onlineForm.querySelector('#bookingDate').value = bookingDate;
+            onlineForm.querySelector('#scheduleIdHidden').value = scheduleId;
+            onlineForm.querySelector('#usedScoreHidden').value = usedScore; // Gửi usedScore
+
+            const onlineSeatContainer = document.getElementById('seatIdContainer');
+            onlineSeatContainer.innerHTML = '';
+            scheduleSeatIds.forEach(seatId => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'scheduleSeatIds';
+                input.value = seatId;
+                onlineSeatContainer.appendChild(input);
+            });
+
+            // Populate offline payment form
+            const offlineForm = document.getElementById('offlinePaymentForm');
+            offlineForm.querySelector('#offlineAmount').value = totalPriceValue;
+            offlineForm.querySelector('#offlineFinalTotal').value = finalTotal;
+            offlineForm.querySelector('#offlineMovieName').value = movieName;
+            offlineForm.querySelector('#offlineOrderInfo').value = `Đặt vé phim ${movieName}`;
+            offlineForm.querySelector('#offlineBookingDate').value = bookingDate;
+            offlineForm.querySelector('#offlineScheduleId').value = scheduleId;
+            offlineForm.querySelector('#offlinePromotionId').value = document.getElementById('selectedPromotionId').value || '';
+            offlineForm.querySelector('#offlineUsedScore').value = usedScore; // Gửi usedScore
+
+            const offlineSeatContainer = document.getElementById('offlineSeatIdContainer');
+            offlineSeatContainer.innerHTML = '';
+            scheduleSeatIds.forEach(seatId => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'scheduleSeatIds';
+                input.value = seatId;
+                offlineSeatContainer.appendChild(input);
+            });
+
+            const isMember = memberRadio.checked;
+            const isGuest = guestRadio.checked;
+
+            // Clear existing user inputs in both forms
+            const existingUserInputsOnline = onlineForm.querySelectorAll("input[name='memberId'], input[name='memberName'], input[name='memberCCCD'], input[name='memberPhone'], input[name='guestName'], input[name='guestAge'], input[name='memberScore']");
+            existingUserInputsOnline.forEach(input => input.remove());
+
+            const existingUserInputsOffline = offlineForm.querySelectorAll("input[name='memberId'], input[name='memberName'], input[name='memberCCCD'], input[name='memberPhone'], input[name='guestName'], input[name='guestAge'], input[name='memberScore']");
+            existingUserInputsOffline.forEach(input => input.remove());
+
+            let bookerName = '';
+            if (isMember) {
+                const memberId = document.getElementById('memberId').textContent.trim() || '';
+                const memberName = document.getElementById('memberName').textContent.trim() || '';
+                const memberCCCD = document.getElementById('memberCCCD').textContent.trim() || '';
+                const memberPhone = document.getElementById('memberPhone').textContent.trim() || '';
+                const memberScore = document.getElementById('memberScore').textContent.trim() || '0';
+
+                if (memberId) {
+                    // Online form
+                    const memberIdInputOnline = document.createElement('input');
+                    memberIdInputOnline.type = 'hidden';
+                    memberIdInputOnline.name = 'memberId';
+                    memberIdInputOnline.value = memberId;
+                    onlineForm.appendChild(memberIdInputOnline);
+
+                    // Offline form
+                    const memberIdInputOffline = document.createElement('input');
+                    memberIdInputOffline.type = 'hidden';
+                    memberIdInputOffline.name = 'memberId';
+                    memberIdInputOffline.value = memberId;
+                    offlineForm.appendChild(memberIdInputOffline);
+                }
+                if (memberName) {
+                    // Online form
+                    const memberNameInputOnline = document.createElement('input');
+                    memberNameInputOnline.type = 'hidden';
+                    memberNameInputOnline.name = 'memberName';
+                    memberNameInputOnline.value = memberName;
+                    onlineForm.appendChild(memberNameInputOnline);
+
+                    // Offline form
+                    const memberNameInputOffline = document.createElement('input');
+                    memberNameInputOffline.type = 'hidden';
+                    memberNameInputOffline.name = 'memberName';
+                    memberNameInputOffline.value = memberName;
+                    offlineForm.appendChild(memberNameInputOffline);
+                }
+                if (memberCCCD) {
+                    // Online form
+                    const memberCCCDInputOnline = document.createElement('input');
+                    memberCCCDInputOnline.type = 'hidden';
+                    memberCCCDInputOnline.name = 'memberCCCD';
+                    memberCCCDInputOnline.value = memberCCCD;
+                    onlineForm.appendChild(memberCCCDInputOnline);
+
+                    // Offline form
+                    const memberCCCDInputOffline = document.createElement('input');
+                    memberCCCDInputOffline.type = 'hidden';
+                    memberCCCDInputOffline.name = 'memberCCCD';
+                    memberCCCDInputOffline.value = memberCCCD;
+                    offlineForm.appendChild(memberCCCDInputOffline);
+                }
+                if (memberPhone) {
+                    // Online form
+                    const memberPhoneInputOnline = document.createElement('input');
+                    memberPhoneInputOnline.type = 'hidden';
+                    memberPhoneInputOnline.name = 'memberPhone';
+                    memberPhoneInputOnline.value = memberPhone;
+                    onlineForm.appendChild(memberPhoneInputOnline);
+
+                    // Offline form
+                    const memberPhoneInputOffline = document.createElement('input');
+                    memberPhoneInputOffline.type = 'hidden';
+                    memberPhoneInputOffline.name = 'memberPhone';
+                    memberPhoneInputOffline.value = memberPhone;
+                    offlineForm.appendChild(memberPhoneInputOffline);
+                }
+                if (memberScore) {
+                    // Online form
+                    const memberScoreInputOnline = document.createElement('input');
+                    memberScoreInputOnline.type = 'hidden';
+                    memberScoreInputOnline.name = 'memberScore';
+                    memberScoreInputOnline.value = memberScore;
+                    onlineForm.appendChild(memberScoreInputOnline);
+
+                    // Offline form
+                    const memberScoreInputOffline = document.createElement('input');
+                    memberScoreInputOffline.type = 'hidden';
+                    memberScoreInputOffline.name = 'memberScore';
+                    memberScoreInputOffline.value = memberScore;
+                    offlineForm.appendChild(memberScoreInputOffline);
+                }
+                bookerName = memberName || 'Hội viên không xác định';
+            } else if (isGuest) {
+                const guestName = document.getElementById('guestName').value.trim() || '';
+                const guestAge = document.getElementById('guestAge').value.trim() || '';
+
+                if (guestName) {
+                    // Online form
+                    const guestNameInputOnline = document.createElement('input');
+                    guestNameInputOnline.type = 'hidden';
+                    guestNameInputOnline.name = 'guestName';
+                    guestNameInputOnline.value = guestName;
+                    onlineForm.appendChild(guestNameInputOnline);
+
+                    // Offline form
+                    const guestNameInputOffline = document.createElement('input');
+                    guestNameInputOffline.type = 'hidden';
+                    guestNameInputOffline.name = 'guestName';
+                    guestNameInputOffline.value = guestName;
+                    offlineForm.appendChild(guestNameInputOffline);
+                }
+                if (guestAge) {
+                    // Online form
+                    const guestAgeInputOnline = document.createElement('input');
+                    guestAgeInputOnline.type = 'hidden';
+                    guestAgeInputOnline.name = 'guestAge';
+                    guestAgeInputOnline.value = guestAge;
+                    onlineForm.appendChild(guestAgeInputOnline);
+
+                    // Offline form
+                    const guestAgeInputOffline = document.createElement('input');
+                    guestAgeInputOffline.type = 'hidden';
+                    guestAgeInputOffline.name = 'guestAge';
+                    guestAgeInputOffline.value = guestAge;
+                    offlineForm.appendChild(guestAgeInputOffline);
+                }
+                bookerName = guestName || 'Khách không xác định';
+            }
+
+            // Populate modal
+            document.getElementById('summarySeats').textContent = selectedSeats.join(', ') || 'Chưa chọn ghế';
+            document.getElementById('summaryQuantity').textContent = selectedSeats.length;
+            document.getElementById('summaryPrice').textContent = formatPrice(finalTotal);
+            document.getElementById('summaryBooker').textContent = bookerName;
+
+            // Hiển thị số điểm sử dụng trong modal (nếu là hội viên)
+            const summaryList = document.querySelector('#bookingSummaryModal .list-group');
+            const usedScoreItem = document.createElement('li');
+            usedScoreItem.className = 'list-group-item';
+            usedScoreItem.innerHTML = `<strong>Điểm sử dụng:</strong> <span>${usedScore} điểm (${formatPrice(discount)})</span>`;
+            if (isMember && usedScore > 0) {
+                summaryList.appendChild(usedScoreItem);
+            }
+
+            // Show modal
+            const bookingModal = new bootstrap.Modal(document.getElementById('bookingSummaryModal'));
+            bookingModal.show();
+        }
+
+        // Event listeners for quantity buttons
+        document.querySelectorAll('.seat-qty-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const qty = parseInt(this.getAttribute('data-value'));
+                if (isNaN(qty) || qty < 0) {
+                    seatQuantityInput.value = 0;
+                    desiredQuantity = 0;
+                } else {
+                    setQuantity(qty);
+                }
+            });
+        });
+
+        // Reset seat selection
+        document.getElementById('resetSeatQtyBtn').addEventListener('click', function() {
+            resetSeatSelection();
+        });
+
+        function validateUsedScore() {
+            const usedScoreInput = document.getElementById('usedScoreInput');
+            const usedScoreMessage = document.getElementById('usedScoreMessage');
+            const memberScore = parseInt(document.getElementById('memberScore').textContent) || 0;
+            const usedScore = parseInt(usedScoreInput.value) || 0;
+
+            if (usedScore < 0) {
+                usedScoreMessage.textContent = 'Số điểm không được âm!';
+                usedScoreMessage.classList.remove('d-none');
+                usedScoreInput.value = 0;
+                return false;
+            } else if (usedScore > memberScore) {
+                usedScoreMessage.textContent = `Số điểm không được vượt quá ${memberScore}!`;
+                usedScoreMessage.classList.remove('d-none');
+                usedScoreInput.value = memberScore;
+                return false;
+            } else {
+                usedScoreMessage.classList.add('d-none');
+                return true;
+            }
+        }
+
+        // Function to switch to seat selection tab
+        function backToSeatSelection() {
+            const seatTab = document.getElementById('seat-tab');
+            const bookingTab = document.getElementById('booking-tab');
+            const seatPane = document.getElementById('seat-selection');
+            const bookingPane = document.getElementById('booking-management');
+
+            bookingTab.classList.remove('active');
+            bookingPane.classList.remove('show', 'active');
+            seatTab.classList.add('active');
+            seatPane.classList.add('show', 'active');
+        }
+
+        // Event listeners
+        memberRadio.addEventListener('change', toggleUserType);
+        guestRadio.addEventListener('change', toggleUserType);
+        checkMemberBtn.addEventListener('click', checkMember);
+        confirmBookingBtn.addEventListener('click', confirmBooking);
+
+        // Thêm vào phần cuối của hàm khởi tạo trong `DOMContentLoaded`
+        document.addEventListener('DOMContentLoaded', function() {
+            formatTimeRange('summaryTime');
+            formatTimeRange('movieTime');
+            generateSeatLayout();
+            toggleUserType();
+
+            // Ensure only one tab is active at a time
+            const seatTab = document.getElementById('seat-tab');
+            const bookingTab = document.getElementById('booking-tab');
+
+            seatTab.addEventListener('shown.bs.tab', function() {
+                document.getElementById('seat-selection').classList.add('show', 'active');
+                document.getElementById('booking-management').classList.remove('show', 'active');
+            });
+
+            bookingTab.addEventListener('shown.bs.tab', function() {
+                document.getElementById('booking-management').classList.add('show', 'active');
+                document.getElementById('seat-selection').classList.remove('show', 'active');
+            });
+
+            document.getElementById('guestName').addEventListener('input', validateSeatSelection);
+            document.getElementById('guestAge').addEventListener('input', validateSeatSelection);
+            document.getElementById('usedScoreInput').addEventListener('input', function() {
+                validateUsedScore();
+                updateSelectionSummary();
+            });
+        });
+
+        function searchBookings() {
+            const searchInput = document.getElementById('searchBooking').value.trim().toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const bookingRows = document.querySelectorAll('#bookingTableBody tr');
+
+            bookingRows.forEach(row => {
+                const bookingId = row.cells[0].textContent.toLowerCase(); // STT
+                const fullName = row.cells[1].textContent.toLowerCase();
+                const identityCard = row.cells[2].textContent.toLowerCase();
+                const phoneNumber = row.cells[3].textContent.toLowerCase();
+                const movieName = row.cells[4].textContent.toLowerCase();
+                const status = row.cells[7].textContent.toLowerCase();
+
+                const matchesSearch = (
+                    bookingId.includes(searchInput) ||
+                    fullName.includes(searchInput) ||
+                    identityCard.includes(searchInput) ||
+                    phoneNumber.includes(searchInput) ||
+                    movieName.includes(searchInput)
+                );
+
+                const matchesStatus = (
+                    statusFilter === '' ||
+                    (statusFilter === 'confirmed' && status.includes('đã xác nhận')) ||
+                    (statusFilter === 'pending' && status.includes('chờ xác nhận')) ||
+                    (statusFilter === 'cancelled' && status.includes('đã huỷ'))
+                );
+
+                row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+            });
+        }
+
+        // Thêm sự kiện lắng nghe cho ô tìm kiếm
+        document.getElementById('searchBooking').addEventListener('input', searchBookings);
+
+        // Thêm sự kiện lắng nghe cho bộ lọc trạng thái
+        document.getElementById('statusFilter').addEventListener('change', searchBookings);
+    </script>
+</div>
+</html>

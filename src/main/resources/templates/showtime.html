@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lịch chiếu phim</title>
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --lunar-bg: #0d1117;
+            --lunar-surface: #161b22;
+            --lunar-card: #21262d;
+            --lunar-border: #30363d;
+            --lunar-text: #e6edf3;
+            --lunar-text-secondary: #7d8590;
+            --lunar-accent: #58a6ff;
+            --lunar-accent-hover: #4184e4;
+            --lunar-danger: #f85149;
+            --lunar-success: #3fb950;
+            --lunar-warning: #d29922;
+            --lunar-purple: #8b5cf6;
+            --lunar-purple-hover: #7c3aed;
+            --lunar-glow: rgba(88, 166, 255, 0.1);
+            --lunar-shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--lunar-bg) 0%, #0f1419 100%);
+            color: var(--lunar-text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(circle at 20% 20%, rgba(88, 166, 255, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 60%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--lunar-card) 0%, var(--lunar-surface) 100%);
+            border: 1px solid var(--lunar-border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow:
+                    0 20px 25px -5px var(--lunar-shadow),
+                    0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--lunar-accent), transparent);
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(135deg, var(--lunar-text) 0%, var(--lunar-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Filter Container */
+        .filter-container {
+            background: var(--lunar-surface);
+            border: 1px solid var(--lunar-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px var(--lunar-shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-label {
+            color: var(--lunar-text);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-select, .form-control {
+            background: var(--lunar-card);
+            border: 1px solid var(--lunar-border);
+            color: var(--lunar-text);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 500;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--lunar-accent);
+            box-shadow:
+                    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+                    0 0 0 3px var(--lunar-glow);
+            background: var(--lunar-card);
+            color: var(--lunar-text);
+        }
+
+        .form-select option {
+            background: var(--lunar-card);
+            color: var(--lunar-text);
+        }
+
+        /* Date Tags */
+        .date-tags-container {
+            background: var(--lunar-surface);
+            border: 1px solid var(--lunar-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px var(--lunar-shadow);
+        }
+
+        .date-tag {
+            background: var(--lunar-card);
+            border: 1px solid var(--lunar-border);
+            color: var(--lunar-text);
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none !important;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .date-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .date-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--lunar-shadow);
+            border-color: var(--lunar-accent);
+            color: var(--lunar-accent) !important;
+        }
+
+        .date-tag:hover::before {
+            left: 100%;
+        }
+
+        .date-tag.bg-danger {
+            background: linear-gradient(135deg, var(--lunar-danger) 0%, #dc2626 100%);
+            border-color: var(--lunar-danger);
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(248, 81, 73, 0.3);
+        }
+
+        /* Table Container */
+        .table-container {
+            background: var(--lunar-surface);
+            border: 1px solid var(--lunar-border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow:
+                    0 25px 50px -12px var(--lunar-shadow),
+                    0 0 0 1px rgba(88, 166, 255, 0.05);
+        }
+
+        .timetable-header {
+            background: linear-gradient(135deg, var(--lunar-accent) 0%, var(--lunar-purple) 100%);
+            color: white;
+            padding: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .timetable-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .table {
+            background: transparent;
+            color: var(--lunar-text);
+            margin: 0;
+        }
+
+        .table td {
+            background: var(--lunar-surface);
+            border-color: var(--lunar-border);
+            padding: 20px;
+            vertical-align: middle;
+        }
+
+        .time-column {
+            background: var(--lunar-card) !important;
+            color: var(--lunar-accent) !important;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: center;
+            border-right: 2px solid var(--lunar-border);
+            width: 150px;
+            position: relative;
+        }
+
+        .time-column::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: linear-gradient(180deg, var(--lunar-accent), var(--lunar-purple));
+            border-radius: 2px;
+        }
+
+        .room-column {
+            padding: 15px;
+        }
+
+        /* Showtime Cards */
+        .showtime-card {
+            background: linear-gradient(135deg, var(--lunar-card) 0%, rgba(33, 38, 45, 0.8) 100%);
+            border: 1px solid var(--lunar-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .showtime-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--lunar-accent), var(--lunar-purple));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .showtime-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow:
+                    0 25px 50px var(--lunar-shadow),
+                    0 0 30px rgba(88, 166, 255, 0.1);
+            border-color: var(--lunar-accent);
+        }
+
+        .showtime-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .showtime-link {
+            text-decoration: none !important;
+            color: inherit;
+            display: block;
+        }
+
+        .movie-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--lunar-warning);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .movie-title:not(:first-child) {
+            color: var(--lunar-text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .clear-filters {
+            background: transparent;
+            border: 2px solid var(--lunar-danger);
+            color: var(--lunar-danger);
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clear-filters::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--lunar-danger);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .clear-filters:hover {
+            color: white;
+            border-color: var(--lunar-danger);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(248, 81, 73, 0.3);
+        }
+
+        .clear-filters:hover::before {
+            left: 0;
+        }
+
+        /* Alert Styles */
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(248, 81, 73, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(248, 81, 73, 0.3);
+            color: #fecaca;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .refresh-indicator {
+            background: var(--lunar-surface) !important;
+            border: 1px solid var(--lunar-border) !important;
+            color: var(--lunar-accent) !important;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .no-showtimes {
+            text-align: center;
+            padding: 60px;
+            color: var(--lunar-text-secondary) !important;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .no-showtimes i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--lunar-accent);
+            opacity: 0.5;
+        }
+
+        /* Flatpickr Dark Theme */
+        .flatpickr-calendar {
+            background: var(--lunar-surface);
+            border: 1px solid var(--lunar-border);
+            border-radius: 12px;
+            box-shadow: 0 25px 50px var(--lunar-shadow);
+        }
+
+        .flatpickr-day {
+            color: var(--lunar-text);
+            border-radius: 8px;
+        }
+
+        .flatpickr-day:hover {
+            background: var(--lunar-card);
+            color: var(--lunar-accent);
+        }
+
+        .flatpickr-day.selected {
+            background: var(--lunar-accent);
+            color: white;
+        }
+
+        .flatpickr-months {
+            background: var(--lunar-card);
+            color: var(--lunar-text);
+        }
+
+        .flatpickr-weekdays {
+            background: var(--lunar-card);
+            color: var(--lunar-text-secondary);
+        }
+
+        .flatpickr-current-month {
+            color: var(--lunar-text);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--lunar-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--lunar-border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--lunar-accent);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .showtime-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .refresh-indicator i {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .page-header h2 {
+                font-size: 2rem;
+            }
+
+            .page-header {
+                padding: 30px 20px;
+            }
+
+            .filter-container {
+                padding: 20px;
+            }
+
+            .date-tag {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+
+            .time-column {
+                width: 120px;
+                font-size: 1rem;
+            }
+
+            .showtime-card {
+                padding: 16px;
+            }
+        }
+
+        /* Focus states for accessibility */
+        .date-tag:focus,
+        .showtime-link:focus {
+            outline: 2px solid var(--lunar-accent);
+            outline-offset: 2px;
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading * {
+            cursor: wait !important;
+        }
+    </style>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="container py-4">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2 class="mb-0">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Lịch chiếu phim
+                <span th:if="${selectedDate != 'all'}" th:text="${selectedDate}"></span>
+                <span th:if="${selectedDate == 'all'}">- Tất cả suất chiếu</span>
+            </h2>
+        </div>
+
+        <!-- Error Messages -->
+        <div id="errorContainer" th:if="${errors != null and !errors.isEmpty()}" class="alert alert-danger alert-dismissible fade show">
+            <ul>
+                <li th:each="error : ${errors}" th:text="${error.value}"></li>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-container d-flex align-items-end gap-3 flex-wrap">
+            <div class="flex-grow-1">
+                <label for="movieFilter" class="form-label">
+                    <i class="fas fa-film me-2"></i>
+                    Chọn phim
+                </label>
+                <select id="movieFilter" class="form-select">
+                    <option value="">Tất cả phim</option>
+                    <option th:each="movie : ${allMovies}"
+                            th:value="${movie.key}"
+                            th:text="${movie.value}"
+                            th:selected="${selectedMovieId != null and selectedMovieId == movie.key.toString()}"></option>
+                </select>
+            </div>
+            <div class="flex-grow-1">
+                <label for="timeSlotFilter" class="form-label">
+                    <i class="fas fa-clock me-2"></i>
+                    Khung giờ
+                </label>
+                <select id="timeSlotFilter" class="form-select">
+                    <option value="">Tất cả khung giờ</option>
+                    <option value="morning" th:selected="${selectedTimeSlot == 'morning'}">Sáng (08:00 - 13:00)</option>
+                    <option value="afternoon" th:selected="${selectedTimeSlot == 'afternoon'}">Chiều (13:00 - 18:00)</option>
+                    <option value="evening" th:selected="${selectedTimeSlot == 'evening'}">Tối (18:00 - 23:00)</option>
+                </select>
+            </div>
+            <div class="d-flex align-items-end gap-2">
+                <button id="clearFilters" class="btn clear-filters">
+                    <i class="fas fa-times me-2"></i>
+                    Xóa bộ lọc
+                </button>
+            </div>
+        </div>
+
+        <!-- Date Tags -->
+        <div class="date-tags-container" th:with="today=${#temporals.createNow()}, days=7">
+            <div class="d-flex flex-wrap justify-content-evenly gap-3">
+                <span th:each="i : ${#numbers.sequence(0, days - 1)}">
+                    <th:block th:with="date=${#temporals.createNow().plusDays(i)}">
+                        <a th:href="@{/showtime(date=${#temporals.format(date, 'yyyy-MM-dd')})}"
+                           th:text="${#temporals.format(date, 'dd/MM/yyyy')}"
+                           th:class="'date-tag' + (${selectedDate} != 'all' and ${#temporals.format(date, 'yyyy-MM-dd')} == ${selectedDate} ? ' bg-danger text-white' : '')"
+                           style="text-decoration:none; cursor:pointer;">
+                        </a>
+                    </th:block>
+                </span>
+            </div>
+        </div>
+
+        <!-- Timetable Table -->
+        <div class="table-container">
+            <table class="table table-bordered align-middle text-center" id="showtimeTable">
+                <thead class="timetable-header">
+                <tr>
+                    <th class="text-white">Thời gian</th>
+                    <th class="text-white">Phim</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="time : ${timeSlots}" class="showtime-row" th:data-time="${time}">
+                    <td class="time-column" th:text="${time}"></td>
+                    <td class="room-column">
+                        <div th:each="room : ${rooms}">
+                            <div th:each="movie : ${movies}">
+                                <th:block th:if="${movie.showtimes.containsKey(room.roomId + '-' + time)}">
+                                    <form action="/selectSeats" method="post" style="display:inline;">
+                                        <input type="hidden" name="versionId" value="${showtime.versionId}">
+                                        <input type="hidden" name="scheduleId" value="${showtime.id}">
+                                        <input type="hidden" name="movieId" value="${showtime.movieId}">
+                                        <button type="submit" class="showtime-link" style="border:none; background:none; padding:0;">
+                                            <div class="showtime-card">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <div class="movie-title">${showtime.movieName}</div>
+                                                    <div class="movie-title">Phòng: ${showtime.roomType}</div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </form>
+                                </th:block>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Filter elements
+            const movieFilter = document.getElementById('movieFilter');
+            const timeSlotFilter = document.getElementById('timeSlotFilter');
+            const clearFiltersBtn = document.getElementById('clearFilters');
+
+            // Check if filters are applied
+            function hasFilters() {
+                return movieFilter.value !== '' || timeSlotFilter.value !== '';
+            }
+
+            // Update clear filters button state
+            function updateClearFiltersButton() {
+                if (hasFilters()) {
+                    clearFiltersBtn.style.display = 'block';
+                    clearFiltersBtn.disabled = false;
+                } else {
+                    clearFiltersBtn.style.display = 'none';
+                    clearFiltersBtn.disabled = true;
+                }
+            }
+
+            // Apply filters by fetching from backend
+            let debounceTimeout;
+            async function applyFilters(updateUrl = true) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(async () => {
+                    const table = document.getElementById('showtimeTable');
+                    table.classList.add('loading');
+                    table.insertAdjacentHTML('beforebegin', '<div class="refresh-indicator text-center"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải lịch chiếu...</div>');
+
+                    try {
+                        const selectedMovie = movieFilter.value;
+                        const selectedTimeSlot = timeSlotFilter.value;
+                        const urlParams = new URLSearchParams(window.location.search);
+                        let dateInput = urlParams.get('date') || new Date().toISOString().split('T')[0];
+
+                        const url = new URL('/showtime/filter', window.location.origin);
+                        if (dateInput) url.searchParams.set('date', dateInput);
+                        if (selectedMovie) url.searchParams.set('movieId', selectedMovie);
+                        if (selectedTimeSlot) url.searchParams.set('timeSlot', selectedTimeSlot);
+
+                        console.log('Fetching showtimes with URL:', url.toString());
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        console.log('Response data:', data);
+
+                        if (data.success) {
+                            updateShowtimeTable(data.showtimes);
+                            updateClearFiltersButton();
+                            if (updateUrl) {
+                                updateUrlWithFilters(selectedMovie, selectedTimeSlot, dateInput);
+                            }
+                            if (data.errors && Object.keys(data.errors).length > 0) {
+                                showError(data.errors);
+                            }
+                        } else {
+                            showError({ general: data.error || 'Không thể tải lịch chiếu' });
+                        }
+                    } catch (error) {
+                        console.error('Error fetching showtimes:', error);
+                        showError({ general: 'Lỗi khi tải lịch chiếu: ' + error.message });
+                    } finally {
+                        table.classList.remove('loading');
+                        const refreshIndicator = document.querySelector('.refresh-indicator');
+                        if (refreshIndicator) refreshIndicator.remove();
+                    }
+                }, 300);
+            }
+
+            // Update showtime table
+            function updateShowtimeTable(showtimes) {
+                console.log('Updating showtime table with:', showtimes);
+                const tableBody = document.querySelector('#showtimeTable tbody');
+                if (!showtimes || showtimes.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="2" class="no-showtimes">
+                                <div>
+                                    <i class="fas fa-calendar-times d-block"></i>
+                                    Không tìm thấy suất chiếu phù hợp với bộ lọc
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tableBody.innerHTML = '';
+
+                // Group showtimes by time slot
+                const groupedByTime = showtimes.reduce((acc, showtime) => {
+                    if (!showtime.scheduleTime) {
+                        console.error('Missing scheduleTime for showtime:', showtime);
+                        return acc;
+                    }
+                    const time = showtime.scheduleTime;
+                    if (!acc[time]) acc[time] = [];
+                    acc[time].push(showtime);
+                    return acc;
+                }, {});
+
+                // Create table rows
+                Object.keys(groupedByTime).sort().forEach(time => {
+                    const row = document.createElement('tr');
+                    row.className = 'showtime-row';
+                    row.dataset.time = time;
+
+                    row.innerHTML = `
+                        <td class="time-column">${time}</td>
+                        <td class="room-column">
+                            ${groupedByTime[time].map(showtime => {
+                        if (!showtime.movieName || !showtime.roomType) {
+                            console.error('Missing data for showtime:', showtime);
+                            return '';
+                        }
+                        return `
+                                                 <form action="/selectSeats" method="post" style="display:inline;">
+                    <input type="hidden" name="versionId" value="${showtime.versionId}">
+                    <input type="hidden" name="scheduleId" value="${showtime.id}">
+                    <input type="hidden" name="movieId" value="${showtime.movieId}">
+                    <button type="submit" class="showtime-link" style="border:none; background:none; padding:0;">
+                        <div class="showtime-card">
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="movie-title">${showtime.movieName}</div>
+                                <div class="movie-title">Phòng: ${showtime.roomType}</div>
+                            </div>
+                        </div>
+                    </button>
+                </form>
+                                `;
+                    }).join('')}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Update URL with filter parameters
+            function updateUrlWithFilters(movieId, timeSlot, date) {
+                const url = new URL(window.location);
+                if (movieId) {
+                    url.searchParams.set('movieId', movieId);
+                } else {
+                    url.searchParams.delete('movieId');
+                }
+                if (timeSlot) {
+                    url.searchParams.set('timeSlot', timeSlot);
+                } else {
+                    url.searchParams.delete('timeSlot');
+                }
+                if (date) {
+                    url.searchParams.set('date', date);
+                } else {
+                    url.searchParams.delete('date');
+                }
+                window.history.replaceState({}, '', url);
+            }
+
+            // Clear filters
+            function clearFilters() {
+                if (hasFilters()) {
+                    movieFilter.value = '';
+                    timeSlotFilter.value = '';
+                    const url = new URL(window.location);
+                    url.searchParams.delete('movieId');
+                    url.searchParams.delete('timeSlot');
+                    window.history.replaceState({}, '', url);
+                    applyFilters(true);
+                }
+            }
+
+            // Show error messages
+            function showError(errors) {
+                const errorContainer = document.getElementById('errorContainer') || document.createElement('div');
+                errorContainer.id = 'errorContainer';
+                errorContainer.className = 'alert alert-danger alert-dismissible fade show';
+                errorContainer.innerHTML = `
+                    <ul class="mb-0">${Object.values(errors).map(err => `<li>${err}</li>`).join('')}</ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                if (!errorContainer.parentElement) {
+                    document.querySelector('.container').insertBefore(errorContainer, document.querySelector('.filter-container'));
+                }
+            }
+
+            // Initialize filters from URL
+            function initializeFiltersFromUrl() {
+                const url = new URL(window.location);
+                const movieIdParam = url.searchParams.get('movieId');
+                const timeSlotParam = url.searchParams.get('timeSlot');
+
+                if (movieIdParam && movieFilter.querySelector(`option[value="${movieIdParam}"]`)) {
+                    movieFilter.value = movieIdParam;
+                }
+                if (timeSlotParam && timeSlotFilter.querySelector(`option[value="${timeSlotParam}"]`)) {
+                    timeSlotFilter.value = timeSlotParam;
+                }
+                applyFilters(false);
+                updateClearFiltersButton();
+            }
+
+            // Event listeners
+            movieFilter.addEventListener('change', () => {
+                console.log('Movie filter changed to:', movieFilter.value);
+                applyFilters(true);
+            });
+
+            timeSlotFilter.addEventListener('change', () => {
+                console.log('Time slot filter changed to:', timeSlotFilter.value);
+                applyFilters(true);
+            });
+
+            clearFiltersBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Clearing filters');
+                clearFilters();
+            });
+
+            // Initialize filters
+            initializeFiltersFromUrl();
+
+            // Enhanced date tag interactions
+            document.querySelectorAll('.date-tag').forEach(tag => {
+                tag.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+
+                    // Add loading state
+                    this.style.opacity = '0.7';
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    // Smooth transition
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 300);
+                });
+
+                // Enhanced hover effects
+                tag.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px) scale(1.05)';
+                });
+
+                tag.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Enhanced showtime card interactions
+            document.addEventListener('click', function(e) {
+                const showtimeCard = e.target.closest('.showtime-card');
+                if (showtimeCard) {
+                    const link = showtimeCard.closest('.showtime-link');
+                    if (link && !e.defaultPrevented) {
+                        // Add ripple effect
+                        const ripple = document.createElement('div');
+                        ripple.style.cssText = `
+                            position: absolute;
+                            border-radius: 50%;
+                            background: rgba(88, 166, 255, 0.3);
+                            transform: scale(0);
+                            animation: ripple 0.6s linear;
+                            pointer-events: none;
+                        `;
+
+                        const rect = showtimeCard.getBoundingClientRect();
+                        const size = Math.max(rect.width, rect.height);
+                        const x = e.clientX - rect.left - size / 2;
+                        const y = e.clientY - rect.top - size / 2;
+
+                        ripple.style.width = ripple.style.height = size + 'px';
+                        ripple.style.left = x + 'px';
+                        ripple.style.top = y + 'px';
+
+                        showtimeCard.style.position = 'relative';
+                        showtimeCard.appendChild(ripple);
+
+                        setTimeout(() => ripple.remove(), 600);
+                    }
+                }
+            });
+
+            // Add ripple animation to CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Filter animation enhancements
+            function animateFilterChange() {
+                const table = document.getElementById('showtimeTable');
+                table.style.transform = 'scale(0.98)';
+                table.style.opacity = '0.8';
+
+                setTimeout(() => {
+                    table.style.transform = 'scale(1)';
+                    table.style.opacity = '1';
+                }, 200);
+            }
+
+            // Enhanced form focus effects
+            [movieFilter, timeSlotFilter].forEach(filter => {
+                filter.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                    this.style.borderColor = 'var(--lunar-accent)';
+                    this.style.boxShadow = '0 0 0 3px var(--lunar-glow)';
+                });
+
+                filter.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                    if (!this.value) {
+                        this.style.borderColor = 'var(--lunar-border)';
+                        this.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.1)';
+                    }
+                });
+            });
+
+            // Keyboard navigation enhancements
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    // Clear filters on escape
+                    if (hasFilters()) {
+                        clearFilters();
+                    }
+                }
+
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case 'f':
+                            e.preventDefault();
+                            movieFilter.focus();
+                            break;
+                        case 't':
+                            e.preventDefault();
+                            timeSlotFilter.focus();
+                            break;
+                    }
+                }
+            });
+
+            // Accessibility improvements - announce filter changes
+            function announceFilterChange(message) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.setAttribute('aria-atomic', 'true');
+                announcement.style.cssText = 'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;';
+                announcement.textContent = message;
+                document.body.appendChild(announcement);
+
+                setTimeout(() => announcement.remove(), 1000);
+            }
+
+            // Override applyFilters to include announcements
+            const originalApplyFilters = applyFilters;
+            applyFilters = function(updateUrl) {
+                animateFilterChange();
+
+                const movieName = movieFilter.selectedOptions[0]?.text || 'Tất cả phim';
+                const timeSlotName = timeSlotFilter.selectedOptions[0]?.text || 'Tất cả khung giờ';
+
+                announceFilterChange(`Đang lọc: ${movieName}, ${timeSlotName}`);
+
+                return originalApplyFilters(updateUrl);
+            };
+
+            // Performance optimization - lazy load showtime cards
+            const observeShowtimeCards = () => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.showtime-card').forEach(card => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    observer.observe(card);
+                });
+            };
+
+            // Initialize lazy loading
+            setTimeout(observeShowtimeCards, 100);
+
+            // Add loading states for better UX
+            function addLoadingState(element, message = 'Đang tải...') {
+                element.style.position = 'relative';
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(13, 17, 23, 0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: inherit;
+                    backdrop-filter: blur(2px);
+                    z-index: 10;
+                `;
+                loadingOverlay.innerHTML = `
+                    <div style="color: var(--lunar-accent); font-weight: 600;">
+                        <i class="fas fa-spinner fa-spin me-2"></i>
+                        ${message}
+                    </div>
+                `;
+                element.appendChild(loadingOverlay);
+                return loadingOverlay;
+            }
+
+            function removeLoadingState(element) {
+                const overlay = element.querySelector('.loading-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
+            }
+
+            console.log('Lunar theme showtime page initialized successfully');
+        });
+    </script>
+</th:block>
+</body>
+</html>

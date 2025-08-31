@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutAdmin}">
+
+<head>
+  <meta charset="UTF-8">
+  <title layout:title-pattern="Cinema Admin">Thống Kê</title>
+  <link rel="stylesheet" th:href="@{/css/admin-statistic.css}">
+  <style>
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 15px; /* khoảng cách giữa các nhóm */
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    select, input[type="date"], input[type="number"], button {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 4px rgba(76, 175, 80, 0.4);
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* Ẩn các filter không dùng */
+    .filter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  </style>
+
+</head>
+
+<body>
+<div layout:fragment="header">
+  <div th:replace="~{fragments/title_admin :: header('Thống kê doanh thu & vé', 'bi-film')}"></div>
+</div>
+<div layout:fragment="content">
+  <div class="container">
+    <form method="get" action="/admin/stats/export" class="export-form">
+      <label>Chế độ lọc:
+        <select id="filterType" name="filterType">
+          <option value="day">Theo ngày</option>
+          <option value="week">Tuần này</option>
+          <option value="month">Tháng này</option>
+          <option value="year">Năm</option>
+          <option value="range">Khoảng thời gian</option>
+        </select>
+      </label>
+
+      <div id="dayInput" class="filter">
+        <label>Ngày:</label>
+        <input type="date" name="day">
+      </div>
+
+      <div id="monthInput" class="filter" style="display: none;">
+        <!-- Không cần input vì lấy tháng hiện tại trong controller -->
+      </div>
+
+      <div id="yearInput" class="filter" style="display: none;">
+        <label>Năm:</label>
+        <input type="number" name="yearInput" id="yearValue" min="2020" max="2099">
+      </div>
+
+      <div id="rangeInput" class="filter" style="display: none;">
+        <label>Từ ngày:</label>
+        <input type="date" name="fromDate">
+        <label>Đến ngày:</label>
+        <input type="date" name="toDate">
+      </div>
+
+      <button type="submit">Xuất Báo Cáo</button>
+    </form>
+
+    <!-- Revenue Chart Section -->
+    <h2>Doanh thu</h2>
+    <form method="get" action="/admin/stats/all" class="filter-form revenue-filter">
+      <label for="revenueMode">Chế độ thống kê:</label>
+      <select name="revenueMode" id="revenueMode">
+        <option value="day" th:selected="${revenueMode == 'day'}">Ngày trong tháng</option>
+        <option value="month" th:selected="${revenueMode == 'month'}">12 tháng trong năm</option>
+        <option value="quarter" th:selected="${revenueMode == 'quarter'}">Theo quý</option>
+        <option value="compareYear" th:selected="${revenueMode == 'compareYear'}">So sánh nhiều năm</option>
+      </select>
+
+      <!-- Bộ lọc năm -->
+      <label for="revenueYear" class="year-filter hidden">Năm:</label>
+      <select name="revenueYear" id="revenueYear" class="year-filter hidden">
+        <option value="2023" th:selected="${selectedRevenueYear == '2023'}">2023</option>
+        <option value="2024" th:selected="${selectedRevenueYear == '2024'}">2024</option>
+        <option value="2025" th:selected="${selectedRevenueYear == '2025'}">2025</option>
+      </select>
+
+      <!-- Bộ lọc tháng -->
+      <!-- CSS tối ưu -->
+      <label for="selectedMonth" class="month-filter hidden">Tháng:</label>
+      <select name="selectedMonth" id="selectedMonth" class="month-filter hidden">
+        <option th:each="month : ${#numbers.sequence(1,12)}"
+                th:value="${month}"
+                th:text="'Tháng ' + ${month}"
+                th:selected="${selectedMonth != null && selectedMonth == month.toString()}">
+        </option>
+      </select>
+
+      <button type="submit">Cập nhật biểu đồ</button>
+    </form>
+
+    <!-- Canvas luôn có sẵn trong DOM -->
+    <canvas id="revenueChart"
+            width="1000" height="400"
+            style="background: #fff; border-radius: 10px; margin-bottom: 40px;">
+    </canvas>
+
+    <!-- Thông báo không có dữ liệu luôn có sẵn nhưng ẩn đi ban đầu -->
+    <div id="noDataMessage"
+         style="display: none; text-align: center; padding: 1rem; background: #fff9e6; color: #555; border-radius: 8px; font-weight: bold;">
+      Không có dữ liệu để hiển thị biểu đồ.
+    </div>
+
+
+    <!-- Trang doanh thu hôm nay -->
+    <div class="card-dashboard">
+      <div class="dashboard-card">
+        <!-- Doanh thu hôm nay -->
+        <h2>Doanh thu hôm nay</h2>
+        <table>
+          <thead>
+          <tr>
+            <th style="font-weight: bold">Tên phim</th>
+            <th style="font-weight: bold">Doanh thu</th>
+            <th style="font-weight: bold">Số vé bán</th>
+            <th style="font-weight: bold">Số suất chiếu</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="dto : ${dailyRevenueStats}">
+            <td th:text="${dto.movieName}">Tên phim</td>
+            <td th:text="${#numbers.formatDecimal(dto.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ
+            </td>
+            <td th:text="${dto.totalTickets}">0</td>
+            <td th:text="${dto.totalShowtimes}">0</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- re-Booked Ticket Statistics -->
+      <div class="dashboard-card">
+        <h2>Thống kê vé đã đặt trước</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+            <tr>
+              <th style="text-align: left">Tên Phim</th>
+              <th style="text-align: center">Vé đã đặt trước</th>
+              <th style="text-align: right">Doanh thu</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="preBookedStat : ${preBookedStats}">
+              <td th:text="${preBookedStat.movieName}"></td>
+              <td th:text="${preBookedStat.preBookedTickets}"></td>
+              <td th:text="${#numbers.formatDecimal(preBookedStat.getTotalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="chart-section">
+      <div id="genreChartContainer" style="max-width: 2000px; ">
+        <h2>Doanh thu thể loại</h2>
+        <div style="position: relative; height: 400px;">
+          <canvas id="genreRevenueChart" style="background: #fff; border-radius: 10px;"></canvas>
+        </div>
+      </div>
+      <div id="peakHourContainer" style="max-width: 2000px; margin: 0 auto;">
+        <h2>Doanh Thu Theo Khung Giờ</h2>
+        <div style="position: relative; height: 400px;">
+          <canvas id="peakHourHeatMap" style="background: #fff; border-radius: 10px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- chart bieu do tron -->
+    <div class="dashboard-row">
+      <!-- Top 10 Customers -->
+      <div class="dashboard-card">
+        <h2>10 Khách hàng hàng đầu</h2>
+        <table>
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Tên đăng nhập</th>
+            <th>Số lượng vé</th>
+            <th>Tổng số tiền đã chi</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="top, iter : ${topCustomerStatsList}">
+            <td th:text="${iter.count}"></td>
+            <td th:text="${top.username}"></td>
+            <td th:text="${top.ticketCount}"></td>
+            <td th:text="${#numbers.formatDecimal(top.totalSpent, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Phân loại khách hàng -->
+      <div class="customer-tier">
+        <h3>Phân loại khách hàng</h3>
+        <p><strong>Tổng tài khoản:</strong>
+          <span th:text="${totalAccounts}">0</span>
+        </p>
+        <canvas id="accountTierChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.0.0/dist/chartjs-chart-matrix.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!--  xuất excel-->
+  <script>
+    document.querySelector(".export-form").addEventListener("submit", function (e) {
+      const formLogout = document.getElementById('adminLogoutForm');
+      const checkLogout = document.querySelector("form");
+
+      // Only execute if formLogout and checkLogout are different
+      if (formLogout !== checkLogout) {
+        const filterType = document.getElementById("filterType").value;
+
+        if (filterType === "day") {
+          const dayInput = document.querySelector("input[name='day']").value;
+          if (!dayInput) {
+            e.preventDefault();
+            alert("Vui lòng chọn ngày trước khi xuất Excel.");
+          }
+        }
+
+        if (filterType === "range") {
+          const fromDate = document.querySelector("input[name='fromDate']").value;
+          const toDate = document.querySelector("input[name='toDate']").value;
+          if (!fromDate || !toDate) {
+            e.preventDefault();
+            alert("Vui lòng chọn đầy đủ khoảng thời gian.");
+          }
+        }
+
+        if (filterType === "year") {
+          const yearInput = document.querySelector("input[name='yearInput']").value;
+          if (!yearInput) {
+            e.preventDefault();
+            alert("Vui lòng nhập năm.");
+          }
+        }
+      }
+    });
+  </script>
+<!--  thống kê thành viên-->
+  <script th:inline="javascript">
+    let tierStats = /*[[${tierStats}]]*/[];
+
+    // Định nghĩa màu sắc cho từng tier cụ thể
+    const tierColors = {
+      'bạc': '#C0C0C0',     // Màu bạc thực tế
+      'silver': '#C0C0C0',  // Hỗ trợ tiếng Anh
+      'vàng': '#FFD700',    // Màu vàng thực tế
+      'gold': '#FFD700',    // Hỗ trợ tiếng Anh
+      'kim cương': '#B9F2FF', // Màu kim cương sáng
+      'diamond': '#B9F2FF', // Hỗ trợ tiếng Anh
+      'Không xác định': '#94A3B8' // Màu xám nhẹ
+    };
+
+    let tierLabels = tierStats.map(r => r.tier || 'Không xác định');
+    let tierData = tierStats.map(r => r.total);
+
+    // Tạo mảng màu sắc dựa trên tier thực tế
+    let tierBackgroundColors = tierLabels.map(tier => {
+      // Chuyển về chữ thường để so sánh
+      const lowerTier = tier.toLowerCase();
+      return tierColors[lowerTier] || tierColors['Không xác định'];
+    });
+
+    new Chart(document.getElementById('accountTierChart'), {
+      type: 'pie',
+      data: {
+        labels: tierLabels,
+        datasets: [{
+          label: 'Phân loại theo hạng',
+          data: tierData,
+          backgroundColor: tierBackgroundColors
+        }]
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Phân loại khách hàng theo hạng'
+          }
+        }
+      }
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const yearSelect = document.getElementById('year');
+      const monthSelect = document.getElementById('month');
+      const quarterSelect = document.getElementById('quarter');
+
+      // Khi chọn month, tự động clear quarter và ngược lại
+      monthSelect.addEventListener('change', function () {
+        if (this.value) {
+          quarterSelect.value = '';
+        }
+      });
+
+      quarterSelect.addEventListener('change', function () {
+        if (this.value) {
+          monthSelect.value = '';
+        }
+      });
+
+      // Disable month/quarter nếu không chọn year (tùy chọn)
+      function toggleMonthQuarter() {
+        const hasYear = yearSelect.value !== '';
+        // Uncomment below lines if you want to disable month/quarter when no year is selected
+        // monthSelect.disabled = !hasYear;
+        // quarterSelect.disabled = !hasYear;
+      }
+
+      yearSelect.addEventListener('change', toggleMonthQuarter);
+      toggleMonthQuarter(); // Initial call
+    });
+  </script>
+<!--  biểu đồ-->
+  <script th:inline="javascript">
+    // Sử dụng cú pháp Thymeleaf đúng cách
+    /*<![CDATA[*/
+    var revenueData = /*[[${revenueStats}]]*/[];
+    var mode = /*[[${revenueMode}]]*/ 'month';
+    var selectedYear = /*[[${selectedRevenueYear}]]*/ '2025';
+    var selectedMonth = /*[[${selectedMonth}]]*/ ''; // Thêm biến này
+    /*]]>*/
+
+    console.log('Revenue Data:', revenueData);
+    console.log('Mode:', mode);
+    console.log('Selected Year:', selectedYear);
+    console.log('Selected Month:', selectedMonth);
+    console.log('Data length:', revenueData.length);
+
+    function createChart() {
+      const ctx = document.getElementById('revenueChart');
+      if (!ctx) {
+        console.error('Canvas element with id "revenueChart" not found');
+        return;
+      }
+
+      if (window.revenueChart instanceof Chart) {
+        window.revenueChart.destroy();
+      }
+
+      try {
+        let labels = [];
+        let values = [];
+        let chartTitle = '';
+        let chartType = 'line';
+
+        // Tạo một map để xử lý dữ liệu từ backend một cách an toàn và dễ dàng
+        const dataMap = new Map();
+        revenueData.forEach(stat => {
+          if (stat) {
+            let key = '';
+            if (stat.year) key = stat.year.toString();
+            else if (stat.quarter) key = stat.quarter.split(' - ')[0]; // Chỉ lấy Q1, Q2...
+            else if (stat.month) key = stat.month.toString();
+
+            const revenueValue = Number(stat.totalRevenue) || 0;
+            if (key) {
+              dataMap.set(key, revenueValue);
+            }
+          }
+        });
+
+        console.log("Processed Data Map:", dataMap);
+
+        switch (mode) {
+          case 'compareYear':
+            chartType = 'bar';
+            chartTitle = 'So sánh doanh thu các năm';
+            const currentYear = new Date().getFullYear();
+            const startYear = 2023;
+            for (let year = startYear; year <= currentYear; year++) {
+              const yearStr = year.toString();
+              labels.push(yearStr);
+              values.push(dataMap.get(yearStr) || 0);
+            }
+            break;
+
+          case 'quarter':
+            labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+            values = revenueData.map(stat => stat.totalRevenue || 0);
+            chartTitle = 'Doanh thu theo quý (' + selectedYear + ')';
+            break;
+
+          case 'day':
+            // Giữ nguyên logic cũ của bạn
+            labels = revenueData.map(stat => stat.month || '');
+            values = revenueData.map(stat => stat.totalRevenue || 0);
+            const monthElement = document.getElementById('selectedMonth');
+            const currentMonth = monthElement ? monthElement.value : selectedMonth;
+            chartTitle = 'Doanh thu theo ngày (' + selectedYear + '-' + (currentMonth || '') + ')';
+            break;
+
+          case 'month':
+            chartType = 'line';
+            chartTitle = `Doanh thu theo tháng (${selectedYear})`;
+            for (let i = 1; i <= 12; i++) {
+              const monthKey = i.toString().padStart(2, '0');
+              labels.push(monthKey);
+              values.push(dataMap.get(monthKey) || 0);
+            }
+            break;
+        }
+
+        console.log("Processed Labels:", labels);
+        console.log("Processed Values:", values);
+
+        // --- Xử lý hiển thị biểu đồ ---
+        const hasActualData = values.some(val => val > 0);
+        const canvas = document.getElementById('revenueChart');
+        const noDataMessage = document.getElementById('noDataMessage');
+
+        if (!hasActualData) {
+          if (canvas) canvas.style.display = 'none';
+          if (noDataMessage) {
+            noDataMessage.style.display = 'block';
+            noDataMessage.textContent = 'Không có dữ liệu doanh thu để hiển thị biểu đồ.';
+          }
+          return;
+        }
+
+        if (canvas) canvas.style.display = 'block';
+        if (noDataMessage) noDataMessage.style.display = 'none';
+
+        window.revenueChart = new Chart(ctx.getContext('2d'), {
+          type: chartType,
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Doanh thu',
+              data: values,
+              borderColor: '#2ecc71',
+              backgroundColor: 'rgba(46, 204, 113, 0.2)',
+              fill: true,
+              tension: 0.2,
+              pointRadius: 5,
+              pointBackgroundColor: '#27ae60'
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: { display: true, text: chartTitle }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: 'Doanh thu (VNĐ)' }
+              },
+              x: {
+                title: { display: true, text: 'Thời gian' }
+              }
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error creating revenue chart:', error);
+      }
+    }
+
+    function updateRevenueFilterFields() {
+      const revenueModeEl = document.getElementById('revenueMode');
+      if (!revenueModeEl) {
+        console.warn('revenueMode element not found');
+        return;
+      }
+
+      const currentMode = revenueModeEl.value;
+      const yearSelect = document.getElementById('revenueYear');
+      const monthSelect = document.getElementById('selectedMonth');
+      const yearLabel = document.querySelector("label[for='revenueYear']");
+      const monthLabel = document.querySelector("label[for='selectedMonth']");
+
+      if (!yearSelect || !monthSelect) {
+        console.warn('Year or month select elements not found');
+        return;
+      }
+
+      yearSelect.removeAttribute('name');
+      monthSelect.removeAttribute('name');
+      [yearSelect, monthSelect, yearLabel, monthLabel].forEach(el => el && (el.style.display = 'none'));
+
+      if (currentMode === 'day') {
+        yearSelect.style.display = 'inline-block';
+        if (yearLabel) yearLabel.style.display = 'inline-block';
+        monthSelect.style.display = 'inline-block';
+        if (monthLabel) monthLabel.style.display = 'inline-block';
+        yearSelect.setAttribute('name', 'revenueYear');
+        monthSelect.setAttribute('name', 'selectedMonth');
+        updateDayModeLabel();
+      } else if (currentMode === 'month' || currentMode === 'quarter') {
+        yearSelect.style.display = 'inline-block';
+        if (yearLabel) yearLabel.style.display = 'inline-block';
+        yearSelect.setAttribute('name', 'revenueYear');
+      }
+    }
+
+    function updateDayModeLabel() {
+      const yearEl = document.getElementById('revenueYear');
+      const monthEl = document.getElementById('selectedMonth');
+      if (!yearEl || !monthEl) {
+        console.warn('Year or month elements not found for day mode label update');
+        return;
+      }
+
+      const year = parseInt(yearEl.value);
+      const month = parseInt(monthEl.value);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const dayOption = document.querySelector('#revenueMode option[value="day"]');
+      if (dayOption) dayOption.textContent = `${daysInMonth} ngày trong tháng`;
+    }
+
+    function restoreFiltersFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlMode = urlParams.get('revenueMode');
+      const year = urlParams.get('revenueYear');
+      const month = urlParams.get('selectedMonth');
+      const revenueModeEl = document.getElementById('revenueMode');
+      const revenueYearEl = document.getElementById('revenueYear');
+      const selectedMonthEl = document.getElementById('selectedMonth');
+
+      if (urlMode && revenueModeEl) revenueModeEl.value = urlMode;
+      if (year && revenueYearEl) revenueYearEl.value = year;
+      if (month && selectedMonthEl) selectedMonthEl.value = month;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('DOM loaded, initializing...');
+      restoreFiltersFromURL();
+      updateRevenueFilterFields();
+      createChart();
+
+      const revenueModeEl = document.getElementById('revenueMode');
+      const revenueYearEl = document.getElementById('revenueYear');
+      const selectedMonthEl = document.getElementById('selectedMonth');
+
+      if (revenueModeEl) {
+        revenueModeEl.addEventListener('change', function () {
+          updateRevenueFilterFields();
+          const yearSelect = document.getElementById('revenueYear');
+          const yearLabel = document.querySelector('label[for="revenueYear"]');
+          if (yearSelect && yearLabel) {
+            if (this.value === 'month') {
+              yearSelect.style.display = 'inline-block';
+              yearLabel.style.display = 'inline';
+            } else if (this.value === 'year') {
+              yearSelect.style.display = 'none';
+              yearLabel.style.display = 'none';
+            }
+          }
+        });
+      }
+
+      if (revenueYearEl) {
+        revenueYearEl.addEventListener('change', function () {
+          if (revenueModeEl && revenueModeEl.value === 'day') {
+            updateDayModeLabel();
+            // Cập nhật lại biểu đồ khi thay đổi năm
+            createChart();
+          }
+        });
+      }
+
+      if (selectedMonthEl) {
+        selectedMonthEl.addEventListener('change', function () {
+          if (revenueModeEl && revenueModeEl.value === 'day') {
+            updateDayModeLabel();
+            // Cập nhật lại biểu đồ khi thay đổi tháng
+            createChart();
+          }
+        });
+      }
+    });
+  </script>
+<!--  thống kê theo giờ-->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    var peakHourData = /*[[${peakHourRevenues}]]*/[];
+    /*]]>*/
+
+    console.log('Peak Hour Data:', peakHourData);
+
+    // Biến global để theo dõi trạng thái chart
+    let peakHourChartCreated = false;
+
+    function createPeakHourHeatMap() {
+      const container = document.getElementById('peakHourContainer');
+
+      // Xóa canvas cũ nếu có
+      const oldCanvas = document.getElementById('peakHourHeatMap');
+      if (oldCanvas) oldCanvas.remove();
+
+      // Tạo lại canvas và gắn vào container
+      const newCanvas = document.createElement('canvas');
+      newCanvas.id = 'peakHourHeatMap';
+      newCanvas.style.background = '#fff';
+      newCanvas.style.borderRadius = '10px';
+      newCanvas.style.width = '100%';
+      newCanvas.style.height = '100%';
+
+      const chartWrapper = document.createElement('div');
+      chartWrapper.style.position = 'relative';
+      chartWrapper.style.height = '400px';
+      chartWrapper.appendChild(newCanvas);
+
+      container.innerHTML = `<h2>Doanh Thu Theo Khung Giờ</h2>`;
+      container.appendChild(chartWrapper);
+
+      const ctx = newCanvas.getContext('2d');
+      if (!ctx) {
+        console.error('Canvas context not found');
+        return;
+      }
+
+      // Đánh dấu là đang tạo chart
+      peakHourChartCreated = true;
+
+      // Hủy chart cũ nếu có
+      if (window.peakHourChart && typeof window.peakHourChart.destroy === 'function') {
+        window.peakHourChart.destroy();
+        window.peakHourChart = null;
+      }
+
+      // Xử lý dữ liệu
+      let labels = [];
+      let dataValues = [];
+
+      if (peakHourData && Array.isArray(peakHourData) && peakHourData.length > 0) {
+        labels = peakHourData.map(item => item.timeSlot || '');
+        dataValues = peakHourData.map(item => parseFloat(item.totalRevenue) || 0);
+      } else {
+        // Dữ liệu mặc định nếu không có dữ liệu
+        labels = ['08:00-11:00', '11:00-14:00', '14:00-17:00', '17:00-20:00', '20:00-23:00'];
+        dataValues = [0, 0, 0, 0, 0];
+      }
+
+      console.log('Processed Labels:', labels);
+      console.log('Processed Data Values:', dataValues);
+
+      // Tạo màu sắc gradient
+      const maxValue = Math.max(...dataValues);
+      const colors = dataValues.map(value => {
+        if (value === 0) return '#e5e7eb'; // Màu xám nhạt cho giá trị 0
+        const intensity = maxValue > 0 ? (value / maxValue) : 0;
+        const opacity = Math.max(0.3, Math.min(0.9, intensity));
+        return `rgba(239, 68, 68, ${opacity})`; // Màu đỏ với độ trong suốt thay đổi
+      });
+
+      try {
+        // Tạo chart với cấu hình tối ưu
+        window.peakHourChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Doanh thu (VNĐ)',
+              data: dataValues,
+              backgroundColor: colors,
+              borderColor: '#ef4444',
+              borderWidth: 1,
+              borderRadius: 4,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false, // Tắt hoàn toàn animation để tránh lặp
+            interaction: {
+              intersect: false,
+              mode: 'index'
+            },
+            plugins: {
+              legend: {
+                display: false
+              },
+              title: {
+                display: true,
+                text: 'Doanh Thu Theo Khung Giờ',
+                font: {
+                  size: 16,
+                  weight: 'bold'
+                },
+                padding: 20
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const value = context.parsed.y;
+                    return `Doanh thu: ${new Intl.NumberFormat('vi-VN').format(value)} VNĐ`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Khung giờ',
+                  font: {
+                    size: 12,
+                    weight: 'bold'
+                  }
+                },
+                grid: {
+                  display: false
+                }
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Doanh thu (VNĐ)',
+                  font: {
+                    size: 12,
+                    weight: 'bold'
+                  }
+                },
+                ticks: {
+                  callback: function (value) {
+                    return new Intl.NumberFormat('vi-VN').format(value);
+                  }
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.1)'
+                }
+              }
+            }
+          }
+        });
+
+        console.log('Peak Hour Chart created successfully');
+
+      } catch (error) {
+        console.error('Error creating peak hour chart:', error);
+        peakHourChartCreated = false; // Reset flag nếu có lỗi
+      }
+    }
+
+    // Hàm reset chart (có thể dùng khi cần update dữ liệu)
+    function resetPeakHourChart() {
+      peakHourChartCreated = false;
+      if (window.peakHourChart && typeof window.peakHourChart.destroy === 'function') {
+        window.peakHourChart.destroy();
+        window.peakHourChart = null;
+      }
+    }
+
+    // Chỉ chạy một lần duy nhất khi DOM sẵn sàng
+    function initializePeakHourChart() {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          // Đợi một chút để đảm bảo tất cả script khác đã load xong
+          setTimeout(createPeakHourHeatMap, 100);
+        });
+      } else {
+        // DOM đã sẵn sàng
+        setTimeout(createPeakHourHeatMap, 100);
+      }
+    }
+
+    // Khởi tạo chart
+    initializePeakHourChart();
+  </script>
+<!--  doanh thu thể loại-->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    var genreRevenues = /*[[${genreRevenues}]]*/[];
+    /*]]>*/
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const ctx = document.getElementById('genreRevenueChart');
+      if (!ctx) {
+        console.warn("Canvas for genre chart not found.");
+        return;
+      }
+
+      const labels = genreRevenues.map(item => item.genreName);
+      const data = genreRevenues.map(item => parseFloat(item.totalRevenue || 0));
+
+      const backgroundColors = labels.map((_, i) =>
+              `hsl(${(i * 40) % 360}, 70%, 60%)`
+      );
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Doanh thu (VNĐ)',
+            data: data,
+            backgroundColor: backgroundColors,
+            borderRadius: 5
+          }]
+        },
+        options: {
+          indexAxis: 'y', // 🔥 Biểu đồ cột ngang
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Doanh thu theo thể loại',
+              font: {
+                size: 18,
+                weight: 'bold'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  const value = context.parsed.x;
+                  return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return new Intl.NumberFormat('vi-VN').format(value);
+                }
+              },
+              title: {
+                display: true,
+                text: 'Doanh thu (VNĐ)',
+                font: { weight: 'bold' }
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Thể loại',
+                font: { weight: 'bold' }
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+<!--  xuất excel-->
+  <script>
+    function toggleFilterFields() {
+      const type = document.getElementById('filterType').value;
+
+      // Ẩn toàn bộ các vùng nhập
+      document.querySelectorAll('.filter').forEach(el => el.style.display = 'none');
+
+      switch (type) {
+        case 'day':
+          document.getElementById('dayInput').style.display = 'block';
+          break;
+        case 'range':
+          document.getElementById('rangeInput').style.display = 'block';
+          break;
+        case 'year':
+          document.getElementById('yearInput').style.display = 'block';
+          // Tự động set năm hiện tại nếu chưa có giá trị
+          const yearInput = document.getElementById('yearValue');
+          if (!yearInput.value) {
+            const currentYear = new Date().getFullYear();
+            yearInput.value = currentYear;
+          }
+          break;
+              // Các trường hợp "month" và "week" không hiển thị input
+        default:
+          break;
+      }
+    }
+
+    // Gọi khi trang load
+    document.addEventListener("DOMContentLoaded", toggleFilterFields);
+    document.getElementById("filterType").addEventListener("change", toggleFilterFields);
+  </script>
+
+</div>
+</body>
+</html>

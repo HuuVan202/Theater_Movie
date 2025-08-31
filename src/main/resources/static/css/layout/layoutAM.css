@@ -1,0 +1,694 @@
+/* === Layout tổng === */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa;
+    overflow: hidden; /* Ngăn tràn toàn layout, chỉ phần content được cuộn */
+}
+
+/* Wrapper chứa sidebar và content */
+#wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* === Sidebar === */
+/* Sidebar wrapper layout */
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    transition: all 0.3s;
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* Sidebar custom layout */
+.sidebar-custom {
+    min-width: 230px;
+    max-width: 230px;
+    min-height: 100vh;
+    background: #fff;
+    border-right: 1px solid #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+/* Sidebar links */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #212529 !important;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-radius: 0.5rem;
+    margin: 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.sidebar-link.active,
+.sidebar-link:active,
+.sidebar-link:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.sidebar-link i {
+    font-size: 1.1rem;
+    margin-right: 0.75rem;
+    width: 1.5rem;
+    text-align: center;
+    color: #212529;
+}
+
+.sidebar-link.active i,
+.sidebar-link:hover i {
+    color: #dc2626;
+}
+
+/* Sidebar footer (Admin / Cài đặt / Đăng xuất) */
+.sidebar-footer {
+    margin-top: auto;
+    padding: 1rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.sidebar-footer .small {
+    color: #212529;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.sidebar-footer .small:hover {
+    color: #dc2626;
+}
+
+.sidebar-footer i {
+    color: #212529;
+    margin-right: 0.5rem;
+}
+
+.sidebar-footer .small:hover i {
+    color: #dc2626;
+}
+
+/* Responsive sidebar adjustments */
+@media (max-width: 991.98px) {
+    .sidebar-custom {
+        min-width: 80px;
+        max-width: 80px;
+    }
+
+    .sidebar-header h5,
+    .sidebar-footer,
+    .sidebar-link span,
+    .sidebar-link .badge {
+        display: none;
+    }
+
+    .sidebar-link i {
+        margin-right: 0;
+        font-size: 1.25rem;
+    }
+}
+
+#wrapper .sidebar {
+    /* Ensure sidebar retains its original width or position */
+    width: 250px !important; /* Adjust as per your design */
+    position: fixed !important;
+}
+#page-content-wrapper {
+    /* Adjust main content to account for sidebar */
+    margin-left: 250px !important; /* Match sidebar width */
+}
+
+/* === Responsive Sidebar === */
+@media (max-width: 767.98px) {
+    .sidebar-custom {
+        min-width: 100%;
+        max-width: 100%;
+        min-height: auto;
+    }
+}
+
+/* === Page Content Wrapper === */
+#page-content-wrapper {
+    margin-left: 250px; /* Tránh trùng với sidebar */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: calc(100% - 250px);
+}
+
+/* === Header/Navbar === */
+#page-content-wrapper > div[layout\:fragment="header"] {
+    flex-shrink: 0;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 999;
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+}
+
+/* === Main Content Scrollable === */
+main[layout\:fragment="content"] {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+/* Tiêu đề logo */
+.sidebar-header h5 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #dc2626;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: 0.01em;
+}
+
+/* Empty state alert */
+.alert-empty {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+/* Offcanvas sidebar nếu dùng */
+.offcanvas-body {
+    padding: 0;
+}
+
+.offcanvas .nav-link {
+    padding: 0.75rem 1rem;
+}
+
+.offcanvas .nav-link.active,
+.offcanvas .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile tweaks */
+@media (max-width: 767.98px) {
+    .alert-empty {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Typography tweaks */
+h5.mb-0 {
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+}
+
+/* Container and Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Main heading */
+.container h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #dc2626;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.container h1::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #dc2626, #f97316);
+    border-radius: 2px;
+}
+
+/* Statistics button */
+.btn-stats {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #fff;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-stats:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+/* Alert messages */
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    border: none;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    color: #dc2626;
+    border-left: 4px solid #dc2626;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    color: #16a34a;
+    border-left: 4px solid #16a34a;
+}
+
+/* Form styling */
+.form-group {
+    display: flex;
+    justify-content: space-between !important;
+    align-items: center;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid #f1f5f9;
+}
+.form-group-room,
+.form-group-watch {
+    align-items: center;
+    gap: 1rem; /* Optional: space between label and select */
+}
+
+.form-group-room label,
+.form-group-watch label {
+    margin-bottom: 0; /* Remove default label margin */
+    min-width: 100px;
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group label:first-child {
+    margin-top: 0;
+}
+
+.form-group input[type="date"],
+.form-group select {
+    width: 100%;
+    max-width: 250px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: #fff;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group input[type="date"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-group .btn {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.form-group .btn:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+/* Calendar container */
+.calendar-container {
+    background: #fff;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid #f1f5f9;
+}
+
+/* FullCalendar customizations */
+.fc-header-toolbar {
+    margin-bottom: 1.5rem !important;
+}
+
+.fc-button-primary {
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    border: none !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    color: #fff !important;
+}
+
+.fc-button-primary:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
+    transform: translateY(-1px) !important;
+}
+
+.fc-button-primary:disabled {
+    background: #9ca3af !important;
+    opacity: 0.6 !important;
+}
+
+.fc-event {
+    border-radius: 0.5rem !important;
+    border: none !important;
+    padding: 0.25rem 0.5rem !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.fc-event:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.fc-daygrid-day {
+    transition: background-color 0.2s ease !important;
+}
+
+.fc-daygrid-day:hover {
+    background-color: #fef2f2 !important;
+}
+
+.fc-col-header-cell {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9) !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    border-color: #e5e7eb !important;
+}
+.fc-col-header-cell-cushion{
+    color: #374151 !important;
+    text-decoration: none !important;
+}
+
+.fc-timegrid-slot {
+    border-color: #f1f5f9 !important;
+}
+
+.fc-timegrid-slot:hover {
+    background-color: #fef2f2 !important;
+}
+
+/* Modal styling */
+.modal-content {
+    border-radius: 1rem !important;
+    border: none !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    color: #fff !important;
+    border-bottom: none !important;
+    border-radius: 1rem 1rem 0 0 !important;
+    padding: 1.5rem 2rem !important;
+}
+
+.modal-title {
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+}
+
+.btn-close {
+    filter: invert(1) !important;
+    opacity: 0.8 !important;
+}
+
+.btn-close:hover {
+    opacity: 1 !important;
+}
+
+.modal-body {
+    padding: 2rem !important;
+}
+
+.modal-body form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-body label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.modal-body input,
+.modal-body select {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.modal-body input:focus,
+.modal-body select:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Modal buttons */
+.btn-suggest {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 0.5rem !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    margin-top: 1rem !important;
+}
+
+.btn-suggest:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 0.5rem !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    margin-top: 1rem !important;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-cancel {
+    background: linear-gradient(135deg, #6b7280, #4b5563) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 0.5rem !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    margin-left: 1rem !important;
+}
+
+.btn-cancel:hover {
+    background: linear-gradient(135deg, #4b5563, #374151) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Confirmation modal */
+.confirm-modal .modal-body {
+    text-align: center;
+}
+
+.confirm-modal .modal-body p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #374151;
+    margin-bottom: 2rem;
+}
+
+.confirm-modal .modal-body button {
+    margin: 0 0.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .container h1 {
+        font-size: 2rem;
+    }
+
+    .calendar-container {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        padding: 1.5rem;
+    }
+
+    .form-group input[type="date"],
+    .form-group select {
+        max-width: 100%;
+        margin-right: 0;
+    }
+
+    .modal-body {
+        padding: 1.5rem !important;
+    }
+
+    .fc-header-toolbar {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    .fc-toolbar-chunk {
+        display: flex !important;
+        justify-content: center !important;
+    }
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #dc2626;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Hover effects for interactive elements */
+.fc-daygrid-day-number:hover {
+    background-color: #dc2626 !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+}
+.fc-daygrid-day-number {
+    text-decoration: none !important;
+}
+
+/* Custom scrollbar for calendar */
+.fc-scroller::-webkit-scrollbar {
+    width: 8px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+}
+
+/* Enhanced focus styles for accessibility */
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid #dc2626 !important;
+    outline-offset: 2px !important;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    transition: all 0.2s ease;
+}
+
+/* Custom styling for time slots */
+.fc-timegrid-slot-label {
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+}
+
+/* Event styling by type */
+.fc-event.movie-event {
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    color: #fff !important;
+}
+
+.fc-event.special-event {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+    color: #fff !important;
+}
+
+/* Empty state styling */
+.fc-daygrid-day.fc-day-today {
+    background-color: #fef2f2 !important;
+}

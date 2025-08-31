@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutAdmin}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thêm Nhân Viên Mới</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/admin/employee/add-employees.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        .sidebar-link {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0.75rem 1rem !important;
+            color: #212529 !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            border-radius: 0.5rem !important;
+            margin: 0.25rem 0 !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+        }
+
+
+    </style>
+</head>
+
+<body>
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Danh sách nhân viên', 'bi bi-person-badge me-2')}"></div>
+</div>
+<div layout:fragment="content">
+    <!-- Success/Error Alert -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible success-alert" role="alert"
+         id="successAlert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible success-alert" role="alert"
+         id="errorAlert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Content -->
+    <div class="container-fluid ">
+        <div class="page-wrapper">
+            <div class="container">
+                <form th:action="@{/admin/employees/add}" method="post"
+                      enctype="multipart/form-data"
+                      onsubmit="return validateForm()" class="employee-form">
+                    <div th:if="${error}" class="error-message" th:text="${error}"></div>
+                    <div th:if="${#fields.hasErrors('account.email')}" class="error-message"
+                         th:errors="*{account.email}">
+                    </div>
+
+                    <input type="hidden" th:field="*{account.registerDate}"
+                           th:value="${#dates.format(#dates.createToday(), 'yyyy-MM-dd')}"/>
+                    <input type="hidden" th:field="*{account.status}" th:value="1"/>
+
+                    <div class="form-columns">
+                        <div class="form-column">
+                            <div class="form-section no-border">
+                                <h2 class="section-title">Thông Tin Tài Khoản & Cá Nhân</h2>
+                                <div class="form-group">
+                                    <label for="username">Tên Đăng Nhập:</label>
+                                    <div class="input-container">
+                                        <input type="text" id="username" th:field="*{account.username}" required
+                                               onblur="checkField('username')"
+                                               oninput="clearValidation('username')"
+                                               placeholder="Nhập username"/>
+                                        <span class="check-icon"><i class="fas fa-check"></i></span>
+                                    </div>
+                                    <div style="margin-top: 8px; margin-left: 10px">
+                                        <button type="button" class="btn-secondary" onclick="autoCreateUsername()">
+                                            <i class="fas fa-magic"></i> Tự Động Tạo
+                                        </button>
+                                    </div>
+                                    <div id="usernameFeedback" class="feedback"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <div class="input-container">
+                                        <input type="email" id="email" th:field="*{account.email}" required
+                                               onblur="checkField('email')" oninput="clearValidation('email')"
+                                               placeholder="example@gmail.com"/>
+                                        <span class="check-icon"><i class="fas fa-check"></i></span>
+                                    </div>
+                                    <div id="emailFeedback" class="feedback"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="fullName">Họ và Tên:</label>
+                                    <div class="input-container">
+                                        <input type="text" id="fullName" th:field="*{account.fullName}" required
+                                               onblur="checkField('fullName')"
+                                               oninput="clearValidation('fullName')"
+                                               placeholder="Nhập họ tên"/>
+                                        <span class="check-icon"><i class="fas fa-check"></i></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group half">
+                                        <label for="dateOfBirth">Ngày Sinh:</label>
+                                        <div class="input-container">
+                                            <input type="date"
+                                                   id="dateOfBirth"
+                                                   th:field="*{account.dateOfBirth}"
+                                                   required />
+                                        </div>
+                                        <div id="dateOfBirthFeedback" class="feedback"></div>
+                                    </div>
+
+                                    <div class="form-group half">
+                                        <label>Giới Tính:</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" id="male" name="gender" value="M"
+                                                       th:field="*{account.gender}" required>
+                                                <span class="radio-text">Nam</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" id="female" name="gender" value="F"
+                                                       th:field="*{account.gender}">
+                                                <span class="radio-text">Nữ</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-column">
+                            <div class="form-section no-border">
+                                <h2 class="section-title">Thông Tin Liên Hệ & Công Việc</h2>
+                                <div class="form-group">
+                                    <label for="phoneNumber">Số Điện Thoại:</label>
+                                    <div class="input-container phone-input">
+                                        <span class="phone-prefix">+84</span>
+                                        <input type="text" id="phoneNumber" th:field="*{account.phoneNumber}"
+                                               required onblur="checkField('phoneNumber')"
+                                               oninput="clearValidation('phoneNumber')"
+                                               placeholder="Nhập số điện thoại"/>
+                                        <span class="check-icon"><i class="fas fa-check"></i></span>
+                                    </div>
+                                    <div id="phoneNumberFeedback" class="feedback"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Địa Chỉ:</label>
+                                    <div class="input-container">
+                                        <input type="text" id="address" th:field="*{account.address}"
+                                               required
+                                               placeholder="102 Lã Xuân Oai, Tăng Nhơn Phú A, Thủ Đức, thành phố Hồ Chí Minh"/>
+                                        <span class="check-icon"><i class="fas fa-check"></i></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="identityCard">CCCD:</label>
+                                    <div class="input-container">
+                                        <input type="text" id="identityCard" th:field="*{account.identityCard}"
+                                               required onblur="checkField('identityCard')"
+                                               oninput="clearValidation('identityCard')"
+                                               placeholder="Nhập số CCCD"/>
+                                        <span class="check-icon"><i class="fas fa-check"></i></span>
+                                    </div>
+                                    <div id="identityCardFeedback" class="feedback"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="avatar">Hình Ảnh:</label>
+                                    <div class="input-container">
+                                        <input type="file" id="avatar" name="avatarFile"
+                                               accept="image/*" onchange="previewImage(this)"/>
+                                        <button type="button" onclick="removeAvatar()" class="btn btn-sm btn-danger"
+                                                style="margin-left: 10px; margin-top: 10px">
+                                            Xóa ảnh
+                                        </button>
+                                    </div>
+                                    <div class="image-preview" id="imagePreview">
+                                        <img id="previewImg"
+                                             src="http://res.cloudinary.com/dycfyoh8r/image/upload/v1755106434/avatars/avatar_default.jpg"
+                                             alt="Preview"
+                                             style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-top: 10px;"/>
+                                    </div>
+                                    <!-- Dùng cờ ẩn để controller biết có xóa ảnh không -->
+                                    <input type="hidden" id="useDefaultAvatar" name="useDefaultAvatar" value="false"/>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group half">
+                                        <label for="dateOfBirth">Ngày Tuyển Dụng:</label>
+                                        <div class="input-container">
+                                            <input type="date"
+                                                   id="hireDate"
+                                                   th:field="*{employee.hireDate}"
+                                                   required />
+                                        </div>
+                                        <div id="hireDateFeedback" class="feedback"></div>
+                                    </div>
+                                    <div class="form-group half">
+                                        <label for="position">Chức Vụ:</label>
+                                        <div class="input-container">
+                                            <input type="text" id="position" th:field="*{employee.position}"
+                                                   required
+                                                   placeholder="Nhập chức vụ"/>
+                                            <span class="check-icon"><i class="fas fa-check"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-user-plus"></i> Thêm Nhân Viên
+                        </button>
+                        <a th:href="@{/admin/employees?page=0}" class="btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay Lại Danh Sách
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Giải pháp hoàn chỉnh cho vấn đề keyboard input
+        class DateInputHandler {
+            constructor(inputElement) {
+                this.input = inputElement;
+                this.isTyping = false;
+                this.typingTimer = null;
+                this.lastValue = '';
+                this.userInput = '';
+
+                this.init();
+            }
+
+            init() {
+                // Lắng nghe các sự kiện
+                this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+                this.input.addEventListener('input', (e) => this.handleInput(e));
+                this.input.addEventListener('change', (e) => this.handleChange(e));
+                this.input.addEventListener('blur', (e) => this.handleBlur(e));
+                this.input.addEventListener('focus', (e) => this.handleFocus(e));
+            }
+
+            handleKeydown(e) {
+                // Đánh dấu user đang gõ
+                this.isTyping = true;
+
+                // Lưu giá trị trước khi user nhập
+                this.lastValue = this.input.value;
+
+                // Nếu user nhấn Enter hoặc Tab, xử lý ngay
+                if (e.key === 'Enter' || e.key === 'Tab') {
+                    this.processUserInput();
+                }
+            }
+
+            handleInput(e) {
+                // Clear timer cũ
+                if (this.typingTimer) {
+                    clearTimeout(this.typingTimer);
+                }
+
+                // Lưu input của user (có thể bị browser reset về rỗng)
+                if (e.target.value) {
+                    this.userInput = e.target.value;
+                } else if (this.userInput && !e.target.value) {
+                    // Browser đã reset input về rỗng vì invalid, nhưng ta vẫn có userInput
+                    // Đừng làm gì ngay, chờ một chút để xử lý
+                }
+
+                // Đặt timer để xử lý sau khi user ngừng gõ
+                this.typingTimer = setTimeout(() => {
+                    this.processUserInput();
+                }, 500); // 500ms sau khi ngừng gõ
+            }
+
+            handleChange(e) {
+                // Change event chỉ fire khi input hợp lệ hoặc user chọn từ calendar
+                if (e.target.value) {
+                    this.clearValidationError();
+                    this.userInput = '';
+                    this.isTyping = false;
+                }
+            }
+
+            handleBlur(e) {
+                // Khi user rời khỏi field, xử lý input cuối cùng
+                if (this.isTyping) {
+                    this.processUserInput();
+                }
+            }
+
+            handleFocus(e) {
+                this.clearValidationError();
+            }
+
+            processUserInput() {
+                this.isTyping = false;
+
+                if (this.typingTimer) {
+                    clearTimeout(this.typingTimer);
+                }
+
+                const currentValue = this.input.value;
+
+                // Nếu input hiện tại rỗng nhưng user đã nhập gì đó
+                if (!currentValue && this.userInput) {
+                    console.log('Processing user input:', this.userInput);
+
+                    // Thử convert input của user
+                    const converted = this.convertToHTML5Date(this.userInput);
+
+                    if (converted) {
+                        console.log('Converted to:', converted);
+                        this.input.value = converted;
+                        this.clearValidationError();
+
+                        // Trigger change event để form biết có thay đổi
+                        this.input.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        this.showValidationError(`Ngày không hợp lệ: ${this.userInput}`);
+                    }
+
+                    // Reset user input
+                    this.userInput = '';
+                }
+                // Nếu input có giá trị và đúng format HTML5
+                else if (currentValue && this.isValidHTML5Date(currentValue)) {
+                    this.clearValidationError();
+                    this.userInput = '';
+                }
+                // Nếu input có giá trị nhưng không đúng format HTML5
+                else if (currentValue) {
+                    const converted = this.convertToHTML5Date(currentValue);
+                    if (converted) {
+                        this.input.value = converted;
+                        this.clearValidationError();
+                        this.input.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        this.showValidationError('Định dạng ngày không hợp lệ');
+                    }
+                    this.userInput = '';
+                }
+            }
+
+            convertToHTML5Date(input) {
+                if (!input) return null;
+
+                // Loại bỏ ký tự không cần thiết
+                let cleanInput = input.replace(/[^\d\/\-\.]/g, '');
+
+                // Nếu đã đúng format HTML5
+                if (this.isValidHTML5Date(cleanInput)) {
+                    return cleanInput;
+                }
+
+                // Xử lý các định dạng khác
+                let parts = [];
+                if (cleanInput.includes('/')) {
+                    parts = cleanInput.split('/');
+                } else if (cleanInput.includes('-')) {
+                    parts = cleanInput.split('-');
+                } else if (cleanInput.includes('.')) {
+                    parts = cleanInput.split('.');
+                } else if (cleanInput.length === 8) {
+                    // Định dạng DDMMYYYY
+                    parts = [
+                        cleanInput.substring(0, 2),
+                        cleanInput.substring(2, 4),
+                        cleanInput.substring(4, 8)
+                    ];
+                }
+
+                if (parts.length !== 3) return null;
+
+                let day, month, year;
+
+                // Xác định định dạng
+                if (parts[0].length === 4) {
+                    // YYYY-MM-DD hoặc YYYY/MM/DD
+                    year = parts[0];
+                    month = parts[1].padStart(2, '0');
+                    day = parts[2].padStart(2, '0');
+                } else {
+                    // DD/MM/YYYY hoặc MM/DD/YYYY
+                    year = parts[2];
+
+                    const part1 = parseInt(parts[0]);
+                    const part2 = parseInt(parts[1]);
+
+                    // Logic thông minh để phân biệt MM/DD vs DD/MM
+                    if (part1 > 12) {
+                        // part1 > 12 => chắc chắn là ngày (DD/MM/YYYY)
+                        day = parts[0].padStart(2, '0');
+                        month = parts[1].padStart(2, '0');
+                    } else if (part2 > 12) {
+                        // part2 > 12 => chắc chắn là ngày (MM/DD/YYYY)
+                        month = parts[0].padStart(2, '0');
+                        day = parts[1].padStart(2, '0');
+                    } else {
+                        // Cả hai đều <= 12
+                        // Với input "02/23/2001", part1=2, part2=23
+                        // part2 > 12 nên đây là MM/DD format
+
+                        // Nhưng ưu tiên DD/MM (phổ biến ở VN) trừ khi part2 > 12
+                        if (part2 > 12) {
+                            // MM/DD/YYYY
+                            month = parts[0].padStart(2, '0');
+                            day = parts[1].padStart(2, '0');
+                        } else {
+                            // DD/MM/YYYY
+                            day = parts[0].padStart(2, '0');
+                            month = parts[1].padStart(2, '0');
+                        }
+                    }
+                }
+
+                // Validate ngày tháng
+                if (this.isValidDate(parseInt(day), parseInt(month), parseInt(year))) {
+                    return `${year}-${month}-${day}`;
+                }
+
+                return null;
+            }
+
+            isValidHTML5Date(dateString) {
+                if (!dateString) return false;
+
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!regex.test(dateString)) return false;
+
+                const date = new Date(dateString + 'T00:00:00');
+                return date.toISOString().slice(0, 10) === dateString;
+            }
+
+            isValidDate(day, month, year) {
+                if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > new Date().getFullYear()) {
+                    return false;
+                }
+
+                const date = new Date(year, month - 1, day);
+                return date.getDate() === day &&
+                    date.getMonth() === month - 1 &&
+                    date.getFullYear() === year;
+            }
+
+            showValidationError(message) {
+                const feedbackId = this.input.id + 'Feedback';
+                let feedback = document.getElementById(feedbackId);
+
+                if (!feedback) {
+                    feedback = this.input.parentNode.querySelector('.feedback');
+                    if (!feedback) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'feedback';
+                        feedback.id = feedbackId;
+                        this.input.parentNode.appendChild(feedback);
+                    }
+                }
+
+                feedback.textContent = message;
+                feedback.className = 'feedback error';
+                this.input.classList.add('error');
+
+                // Đánh dấu input là invalid
+                this.input.setAttribute('data-invalid', 'true');
+            }
+
+            clearValidationError() {
+                const feedbackId = this.input.id + 'Feedback';
+                const feedback = document.getElementById(feedbackId) ||
+                    this.input.parentNode.querySelector('.feedback');
+
+                if (feedback) {
+                    feedback.textContent = '';
+                    feedback.className = 'feedback';
+                }
+
+                this.input.classList.remove('error');
+                this.input.removeAttribute('data-invalid');
+            }
+        }
+
+        // Form validation function
+        function validateDateBeforeSubmit(form) {
+            const dateInputs = form.querySelectorAll('input[type="date"][required]');
+            let isValid = true;
+
+            dateInputs.forEach(input => {
+                const handler = input.dateHandler;
+
+                // Nếu có handler, xử lý input cuối cùng
+                if (handler && handler.isTyping) {
+                    handler.processUserInput();
+                }
+
+                // Kiểm tra validation
+                if (!input.value || input.value.trim() === '') {
+                    if (handler) {
+                        handler.showValidationError('Ngày sinh không được để trống');
+                    }
+                    isValid = false;
+                } else if (input.hasAttribute('data-invalid')) {
+                    if (handler) {
+                        handler.showValidationError('Ngày sinh không hợp lệ');
+                    }
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        // Initialize date handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup date input handlers
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                input.dateHandler = new DateInputHandler(input);
+            });
+
+            // Setup form validation
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (!validateDateBeforeSubmit(this)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                });
+            });
+        });
+
+        // Legacy functions để tương thích với code cũ
+        function handleDateInput(input) {
+            // Nếu có handler, delegate cho nó
+            if (input.dateHandler) {
+                return;
+            }
+
+            // Fallback code cũ
+            console.warn('DateInputHandler not found, using fallback');
+        }
+
+        function handleDateChange(inputId) {
+            const input = document.getElementById(inputId);
+            if (input && input.dateHandler) {
+                return;
+            }
+
+            // Fallback code cũ
+            console.warn('DateInputHandler not found for change event');
+        }
+    </script>
+    <script th:inline="javascript">
+        // Khởi tạo các biến toàn cục từ Thymeleaf
+        window.existingUsernames = new Set(/*[[${existingUsernames}]]*/[]);
+        window.existingEmails = new Set(/*[[${existingEmails}]]*/[]);
+        window.existingIdentityCards = new Set(/*[[${existingIdentityCards}]]*/[]);
+        window.existingPhoneNumbers = new Set(/*[[${existingPhoneNumbers}]]*/[]);
+        console.log('Existing usernames Set (from HTML):', window.existingUsernames);
+    </script>
+    <script th:src="@{/js/add-employees.js}"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-hide success/error messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function () {
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+
+            function hideAlert(alertElement) {
+                if (alertElement) {
+                    setTimeout(() => {
+                        alertElement.classList.add('fade-out');
+                        setTimeout(() => {
+                            alertElement.remove();
+                        }, 500); // Wait for fade-out animation to complete
+                    }, 5000); // 5 seconds
+                }
+            }
+
+            hideAlert(successAlert);
+            hideAlert(errorAlert);
+        });
+    </script>
+    <script>
+        function previewImage(input) {
+            const file = input.files[0];
+            const preview = document.getElementById('previewImg');
+            document.getElementById('useDefaultAvatar').value = "false"; // không xài default
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeAvatar() {
+            document.getElementById('avatar').value = ""; // xoá file
+            document.getElementById('previewImg').src = "http://res.cloudinary.com/dycfyoh8r/image/upload/v1755106434/avatars/avatar_default.jpg";
+            document.getElementById('useDefaultAvatar').value = "true"; // bật cờ dùng ảnh mặc định
+        }
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+.date-btn.active,
+.version-btn.active,
+.time-btn.active {
+    background-color: #0dcaf0;
+    color: #000;
+    border-color: #0dcaf0;
+}
+
+.version-btn,
+.time-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.time-btn:hover,
+.version-btn:hover {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.modal-content {
+    background-color: #202435;
+    color: #f8f9fa;
+    border-radius: 1rem;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+}
+
+.text-muted{
+
+}

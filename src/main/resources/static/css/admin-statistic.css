@@ -1,0 +1,500 @@
+    /* Toàn bộ container */
+.card-container {
+
+    background: linear-gradient(to bottom, #f5f7fa, #e4ecf2);
+    /* Nền tổng thể */
+}
+
+/* biểu đồ doanh thu */
+/* Tiêu đề */
+h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 20px;
+    border-left: 6px solid #1976d2;
+    padding-left: 12px;
+}
+
+/* Form lọc */
+.filter-form.revenue-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: #f8f9fa;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    animation: fadeInUp 0.8s ease;
+}
+
+/* Label đẹp hơn */
+.filter-form label {
+    font-weight: 600;
+    color: #333;
+    margin-right: 6px;
+    align-self: center;
+}
+
+/* Select box */
+.filter-form select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-form select:hover {
+    border-color: #1976d2;
+    box-shadow: 0 0 6px rgba(25, 118, 210, 0.3);
+}
+
+.filter-form select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 8px rgba(25, 118, 210, 0.4);
+}
+
+/* Nút submit */
+.filter-form button {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #2196f3, #1e88e5);
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+.filter-form button:hover {
+    background: linear-gradient(135deg, #1e88e5, #1565c0);
+    transform: translateY(-2px);
+}
+
+/* Canvas biểu đồ */
+#revenueChart {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    width: 99%;
+    /* Giảm chiều rộng xuống còn 70% */
+    max-width: 99%;
+    /* Giới hạn chiều rộng tối đa */
+    height: auto;
+    padding: 16px;
+    /* Thêm padding để biểu đồ không sát viền */
+    margin: 0 auto 40px auto;
+    /* Căn giữa và tạo khoảng cách dưới */
+    animation: fadeInUp 1s ease;
+}
+
+
+/* Animation fade in */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* card-dashboard  */
+.card-dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 34px;
+    padding: 12px;
+}
+
+/* Từng card */
+.dashboard-card {
+
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    padding: 24px 20px;
+    width: 100%;
+    max-width: 540px;
+    transition: all 0.35s ease;
+    animation: fadeInUp 0.6s ease both;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gradient top border bar */
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    height: 6px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(90deg, #ff8a65, #f6bf26, #4dd0e1, #81c784);
+    background-size: 300% 100%;
+    animation: gradientBar 5s ease infinite;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+/* Hover effect */
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Tiêu đề */
+.dashboard-card h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+    padding-left: 10px;
+    border-left: 5px solid #00BCD4;
+}
+
+/* Bảng */
+.dashboard-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Header bảng */
+.dashboard-card thead tr {
+    background: linear-gradient(to right, #e0f7fa, #e1f5fe);
+    color: #00796b;
+    font-weight: bold;
+}
+
+/* Ô bảng */
+.dashboard-card th,
+.dashboard-card td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+}
+
+/* Hover từng dòng */
+.dashboard-card tbody tr:hover {
+    background-color: #f1f8ff;
+    transition: background-color 0.2s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-card {
+        max-width: 100%;
+    }
+}
+
+/* Fade-in Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Gradient animation on bar */
+@keyframes gradientBar {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* chart middle */
+/* Chart section layout */
+.chart-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    margin: 40px auto;
+    padding: 0 16px;
+    max-width: 1200px;
+}
+
+/* Biểu đồ chính */
+#genreChartContainer,
+#peakHourContainer {
+    flex: 1 1 48%;
+    min-width: 460px;
+    max-width: 660px;
+    background: linear-gradient(145deg, #f9f9f9, #ffffff);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.8s ease both;
+    border: 1px solid #e0e0e0;
+}
+
+
+/* Hover mượt và đẹp */
+#genreChartContainer:hover,
+#peakHourContainer:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 16px 32px rgba(33, 150, 243, 0.15);
+    background: linear-gradient(145deg, #eaf4fb, #ffffff);
+}
+
+/* Tiêu đề biểu đồ */
+#genreChartContainer h2,
+#peakHourContainer h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 16px;
+    padding-left: 14px;
+    border-left: 4px solid #1976d2;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+/* Canvas biểu đồ */
+#genreChartContainer canvas,
+#peakHourContainer canvas {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Animation load lên */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive cho tablet/mobile */
+@media (max-width: 768px) {
+
+    #genreChartContainer,
+    #peakHourContainer {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+
+/* Vùng chứa biểu đồ hình tròn */
+/* Container bọc hai block */
+.dashboard-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 32px;
+    margin: 40px auto;
+    padding: 0 16px;
+    max-width: 1200px;
+}
+
+/* Card bảng top khách hàng */
+.dashboard-card {
+    flex: 1 1 48%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 0.6s ease;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card h2 {
+    font-size: 22px;
+    color: #2c3e50;
+    border-left: 5px solid #ff6b6b;
+    padding-left: 12px;
+    margin-bottom: 16px;
+}
+
+.dashboard-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.dashboard-card th,
+.dashboard-card td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+}
+
+.dashboard-card th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+}
+
+.dashboard-card tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Phân loại khách hàng */
+.customer-tier {
+    flex: 1 1 48%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 0.8s ease;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+}
+
+.customer-tier:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.customer-tier h3 {
+    font-size: 22px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #ffa502;
+    display: inline-block;
+    padding-bottom: 4px;
+}
+
+.customer-tier p {
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dashboard-card,
+    .customer-tier {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+
+    .table-scroll {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .table-scroll table {
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;  /* Quan trọng để width hoạt động đúng */
+    }
+
+    .table-scroll th,
+    .table-scroll td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        vertical-align: top;  /* Căn trên cho các ô */
+    }
+
+    .table-scroll thead th {
+        position: sticky;
+        top: 0;
+        background: #f8f8f8;
+        z-index: 2;
+    }
+
+    /* Thiết lập độ rộng cột theo yêu cầu */
+    .table-scroll th:nth-child(1),
+    .table-scroll td:nth-child(1) {
+        width: 65%;  /* Tên phim - 50% */
+        word-wrap: break-word;     /* Cho phép xuống hàng */
+        white-space: normal;       /* Cho phép xuống hàng */
+    }
+
+    .table-scroll th:nth-child(2),
+    .table-scroll td:nth-child(2) {
+        width: 15%;  /* Số vé - 15% */
+        text-align: center;
+        white-space: nowrap;  /* Không xuống hàng */
+    }
+
+    .table-scroll th:nth-child(3),
+    .table-scroll td:nth-child(3) {
+        width: 20%;  /* Doanh thu - 35% */
+        text-align: right;
+        white-space: nowrap;  /* Không xuống hàng */
+    }
+
+    /* Thêm style cho tên phim để hiển thị đẹp hơn */
+    .table-scroll td:nth-child(1) {
+        line-height: 1.4;  /* Tăng khoảng cách dòng */
+        padding: 12px 8px; /* Tăng padding dọc */
+    }
+
+    /* Style cho header */
+    .table-scroll th {
+        font-weight: bold;
+        background: #f8f8f8;
+        white-space: nowrap;  /* Header không xuống hàng */
+    }
+
+    /*!* Thêm border cho table đẹp hơn *!*/
+    /*.table-scroll th,*/
+    /*.table-scroll td {*/
+    /*    border-right: 1px solid #eee;*/
+    /*}*/
+
+    /*.table-scroll th:last-child,*/
+    /*.table-scroll td:last-child {*/
+    /*    border-right: none;*/
+    /*}*/

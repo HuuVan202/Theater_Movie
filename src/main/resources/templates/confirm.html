@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Xác nhận đặt vé - MoonCinema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}"/>
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .confirm-container {
+            max-width: 1100px;
+            width: 100%;
+            padding: 30px;
+            margin: 80px 0 50px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 0.5s ease-out;
+            color: white;
+        }
+
+        .confirm-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #5bc8ff;
+            border-radius: 15px;
+        }
+
+        .confirm-header h1 {
+            font-size: 32px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-content {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .left-section,
+        .right-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .detail-group {
+            background: rgb(93 94 108);
+            border-left: 4px solid #5bc8ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-group h2 {
+            font-size: 20px;
+            color: #5bc8ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-group h2 i {
+            margin-right: 10px;
+        }
+
+        .detail-group p {
+            margin-bottom: 6px;
+        }
+
+        .seat-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .seat-item {
+            background: rgba(91, 200, 255, 0.12);
+            border: 1px solid rgba(91, 200, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .price-info {
+            background: rgba(255, 215, 0, 0.12);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            /*text-align: center;*/
+            animation: glowPulse 2s infinite;
+        }
+
+        .price-info i {
+            margin-right: 6px;
+        }
+
+        .price-info .total-price {
+            font-size: 28px;
+            color: #ffdd57;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-top: 8px;
+        }
+
+        .use-score-group {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #f1a033;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .use-score-group h2 {
+            font-size: 20px;
+            color: #f1a033;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .use-score-group input[type="range"] {
+            width: 100%;
+            margin-top: 10px;
+            accent-color: #f1a033;
+        }
+
+        .use-score-group button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #f1a033;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .use-score-group button:hover {
+            background: #ffb84d;
+            transform: translateY(-2px);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #5bc8ff, #3498db);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 6px 20px rgba(91, 200, 255, 0.4);
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(145deg, #6cd8ff, #5bc8ff);
+            box-shadow: 0 8px 30px rgba(91, 200, 255, 0.5);
+        }
+
+        .seat-list.one-line {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .promo-dropdown {
+            margin: 10px 0 20px;
+        }
+
+        .promo-dropdown label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #ffcc70;
+            font-size: 15px;
+        }
+
+        .promo-dropdown select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #5bc8ff;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%235bc8ff' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 8px 10px;
+            transition: 0.3s ease;
+        }
+
+        .promo-dropdown select:hover {
+            border-color: #6cd8ff;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .promo-dropdown select:focus {
+            border-color: #ffcc70;
+            box-shadow: 0 0 5px rgba(255, 204, 112, 0.5);
+        }
+
+        .promo-dropdown select option {
+            color: #000000;
+            background-color: #ffffff; /* Có thể bỏ nếu không muốn */
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .confirm-content {
+                flex-direction: column;
+            }
+
+            .button-container {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="confirm-container">
+    <!-- Header -->
+    <div class="confirm-header">
+        <h1>Xác nhận thông tin vé của bạn</h1>
+        <p id="countdownTimer">
+            ⏳ Thời gian giữ ghế còn lại:
+            <span th:text="${remainingTime}">0 phút 50 giây</span>
+        </p>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div class="confirm-content">
+        <!-- Trái: Thông tin đặt vé -->
+        <div class="left-section">
+            <div class="detail-group">
+                <h2><i class="fas fa-user"></i> Thông tin đặt vé</h2>
+                <p>👤 Họ tên: <span th:text="${account.fullName}">Trần Thị Mỹ Linh</span></p>
+                <p>📧 Email: <span th:text="${account.email}">pik21500@gmail.com</span></p>
+                <p>🆔 CMND/CCCD: <span th:text="${account.identityCard}">123456789</span></p>
+                <p>📞 SĐT: <span th:text="${account.phoneNumber}">0369660091</span></p>
+            </div>
+
+            <div class="detail-group">
+                <h2><i class="fas fa-film"></i> Thông tin phim</h2>
+                <p>🎬 Tên phim: <span th:text="${movie.movieName}">Tên phim</span></p>
+                <p>🏠 Phòng chiếu: <span th:text="${movie.roomName}">Room 1</span></p>
+                <p>📅 Ngày chiếu: <span th:text="${movie.showDate}">2025-05-23</span></p>
+                <p>⏰ Giờ chiếu: <span th:text="${movie.scheduleTime}">09:00</span></p>
+            </div>
+        </div>
+
+        <!-- Phải: Chi tiết vé & giảm giá -->
+        <div class="right-section">
+            <div class="detail-group">
+                <h2><i class="fas fa-ticket-alt"></i> Chi tiết vé & Giảm giá</h2>
+
+
+                <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                    <strong style="margin-right: 6px;">Ghế đã chọn:</strong>
+                    <div class="seat-list" style="flex-wrap: nowrap;">
+        <span class="seat-item" th:each="seat, iterStat : ${seatList}">
+            <span th:text="${seat}">A1</span><span th:if="${!iterStat.last}"></span>
+        </span>
+                    </div>
+                </div>
+
+                <p><i class="fas fa-layer-group"></i> Số lượng vé:
+                    <strong th:text="${quantity}">1</strong>
+                </p>
+
+                <div class="promo-dropdown">
+                    <label for="promoSelect"><i class="fas fa-gift"></i> Khuyến mãi:</label>
+                    <select id="promoSelect" name="promotionCode">
+                        <option value="">Chọn mã khuyến mãi</option>
+                        <option th:each="promo : ${promotionList}"
+                                th:value="${promo.promotionId}"
+                                th:data-discount-level="${promo.discountLevel != null ? 'PERCENT' : (promo.discountAmount != null ? 'FIXED' : '')}"
+                                th:data-discount-amount="${promo.discountLevel != null ? promo.discountLevel : promo.discountAmount}"
+                                th:text="${promo.detail}">
+                        </option>
+
+                    </select>
+                </div>
+
+                <p style="margin-top:10px;"><strong>🎯 Quy định:</strong> 1 điểm = 1.000 VNĐ, mỗi vé được +10 điểm. (số điểm tối đa được đổi bé hơn hoặc bằng 50% tổng tiền)</p>
+                <p><strong>Điểm hiện có:</strong>
+                    <span th:text="${#numbers.formatInteger(member.score, 0, 'COMMA')}">140</span> điểm
+                </p>
+
+                <label for="useScore">Chọn điểm muốn dùng:</label>
+                <input type="range" id="useScore" name="useScore"
+                       th:attr="max=${member.score}"
+                       th:value="${usedScore != null ? usedScore : 0}"
+                       oninput="document.getElementById('scoreVal').innerText=this.value"/>
+                <span id="scoreVal" th:text="${usedScore != null ? usedScore : 0}">50</span> điểm
+            </div>
+
+            <!-- Khung vàng -->
+            <div class="price-info">
+                <div style="display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-ticket-alt"></i> Tổng giá vé:</span>
+                    <span><strong
+                            th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')}">120,000</strong> VND</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-tag"></i> Giảm khuyến mãi:</span>
+                    <span>
+        <strong id="promotionDiscountText"
+                th:text="  ${#numbers.formatDecimal(promotionDiscount != null ? promotionDiscount : 0, 0, 'COMMA', 0, 'POINT')}">0</strong> VND
+    </span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-star"></i> Điểm đổi:</span>
+                    <span>
+        <strong id="scoreDiscountText"
+                th:text=" ${#numbers.formatDecimal((usedScore != null ? usedScore : 0) * 1000, 0, 'COMMA', 0, 'POINT')}">50,000</strong> VND
+    </span>
+                </div>
+
+
+                <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: #ffd700; margin-top: 12px;">
+                    <span>Tổng cần thanh toán:</span>
+                    <span>
+        <strong id="finalTotalText"
+                th:text="${#numbers.formatDecimal((totalPrice - (promotionDiscount ?: 0) - (usedScore ?: 0) * 1000), 0, 'COMMA', 0, 'POINT')}">70,000</strong> VND
+    </span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="button-container">
+        <a th:href="@{/}" class="back-button">
+            <i class="fas fa-home"></i> Về trang chủ
+        </a>
+        <form th:action="@{/api/payment/create_payment}" method="get" style="display: inline-block; margin-left: 15px;">
+            <input type="hidden" name="amount" th:value="${totalPrice}"/>
+            <input type="hidden" name="orderInfo" th:value="'Thanh toan don hang:' + ${movie.getMovieName()}"/>
+            <input type="hidden" name="movieName" th:value="${movie.getMovieName()}"/>
+            <input type="hidden" name="scheduleId" th:value="${movie.getScheduleId()}"/>
+            <input type="hidden" name="bookingDate" th:value="${movie.getShowDate()}"/>
+            <input type="hidden" id="selectedPromotionId" name="promotionId"/>
+            <input type="hidden" id="finalTotalHidden" name="finalTotal"/>
+            <input type="hidden" name="invoiceId" th:value="${invoiceId}"/> <!-- Thêm invoiceId -->
+            <th:block th:each="id : ${scheduleSeatIdList}">
+                <input type="hidden" name="scheduleSeatIds" th:value="${id}"/>
+            </th:block>
+            <input type="hidden" id="usedScoreHidden" name="usedScore" value="0"/>
+            <button type="submit" class="back-button" style="background: linear-gradient(145deg, #28a745, #218838);" id="confirmPayBtn">
+                <i class="fas fa-credit-card"></i> Xác nhận & Thanh toán
+            </button>
+        </form>
+
+    </div>
+
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<p id="appliedScoreMessage" style="display:none; color: #28a745; font-weight: bold;"></p>
+
+<script th:inline="javascript">
+    const countdownEl = document.getElementById("countdownTimer");
+    const expireAtStr = /*[[${expireAt}]]*/ null;
+    const payBtn = document.getElementById("confirmPayBtn");
+
+    let isExpired = false;
+
+    if (countdownEl && expireAtStr) {
+        const expireAt = new Date(expireAtStr);
+        const interval = setInterval(() => {
+            const now = new Date();
+            const diff = expireAt - now;
+
+            if (diff <= 0) {
+                clearInterval(interval);
+                countdownEl.textContent = "⏰ Hết thời gian giữ ghế!";
+                isExpired = true;
+
+                if (payBtn) {
+                    payBtn.disabled = true;
+                    payBtn.style.opacity = "0.6";
+                    payBtn.style.cursor = "not-allowed";
+                }
+                return;
+            }
+
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            countdownEl.textContent = `⏳ Thời gian giữ ghế còn lại: ${minutes} phút ${seconds} giây`;
+        }, 1000);
+    }
+    window.addEventListener("beforeunload", function (event) {
+        console.log("beforeunload event triggered");
+        if (!isExpired && !form.submitted) {
+            console.log("Sending beacon with seat IDs:", scheduleSeatIds);
+            const scheduleSeatIds = Array.from(document.querySelectorAll("input[name='scheduleSeatIds']")).map(i => i.value);
+            const blob = new Blob([JSON.stringify(scheduleSeatIds)], { type: 'application/json' });
+            navigator.sendBeacon('/seats/release', blob);
+        }
+    });
+
+    const totalPrice = /*[[${totalPrice}]]*/ 0;
+    let currentPromotionDiscount = /*[[${promotionDiscount}]]*/ 0;
+
+    const useScoreInput = document.getElementById("useScore");
+    const scoreValSpan = document.getElementById("scoreVal");
+    const scoreDiscountText = document.getElementById("scoreDiscountText");
+    const finalTotalText = document.getElementById("finalTotalText");
+    const usedScoreHidden = document.getElementById("usedScoreHidden");
+    const promotionDiscountEl = document.getElementById("promotionDiscountText");
+    const promoSelect = document.getElementById("promoSelect");
+
+    const formatNumber = (num) => num.toLocaleString('vi-VN');
+
+    function updateFinalTotal() {
+        const usedScore = parseInt(useScoreInput?.value || 0);
+        const maxScoreDiscount = totalPrice * 0.5; // Giới hạn tối đa 50% tổng giá
+        const scoreDiscount = Math.min(usedScore * 1000, maxScoreDiscount); // Lấy giá trị nhỏ hơn giữa điểm đổi và giới hạn
+        const adjustedUsedScore = Math.min(usedScore, Math.floor(maxScoreDiscount / 1000)); // Điều chỉnh số điểm hiển thị
+        const finalTotal = Math.max(totalPrice - currentPromotionDiscount - scoreDiscount, 0);
+
+        if (scoreValSpan) scoreValSpan.textContent = adjustedUsedScore;
+        if (scoreDiscountText) scoreDiscountText.textContent = "- " + formatNumber(scoreDiscount);
+        if (finalTotalText) finalTotalText.textContent = formatNumber(finalTotal);
+        if (usedScoreHidden) usedScoreHidden.value = adjustedUsedScore;
+        const finalTotalHidden = document.getElementById("finalTotalHidden");
+        const selectedPromotionIdInput = document.getElementById("selectedPromotionId");
+
+        if (finalTotalHidden) finalTotalHidden.value = finalTotal;
+        if (selectedPromotionIdInput) selectedPromotionIdInput.value = promoSelect.value;
+    }
+
+    if (useScoreInput) {
+        useScoreInput.addEventListener("input", updateFinalTotal);
+    }
+
+    if (promoSelect) {
+        promoSelect.addEventListener("change", function () {
+            const selectedOption = promoSelect.options[promoSelect.selectedIndex];
+
+            const discountLevel = selectedOption.dataset.discountLevel; // PERCENT or FIXED
+            const discountAmount = parseFloat(selectedOption.dataset.discountAmount || 0);
+
+            if (discountLevel === "PERCENT") {
+                currentPromotionDiscount = totalPrice * (discountAmount / 100);
+            } else if (discountLevel === "FIXED") {
+                currentPromotionDiscount = discountAmount;
+            } else {
+                currentPromotionDiscount = 0;
+            }
+
+            if (promotionDiscountEl)
+                promotionDiscountEl.textContent = "- " + formatNumber(currentPromotionDiscount);
+
+            updateFinalTotal();
+
+            sessionStorage.setItem("selectedPromotionId", promoSelect.value);
+        });
+    }
+
+    const form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            if (!isExpired) {
+                form.submitted = true; // Đặt cờ khi form được gửi
+            } else {
+                e.preventDefault();
+                alert("⏰ Đã hết thời gian giữ ghế, vui lòng đặt lại!");
+            }
+        });
+    }
+    updateFinalTotal();
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+/*!* member.css *!*/
+
+/*!* Toàn bộ body padding để tránh navbar cố định *!*/
+/*!*body {*!*/
+/*!*    padding-top: 56px; !* nếu bạn dùng navbar fixed-top *!*!*/
+/*!*}*!*/
+
+/*!* Card chứa bảng *!*/
+/*.card {*/
+/*    border: none;*/
+/*    border-radius: 0.5rem;*/
+/*}*/
+
+/*!* Card header *!*/
+/*.card-header {*/
+/*    background-color: #fff;*/
+/*    border-bottom: 1px solid #e0e0e0;*/
+/*    font-weight: 500;*/
+/*}*/
+
+/*!* Table wrapper *!*/
+/*.table-responsive {*/
+/*    margin-top: 1rem;*/
+/*}*/
+
+/*!* Bảng *!*/
+/*.table {*/
+/*    background-color: #fff;*/
+/*    border: 1px solid #dee2e6;*/
+/*}*/
+
+/*.table-hover tbody tr:hover {*/
+/*    background-color: #f8f9fa;*/
+/*}*/
+
+/*!* Căn giữa cột thao tác *!*/
+/*.table td.text-center,*/
+/*.table th.text-center {*/
+/*    text-align: center;*/
+/*}*/
+
+/*!* Buttons trong row *!*/
+/*.table .btn-sm {*/
+/*    min-width: 2.5rem;*/
+/*}*/
+
+/*!* Empty state alert *!*/
+/*.alert-empty {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 0.5rem;*/
+/*    font-size: 0.95rem;*/
+/*}*/
+
+/*!* Offcanvas sidebar nếu dùng *!*/
+/*.offcanvas-body {*/
+/*    padding: 0;*/
+/*}*/
+
+/*.offcanvas .nav-link {*/
+/*    padding: 0.75rem 1rem;*/
+/*}*/
+
+/*.offcanvas .nav-link.active,*/
+/*.offcanvas .nav-link:hover {*/
+/*    background-color: rgba(255, 255, 255, 0.1);*/
+/*}*/
+
+/*!* Mobile adjustments *!*/
+/*@media (max-width: 767.98px) {*/
+/*    .card {*/
+/*        margin: 0 0.5rem;*/
+/*    }*/
+/*    .card-header {*/
+/*        padding: 0.75rem 1rem;*/
+/*    }*/
+/*    .table-responsive {*/
+/*        margin-top: 0.5rem;*/
+/*    }*/
+/*    .alert-empty {*/
+/*        font-size: 0.9rem;*/
+/*        padding: 0.75rem 1rem;*/
+/*    }*/
+/*}*/
+
+/*!* Desktop adjustments *!*/
+/*@media (min-width: 768px) {*/
+/*    .card {*/
+/*        margin: 0 1rem;*/
+/*    }*/
+/*    .table-responsive {*/
+/*        margin-top: 1.5rem;*/
+/*    }*/
+/*}*/
+
+/*!* Typography tweaks *!*/
+/*h5.mb-0 {*/
+/*    font-size: 1.25rem;*/
+/*    letter-spacing: 0.5px;*/
+/*}*/
+
+/*!* Override bootstrap icon sizing *!*/
+/*.bi {*/
+/*    vertical-align: -.125em;*/
+/*    font-size: 1rem;*/
+/*}*/

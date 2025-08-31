@@ -1,0 +1,86 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a2e;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.logo {
+    font-size: 24px;
+    color: #ff6f61;
+}
+
+.search-bar {
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+}
+
+.login-btn {
+    background-color: #ff6f61;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.banner {
+    text-align: center;
+    padding: 20px;
+    background-color: #e5a637;
+    margin: 20px;
+    border-radius: 10px;
+}
+
+.promo-highlight {
+    background-color: #d9a54b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.promo-highlight h2 {
+    color: #fff;
+}
+
+.buy-btn {
+    background-color: #ff2e63;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.promo-card {
+    background-color: #2a2e4c;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.promo-card h3 {
+    color: #ff6f61;
+}
+
+.promo-card p {
+    color: white;
+}
+
+.terms {
+    padding: 20px;
+    background-color: #16213e;
+    margin: 20px;
+    border-radius: 10px;
+    color: white;
+}
+
+

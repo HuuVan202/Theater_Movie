@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="Chi tiết nhân viên">Chi tiết nhân viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin/employee/employees.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/layoutAM.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+
+    <style>
+        /* Base styling giống form edit */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header navbar */
+        .navbar {
+            background: linear-gradient(90deg, #dc3545, #c82333);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .navbar-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white !important;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            padding: 2rem 1rem;
+        }
+
+        /* Main card container */
+        .employee-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        /* Card header */
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0;
+        }
+
+        /* Card body */
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Employee content layout */
+        .employee-content {
+            display: flex;
+            gap: 2.5rem;
+            align-items: flex-start;
+        }
+
+        /* Avatar styling giống form */
+        .avatar-container {
+            flex-shrink: 0;
+        }
+
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Employee info */
+        .employee-info {
+            flex: 1;
+        }
+
+        /* Info grid layout */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Info item styling giống form fields */
+        .info-item {
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        .info-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            padding: 0.75rem 1rem;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #2d3748;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Special styling for status */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-inactive {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        /* Action buttons */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-modern {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #495057, #343a40);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+            color: white;
+        }
+
+        /* Phone number styling */
+        .phone-value {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 44px;
+        }
+
+        .country-code {
+            background-color: #e9ecef;
+            color: #6c757d;
+            padding: 0.75rem;
+            border-right: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .phone-number {
+            padding: 0.75rem 1rem;
+            flex: 1;
+            font-size: 0.95rem;
+            color: #2d3748;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .employee-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-modern {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .card-header {
+                padding: 1rem 1.5rem;
+                font-size: 1.1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .avatar-img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* Animation */
+        .employee-card {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Email link styling */
+        .email-link {
+            color: #0ea5e9;
+            text-decoration: none;
+        }
+
+        .email-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Long text handling */
+        .info-value {
+            word-break: break-word;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Chi tiết nhân viên', 'bi bi-person-badge me-2')}"></div>
+</div>
+<div layout:fragment="content">
+    <div class="container">
+        <div class="card employee-card">
+            <div class="card-header">
+                <i class="bi bi-person-circle me-2"></i>
+                Thông tin nhân viên
+            </div>
+            <div class="card-body">
+                <div class="employee-content">
+                    <!-- Avatar -->
+                    <div class="avatar-container">
+                        <img th:src="${accountDTO.avatarUrl} ?: 'http://res.cloudinary.com/dycfyoh8r/image/upload/v1755106434/avatars/avatar_default.jpg'"
+                             alt="Avatar"
+                             class="avatar-img" />
+                    </div>
+
+                    <!-- Employee Information -->
+                    <div class="employee-info">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">Tên Đăng Nhập</label>
+                                <div class="info-value" th:text="${accountDTO.username} ?: 'N/A'">Username</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Họ và Tên</label>
+                                <div class="info-value" th:text="${accountDTO.fullName} ?: 'N/A'">Tên</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Email</label>
+                                <div class="info-value">
+                                    <a class="email-link" th:href="'mailto:' + ${accountDTO.email}" th:text="${accountDTO.email} ?: 'N/A'">email@example.com</a>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Số Điện Thoại</label>
+                                <div class="phone-value">
+                                    <span class="country-code">+84</span>
+                                    <span class="phone-number" th:text="${accountDTO.getPhoneNumber()} ?: 'N/A'">0369660091</span>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Địa Chỉ</label>
+                                <div class="info-value" th:text="${accountDTO.address} ?: 'N/A'">Địa chỉ</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">CCCD</label>
+                                <div class="info-value" th:text="${accountDTO.identityCard} ?: 'N/A'">CCCD</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Ngày Sinh</label>
+                                <div class="info-value" th:text="${accountDTO.dateOfBirth != null} ? ${#temporals.format(accountDTO.dateOfBirth, 'dd/MM/yyyy')} : 'N/A'">Ngày sinh</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Giới Tính</label>
+                                <div class="info-value" th:text="${accountDTO.gender == 'M' ? 'Nam' : (accountDTO.gender == 'F' ? 'Nữ' : 'Khác')}">Giới tính</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Chức Vụ</label>
+                                <div class="info-value" th:text="${employee.position} ?: 'N/A'">Chức vụ</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Ngày Tuyển Dụng</label>
+                                <div class="info-value" th:text="${employee.hireDate != null} ? ${#temporals.format(employee.hireDate, 'dd/MM/yyyy')} : 'N/A'">Ngày tuyển dụng</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label class="info-label">Trạng Thái</label>
+                                <div class="info-value">
+                                    <span th:class="${accountDTO.status == 1 ? 'status-badge status-active' : 'status-badge status-inactive'}"
+                                          th:text="${accountDTO.status == 1 ? 'Đang làm việc' : (accountDTO.status == 0 ? 'Đã nghỉ việc' : 'N/A')}">
+                                        Trạng thái
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a th:href="@{/admin/employees?page=0}" class="btn-modern btn-back">
+                                <i class="fas fa-arrow-left"></i>
+                                Quay Lại Danh Sách
+                            </a>
+                            <a class="btn-modern btn-edit" th:href="@{/admin/employees/edit/{id}(id=${employee.employeeId})}">
+                                <i class="bi bi-pencil"></i>
+                                Chỉnh sửa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

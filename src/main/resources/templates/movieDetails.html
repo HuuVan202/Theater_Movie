@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Detail</title>
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/movieDetails.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Background Effects -->
+<div class="background-overlay"></div>
+<div class="floating-particles" id="particles"></div>
+
+<main layout:fragment="content" class="container-fluid .pt-0 pb-4">
+    <div class="movie-banner">
+        <img
+                th:src="${movie.largeImageUrl != null && !#strings.isEmpty(movie.largeImageUrl) ? movie.largeImageUrl : movie.smallImageUrl}"
+                th:alt="#{movie.banner.alt}"
+                class="banner-image">
+    </div>
+    <div class="movie-detail-container">
+        <div class="movie-hero">
+            <div class="movie-poster-container">
+                <img th:src="${movie.smallImageUrl != null && !#strings.isEmpty(movie.smallImageUrl) ? movie.smallImageUrl : movie.largeImageUrl}"
+                     th:alt="#{movie.poster.alt}"
+                     class="movie-poster">
+            </div>
+            <div class="movie-info">
+                <h1 class="movie-title" th:text="${movie.movieName}">#{page.title}</h1>
+                <div class="movie-meta">
+                    <div class="meta-item">
+                        <i class="bi bi-clock"></i>
+                        <span th:if="${movie.duration != null}" th:text="${movie.duration}"></span>
+                        <span th:if="${movie.duration != null}" th:text="' ' + #{duration_min}"></span>
+                        <span th:unless="${movie.duration != null}">N/A</span>
+
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-calendar"></i>
+                        <span th:text="${#temporals.format(movie.fromDate, 'dd/MM/yyyy')}">#{release_date}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-film"></i>
+                        <span th:if="${movie.genres != null and !#lists.isEmpty(movie.genres)}">
+                            <span th:each="genre, iterStat : ${movie.genres}">
+                                <span th:text="${#messages.msgOrNull('genre.' + genre) ?: genre} + (${iterStat.last} ? '' : ', ')"></span>
+                            </span>
+                        </span>
+                        <span th:unless="${movie.genres != null and !#lists.isEmpty(movie.genres)}"
+                              th:text="#{not_categorized}">Chưa phân loại</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-person-video3"></i>
+                        <span th:text="${movie.getDirector()}">#{director}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-translate"></i>
+                        <span th:if="${!#lists.isEmpty(versions)}">
+                            <span th:each="ver, iterStat : ${versions}"
+                                  th:text="${ver.versionName} + (${iterStat.last} ? '' : ', ')">
+                            </span>
+                        </span>
+<!--                        <div class="mb-3">-->
+<!--                            <label class="form-label fw-bold"><i class="bi bi-camera-reels me-2"></i>Phiên bản:</label>-->
+<!--                            <div class="d-flex flex-wrap gap-2">-->
+<!--                                <button th:each="ver : ${versions}"-->
+<!--                                        class="btn btn-outline-warning version-btn"-->
+<!--                                        th:attr="data-version-id=${ver.getVersionId()}"-->
+<!--                                        th:text="${ver.getVersionName()}"></button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <span th:unless="${!#lists.isEmpty(movie.versions)}">#{common.na}</span>-->
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-building"></i>
+                        <span th:text="${movie.productionCompany}">#{productionCompany}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-star-fill"></i>
+                        <span th:text="${movie.getRatingCode()} ?: #{common.na}">#{age_rating}</span>
+                        <span> - </span>
+                        <span th:text="${movie.getAgeRating()} ?: #{common.na}">#{movie_content}</span>
+                    </div>
+                </div>
+                <div class="movie-description">
+                    <h6><i class="bi bi-info-circle me-2"></i><span th:text="#{movie.description}"></span></h6>
+                    <p th:text="${movie.getContent()}">#{movie_content}</p>
+                </div>
+                <div class="action-buttons">
+                    <a href="#" class="btn-booking px-4 py-2 fw-bold shadow"
+                       data-bs-toggle="modal" data-bs-target="#bookingModal">
+                        <span class="bi bi-ticket-perforated me-2" th:text="#{button.book.ticket}"></span>
+                    </a>
+                    <button th:if="${movie.trailerUrl != null && !#strings.isEmpty(movie.trailerUrl)}"
+                            class="btn-trailer px-4 py-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#trailerModal">
+                        <span class="bi bi-play-circle me-2" th:text=" #{button.trailer}"></span>
+                    </button>
+                    <button th:unless="${movie.trailerUrl != null && !#strings.isEmpty(movie.trailerUrl)}"
+                            class="btn-trailer px-4 py-2" disabled>
+                        <i class="bi bi-play-circle me-2"></i>
+                        Trailer
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Trailer Modal -->
+        <div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="trailerModalLabel">Trailer</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div th:if="${movie.trailerUrl != null && !#strings.isEmpty(movie.trailerUrl)}">
+                            <iframe th:src="@{${movie.trailerUrl}}" width="711" height="400" frameborder="0"
+                                    allowfullscreen></iframe>
+                        </div>
+                        <div th:unless="${movie.trailerUrl != null && !#strings.isEmpty(movie.trailerUrl)}">
+                            <p class="text-center">#{common.na}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                th:text="#{button.close}"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Related Films Section -->
+        <div class="related-films-section" id="relatedFilms">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-film me-3" th:text="#{section.related.movies}"></i>
+                </h2>
+                <div class="section-nav">
+                    <button class="nav-btn" id="prevBtn">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="nav-btn" id="nextBtn">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="films-container" id="filmsContainer">
+                <div th:each="relatedMovie : ${relatedMovies}" class="film-card">
+                    <div class="film-poster">
+                        <img th:src="${relatedMovie.largeImageUrl}" th:alt="${relatedMovie.movieName}">
+                        <div class="film-overlay">
+                            <button class="bookmark-btn">
+                                <i class="bi bi-ticket-perforated-fill"></i>
+                            </button>
+                            <a th:href="@{'/detail/' + ${relatedMovie.movieId}}" class="play-btn">
+                                <i class="bi bi-info-circle-fill"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="film-info">
+                        <h4 class="film-title" th:text="${relatedMovie.movieNameVn}"></h4>
+                        <div class="film-meta">
+                            <span th:if="${relatedMovie.genres != null and !#lists.isEmpty(relatedMovie.genres)}">
+                        <span th:each="genre, iterStat : ${relatedMovie.genres}">
+                            <span th:text="${#messages.msgOrNull('genre.' + genre) ?: genre} + (${iterStat.last} ? '' : ', ')"></span>
+                        </span>
+                    </span>
+                            <span th:unless="${relatedMovie.genres != null and !#lists.isEmpty(relatedMovie.genres)}"
+                                  th:text="#{not_categorized}">Chưa phân loại</span>
+                            <span class="film-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span th:text="${relatedMovie.ageRating?.ratingCode ?: 'N/A'}"></span>
+                            </span>
+                        </div>
+                        <div class="film-duration">
+                            <i class="bi bi-clock"></i>
+                            <span th:if="${relatedMovie.duration != null}" th:text="${relatedMovie.duration}"></span>
+                            <span th:if="${relatedMovie.duration != null}" th:text="' ' + #{duration_min}"></span>
+                            <span th:unless="${relatedMovie.duration != null}">N/A</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hot Films Section -->
+    <div class="hot-films-section" id="hotFilms">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="bi bi-fire me-3"></i>Phim Hot
+            </h2>
+            <div class="section-nav">
+                <button class="nav-btn" id="hotPrevBtn">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="nav-btn" id="hotNextBtn">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="films-container" id="hotFilmsContainer">
+            <div th:each="hotMovie : ${featuredMovies}" class="film-card hot-film">
+                <div class="film-poster">
+                    <img th:src="${hotMovie.largeImageUrl}" th:alt="${hotMovie.movieNameVn}">
+                    <div class="hot-badge">HOT</div>
+                    <div class="film-overlay">
+                        <a th:href="@{'/detail/' + ${hotMovie.movieId}}" class="play-btn">
+                            <i class="bi bi-info-circle-fill"></i>
+                        </a>
+                        <button class="bookmark-btn">
+                            <i class="bi bi-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="film-info">
+                    <h4 class="film-title" th:text="${hotMovie.movieNameVn}"></h4>
+                    <div class="film-meta">
+                            <span th:if="${hotMovie.genres != null and !#lists.isEmpty(hotMovie.genres)}">
+                        <span th:each="genre, iterStat : ${hotMovie.genres}">
+                            <span th:text="${#messages.msgOrNull('genre.' + genre) ?: genre} + (${iterStat.last} ? '' : ', ')"></span>
+                        </span>
+                    </span>
+                        <span th:unless="${hotMovie.genres != null and !#lists.isEmpty(hotMovie.genres)}"
+                              th:text="#{not_categorized}">Chưa phân loại</span>
+                        <span class="film-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span th:text="${hotMovie.ageRating?.ratingCode ?: 'N/A'}"></span>
+                            </span>
+                    </div>
+                    <div class="film-duration">
+                        <i class="bi bi-clock"></i>
+                        <span th:if="${hotMovie.duration != null}" th:text="${hotMovie.duration}"></span>
+                        <span th:if="${hotMovie.duration != null}" th:text="' ' + #{duration_min}"></span>
+                        <span th:unless="${hotMovie.duration != null}">N/A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel" th:text="${movie.movieNameVn} + ' - Suất Chiếu'">Suất Chiếu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Phiên bản phim -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-camera-reels me-2"></i>Phiên bản:</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button th:each="ver : ${versions}"
+                                    class="btn btn-outline-warning version-btn"
+                                    th:attr="data-version-id=${ver.getVersionId()}"
+                                    th:text="${ver.getVersionName()}"></button>
+                        </div>
+                    </div>
+                    <!-- Ngày chiếu -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-calendar-event me-2"></i>Chọn ngày chiếu:</label>
+                        <div class="d-flex flex-wrap gap-2" id="dateButtons"></div>
+                    </div>
+                    <!-- Suất chiếu -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-clock me-2"></i>Suất chiếu:</label>
+                        <div id="showtimeBlocks"></div>
+                    </div>
+                    <input type="hidden" id="selectedVersionId" />
+                    <input type="hidden" id="selectedShowtimeId" />
+                    <input type="hidden" id="selectedMovieId" th:value="${movie.movieId}" />
+                    <!-- Nút xác nhận -->
+                    <form th:action="@{/selectSeats}" method="post" class="text-end" id="bookingForm">
+                        <input type="hidden" id="selectedVersionIdInput" name="versionId" value="1"/>
+                        <input type="hidden" id="selectedScheduleIdInput" name="scheduleId" value="1"/>
+                        <input type="hidden" name="movieId" th:value="${movie.movieId}"/>
+                        <button id="bookNowBtn"  type="submit" class="btn btn-danger px-4 py-2">
+                            <i class="bi bi-arrow-right me-2"></i>Tiếp Tục Đặt Vé
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    // Create floating particles
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.width = Math.random() * 4 + 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        createParticles();
+
+        // Booking modal functionality
+        const versions = /*[[${movie.versions}]]*/ [];
+        const dateButtonsContainer = document.getElementById("dateButtons");
+        const showtimeBlocksContainer = document.getElementById("showtimeBlocks");
+        const versionButtons = document.querySelectorAll(".version-btn");
+        const inputVersion = document.getElementById("selectedVersionId");
+        const inputShowtime = document.getElementById("selectedShowtimeId");
+        const inputVersionForm = document.getElementById("selectedVersionIdInput");
+        const inputShowtimeForm = document.getElementById("selectedScheduleIdInput");
+        const bookNowBtn = document.getElementById("bookNowBtn");
+
+        let selectedVersionId = null;
+        let selectedShowtimeId = null;
+
+        // Function to populate dates and showtimes
+        function populateDatesAndShowtimes(versionId) {
+            const version = versions.find(v => v.versionId == versionId);
+            if (!version) return;
+
+            // Clear existing buttons and blocks
+            dateButtonsContainer.innerHTML = "";
+            showtimeBlocksContainer.innerHTML = "";
+
+            // Populate date buttons
+            version.showDates.forEach(date => {
+                const btn = document.createElement("button");
+                btn.className = "btn btn-outline-primary date-btn";
+                btn.setAttribute("data-date-id", date.showDateId);
+                btn.textContent = new Date(date.showDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+                dateButtonsContainer.appendChild(btn);
+            });
+
+            // Populate showtime blocks
+            version.showDates.forEach(date => {
+                const block = document.createElement("div");
+                block.className = "cinema-block mb-2 showtime-block";
+                block.setAttribute("data-date-id", date.showDateId);
+                block.style.display = "none";
+
+                const showtimeContainer = document.createElement("div");
+                showtimeContainer.className = "d-flex gap-2 mt-1 flex-wrap";
+
+                date.schedules.forEach(schedule => {
+                    if (schedule.availableSeats > 0) {
+                        const btn = document.createElement("button");
+                        btn.className = "btn btn-outline-success time-btn";
+                        btn.setAttribute("data-showtime-id", schedule.showtimeId);
+                        btn.textContent = schedule.scheduleTime + " (" + schedule.roomNumber +" | "+ schedule.availableSeats  +")";
+                        showtimeContainer.appendChild(btn);
+                    }
+                });
+
+                block.appendChild(showtimeContainer);
+                showtimeBlocksContainer.appendChild(block);
+            });
+
+            // Attach event listeners to new date buttons
+            const dateButtons = document.querySelectorAll(".date-btn");
+            dateButtons.forEach(button => {
+                button.addEventListener("click", () => {
+                    dateButtons.forEach(btn => btn.classList.remove("active"));
+                    button.classList.add("active");
+
+                    const selectedDateId = button.getAttribute("data-date-id");
+                    document.querySelectorAll(".showtime-block").forEach(block => {
+                        block.style.display = block.getAttribute("data-date-id") === selectedDateId ? "block" : "none";
+                    });
+
+                    // Reset showtime selection
+                    selectedShowtimeId = null;
+                    inputShowtime.value = "";
+                    inputShowtimeForm.value = "";
+                    document.querySelectorAll(".time-btn").forEach(btn => btn.classList.remove("active"));
+                    bookNowBtn.disabled = true;
+                });
+            });
+
+            // Auto-select first date if available
+            if (dateButtons.length > 0) dateButtons[0].click();
+        }
+
+        // Handle version selection
+        versionButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                versionButtons.forEach(btn => btn.classList.remove("active"));
+                button.classList.add("active");
+
+                selectedVersionId = button.getAttribute("data-version-id");
+                inputVersion.value = selectedVersionId;
+                inputVersionForm.value = selectedVersionId;
+                console.log("Selected versionId:", selectedVersionId);
+
+                // Reset showtime selection when version changes
+                selectedShowtimeId = null;
+                inputShowtime.value = "";
+                inputShowtimeForm.value = "";
+                bookNowBtn.disabled = true;
+
+                populateDatesAndShowtimes(selectedVersionId);
+            });
+        });
+
+        // Handle showtime selection
+        showtimeBlocksContainer.addEventListener("click", e => {
+            if (e.target.classList.contains("time-btn")) {
+                document.querySelectorAll(".time-btn").forEach(btn => btn.classList.remove("active"));
+                e.target.classList.add("active");
+
+                selectedShowtimeId = e.target.getAttribute("data-showtime-id");
+                inputShowtime.value = selectedShowtimeId;
+                inputShowtimeForm.value = selectedShowtimeId;
+                console.log("Selected showtimeId:", selectedShowtimeId);
+
+                // Enable book now button only if both version and showtime are selected
+                bookNowBtn.disabled = !(selectedVersionId && selectedShowtimeId);
+            }
+        });
+
+        // Auto-select first version if available
+        if (versionButtons.length > 0) {
+            versionButtons[0].click();
+        }
+
+        // Prevent form submission if no showtime is selected
+        document.getElementById("bookingForm").addEventListener("submit", (e) => {
+            if (!selectedVersionId || !selectedShowtimeId) {
+                e.preventDefault();
+                console.log("Cannot submit: Missing versionId or showtimeId");
+            }
+        });
+
+        // Add click effects to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('div');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Scroll effect for movie detail blur
+        let ticking = false;
+        function updateScrollEffect() {
+            const scrollTop = window.pageYOffset;
+            const movieHero = document.querySelector('.movie-hero');
+            const relatedSection = document.querySelector('.related-films-section');
+
+            if (movieHero && relatedSection) {
+                const movieHeroRect = movieHero.getBoundingClientRect();
+                const relatedSectionRect = relatedSection.getBoundingClientRect();
+
+                if (relatedSectionRect.top <= 200) {
+                    movieHero.classList.add('blurred');
+                } else {
+                    movieHero.classList.remove('blurred');
+                }
+            }
+            ticking = false;
+        }
+
+        function requestScrollUpdate() {
+            if (!ticking) {
+                requestAnimationFrame(updateScrollEffect);
+                ticking = true;
+            }
+        }
+        window.addEventListener('scroll', requestScrollUpdate);
+
+        // Film carousel functionality
+        function setupCarousel(containerId, prevBtnId, nextBtnId) {
+            const container = document.getElementById(containerId);
+            const prevBtn = document.getElementById(prevBtnId);
+            const nextBtn = document.getElementById(nextBtnId);
+
+            if (!container || !prevBtn || !nextBtn) return;
+
+            const cardWidth = 280 + 32; // card width + gap
+            let currentIndex = 0;
+
+            function updateCarousel() {
+                const maxIndex = Math.max(0, container.children.length - Math.floor(container.offsetWidth / cardWidth));
+
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex >= maxIndex;
+
+                container.scrollTo({
+                    left: currentIndex * cardWidth,
+                    behavior: 'smooth'
+                });
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateCarousel();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const maxIndex = Math.max(0, container.children.length - Math.floor(container.offsetWidth / cardWidth));
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                    updateCarousel();
+                }
+            });
+
+            updateCarousel();
+            window.addEventListener('resize', updateCarousel);
+        }
+
+        setupCarousel('filmsContainer', 'prevBtn', 'nextBtn');
+        setupCarousel('hotFilmsContainer', 'hotPrevBtn', 'hotNextBtn');
+
+        // Add click handlers for film cards
+        document.querySelectorAll('.film-card').forEach(card => {
+            card.addEventListener('click', function (e) {
+                if (e.target.closest('.play-btn') || e.target.closest('.bookmark-btn')) {
+                    return;
+                }
+                const filmTitle = this.querySelector('.film-title').textContent;
+                console.log('Navigate to:', filmTitle);
+            });
+        });
+
+        document.querySelectorAll('.play-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const filmTitle = this.closest('.film-card').querySelector('.film-title').textContent;
+                console.log('Play trailer for:', filmTitle);
+            });
+        });
+
+        document.querySelectorAll('.bookmark-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const filmTitle = this.closest('.film-card').querySelector('.film-title').textContent;
+                const icon = this.querySelector('i');
+
+                if (icon.classList.contains('bi-bookmark')) {
+                    icon.classList.remove('bi-bookmark');
+                    icon.classList.add('bi-bookmark-fill');
+                    this.style.color = '#ff6b35';
+                    console.log('Bookmarked:', filmTitle);
+                } else {
+                    icon.classList.remove('bi-bookmark-fill');
+                    icon.classList.add('bi-bookmark');
+                    this.style.color = '#ffffff';
+                    console.log('Removed bookmark:', filmTitle);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

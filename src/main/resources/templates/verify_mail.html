@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="Forgot Password">Forgot Password - Top1Cinema</title>
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/forgot-password.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
+</head>
+
+<body>
+<!-- Main Content -->
+<div layout:fragment="content" class="min-h-screen">
+    <!-- Floating Lanterns for atmosphere -->
+    <div class="floating-lanterns">
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+        <div class="lantern"></div>
+    </div>
+
+    <main class="forgot-password-main">
+        <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
+            <div class="row w-100 justify-content-center">
+                <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+                    <div class="forgot-password-container">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <div class="forgot-password-icon mb-3">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <h2 class="forgot-password-title">Forgot Password?</h2>
+                            <p class="forgot-password-subtitle">
+                                Don't worry! Enter your email address and we'll send you a OTP to reset your password.
+                            </p>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div th:if="${error}" class="alert alert-danger alert-custom" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span th:text="${error}">An error occurred. Please try again.</span>
+                        </div>
+
+                        <!-- Forgot Password Form -->
+                        <form method="post" th:action="@{/forgot}" id="forgotPasswordForm"
+                              class="forgot-password-form">
+                            <div class="form-group mb-4">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>Email Address
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="email"
+                                           name="email"
+                                           placeholder="Enter your email address"
+                                           th:value="${email}">
+                                </div>
+                                <div class="invalid-feedback" id="emailError"></div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary submit-btn w-100 mb-3" id="submitBtn">
+                                <span class="btn-text">
+                                    <i class="fas fa-paper-plane me-2"></i>Send OTP To Email
+                                </span>
+                            </button>
+
+                            <!-- Back to Login -->
+                            <div class="text-center">
+                                <p class="back-to-login-text">
+                                    Remember your password?
+                                    <a th:href="@{/auth}" class="back-to-login-link">
+                                        <i class="fas fa-arrow-left me-1"></i>Back to Login
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Toast Notification Container -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1100" id="toastContainer">
+    <!-- Toasts will be dynamically inserted here -->
+</div>
+
+<!--&lt;!&ndash; JavaScript &ndash;&gt;-->
+<!--<script th:src="@{/js/forgot-password.js}"></script>-->
+</body>
+</html>

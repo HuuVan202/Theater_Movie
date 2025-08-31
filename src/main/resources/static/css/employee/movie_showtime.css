@@ -1,0 +1,135 @@
+/* Message cho thông báo khi chọn ngày không có suất chiếu */
+.no-showtimes {
+    color: #CC0033;
+    text-align: center;
+    margin-top: 30px;
+    display: block !important;
+}
+
+.no-showtimes i,
+.no-showtimes h3,
+.no-showtimes p {
+    color: #CC0033;
+    margin-bottom: 10px;
+}
+
+/* Đảm bảo container cha không phá vỡ grid */
+.movie-container {
+    flex-grow: 1;
+    width: 100%;
+    padding: 0 15px; /* Đồng bộ với gutter của Bootstrap */
+}
+
+.movie-card-container {
+    padding: 0; /* Bootstrap đã có padding qua .g-4 */
+    margin: 0;
+}
+
+.showtime-movie-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-poster {
+    object-fit: cover;
+    width: 100%;
+    height: 300px; /* Chiều cao cố định cho poster */
+}
+
+.showtimes-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+/* Buộc card trong mỗi col có chiều cao bằng nhau */
+.movie-card-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Thẻ .card chiếm hết chiều cao */
+.showtime-movie-card {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+}
+
+/* Đảm bảo .card-body đẩy phần showtime xuống đáy */
+.movie-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    font-size: 0.95rem;
+}
+
+.movie-info {
+    font-size: 0.95rem;
+}
+
+.showtime-btn {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+}
+
+
+.movie-title {
+    min-height: 3rem; /* hoặc set số dòng cố định bằng line-clamp */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Giới hạn số dòng */
+    -webkit-box-orient: vertical;
+}
+
+.movie-card-container {
+    padding: 10px;
+}
+
+.showtime-movie-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.movie-poster {
+    height: 300px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.actor-text {
+    display: inline-block;
+    max-width: 100%;      /* hoặc cụ thể như 250px */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+}
+
+.showtime-movie-card {
+    transition: all 0.3s ease;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.showtime-movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-color: #aaa;
+    background-color: #fdfdfd;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .movie-poster {
+        height: 200px; /* Giảm chiều cao trên mobile */
+    }
+}
+

@@ -1,0 +1,459 @@
+/* General styles for movie entry */
+.movie-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+.movie-entry select,
+.movie-entry input {
+    margin-right: 12px;
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-entry select:focus,
+.movie-entry input:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    outline: none;
+}
+
+.movie-entries-container {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    margin: 15px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.remove-movie-btn {
+    color: white;
+    background: #dc3545;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.remove-movie-btn:hover {
+    background: #bd2130;
+    transform: scale(1.1);
+}
+
+.btn-delete-date {
+    background: linear-gradient(135deg, #4e73df, #224abe) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.btn-delete-date:hover {
+    background: linear-gradient(135deg, #224abe, #4e73df) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(78, 115, 223, 0.3);
+}
+
+/* Enhanced styles for autoCreateShowtimeModal */
+#autoCreateShowtimeModal .modal-dialog {
+    max-width: 650px;
+    /*margin: 1.75rem auto;*/
+}
+
+#autoCreateShowtimeModal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    border: none;
+    background: #ffffff;
+    max-height: 70vh;
+}
+
+
+#autoCreateShowtimeModal .modal-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+}
+
+#autoCreateShowtimeModal .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+#autoCreateShowtimeModal .btn-close:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+#autoCreateShowtimeModal .modal-body {
+    padding: 35px 30px;
+    background-color: #f9fafb;
+}
+
+#autoCreateShowtimeModal label {
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    display: block;
+    font-size: 1rem;
+}
+
+#autoCreateShowtimeModal label:first-child {
+    margin-top: 0;
+}
+
+#autoCreateShowtimeModal input,
+#autoCreateShowtimeModal select {
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-bottom: 15px;
+    background: #ffffff;
+}
+
+#autoCreateShowtimeModal input:focus,
+#autoCreateShowtimeModal select:focus {
+    border-color: #5a67d8;
+    box-shadow: 0 0 0 0.25rem rgba(90, 103, 216, 0.25);
+    outline: none;
+}
+
+#autoCreateShowtimeModal input[type="date"]::-webkit-calendar-picker-indicator {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%235a67d8" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/><path d="M6.5 7a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/></svg>') no-repeat center;
+    cursor: pointer;
+    padding: 8px;
+}
+
+#autoCreateShowtimeModal .movie-entries-container {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 25px 0;
+    border: 1px solid #dee2e6;
+    max-height: 350px;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+#autoCreateShowtimeModal .movie-entry {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+#autoCreateShowtimeModal .movie-entry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#autoCreateShowtimeModal .movie-entry:last-child {
+    margin-bottom: 0;
+}
+
+#autoCreateShowtimeModal .movie-entry select,
+#autoCreateShowtimeModal .movie-entry input {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+#autoCreateShowtimeModal .remove-movie-btn {
+    background: #e3342f;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+#autoCreateShowtimeModal .remove-movie-btn:hover {
+    background: #cc1f1a;
+    transform: scale(1.1);
+}
+
+#autoCreateShowtimeModal #addMovieBtn {
+    background: linear-gradient(135deg, #38b2ac, #319795);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#autoCreateShowtimeModal #addMovieBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(56, 178, 172, 0.3);
+}
+
+#autoCreateShowtimeModal #autoConfirmBtn {
+    background: linear-gradient(135deg, #5a67d8, #3c366b);
+    border: none;
+    color: white;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#autoCreateShowtimeModal #autoConfirmBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(90, 103, 216, 0.3);
+}
+
+#autoCreateShowtimeModal .btn-cancel-modal {
+    background: #6b7280;
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#autoCreateShowtimeModal .btn-cancel-modal:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+/* Enhanced styles for deleteShowtimesByDateModal */
+#deleteShowtimesByDateModal .modal-dialog {
+    max-width: 550px;
+    margin: 1.75rem auto;
+}
+
+#deleteShowtimesByDateModal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+#deleteShowtimesByDateModal .modal-header {
+    background: linear-gradient(135deg, #e3342f, #cc1f1a);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 20px 30px;
+    border-bottom: none;
+}
+
+#deleteShowtimesByDateModal .modal-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+}
+
+#deleteShowtimesByDateModal .modal-title::before {
+    content: "⚠️";
+    margin-right: 12px;
+    font-size: 1.3rem;
+}
+
+#deleteShowtimesByDateModal .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#deleteShowtimesByDateModal .btn-close:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+#deleteShowtimesByDateModal .modal-body {
+    padding: 35px 30px;
+    background-color: #f9fafb;
+}
+
+#deleteShowtimesByDateModal label {
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 15px;
+    display: block;
+    font-size: 1.1rem;
+}
+
+#deleteShowtimesByDateModal #deleteShowDate {
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 16px;
+    width: 100%;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+#deleteShowtimesByDateModal #deleteShowDate:focus {
+    border-color: #e3342f;
+    box-shadow: 0 0 0 0.25rem rgba(227, 52, 47, 0.25);
+    outline: none;
+}
+
+#deleteShowtimesByDateModal #deleteShowDate::-webkit-calendar-picker-indicator {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23e3342f" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/><path d="M6.5 7a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/></svg>') no-repeat center;
+    cursor: pointer;
+    padding: 8px;
+}
+
+#deleteShowtimesByDateModal #confirmDeleteByDateBtn {
+    background: linear-gradient(135deg, #e3342f, #cc1f1a);
+    border: none;
+    color: white;
+    padding: 15px 35px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#deleteShowtimesByDateModal #confirmDeleteByDateBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+#deleteShowtimesByDateModal #confirmDeleteByDateBtn:hover::before {
+    left: 100%;
+}
+
+#deleteShowtimesByDateModal #confirmDeleteByDateBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(227, 52, 47, 0.4);
+}
+
+#deleteShowtimesByDateModal .btn-cancel-modal {
+    background: #6b7280;
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#deleteShowtimesByDateModal .btn-cancel-modal:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+/* Warning message styling for delete modal */
+#deleteShowtimesByDateModal .modal-body::before {
+    content: "⚠️ Cảnh báo: Hành động này sẽ xóa tất cả suất chiếu trong ngày đã chọn và không thể hoàn tác!";
+    display: block;
+    background: #fefcbf;
+    color: #744210;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #f6c107;
+    margin-bottom: 25px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Date picker styling for Webkit browsers */
+input[type="date"]::-webkit-datetime-edit {
+    color: #343a40;
+    font-size: 15px;
+    font-family: 'Roboto', sans-serif;
+}
+
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field {
+    padding: 2px 5px;
+}
+
+input[type="date"]::-webkit-datetime-edit-text {
+    color: #5a67d8;
+}
+
+/* Style for the date picker popup (limited control, browser-dependent) */
+input[type="date"] {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #autoCreateShowtimeModal .modal-dialog,
+    #deleteShowtimesByDateModal .modal-dialog {
+        margin: 15px;
+        max-width: 95%;
+    }
+
+    #autoCreateShowtimeModal .movie-entry {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    #autoCreateShowtimeModal .movie-entry > * {
+        margin-bottom: 12px;
+        margin-right: 0;
+    }
+
+    #autoCreateShowtimeModal .remove-movie-btn,
+    #deleteShowtimesByDateModal .btn-cancel-modal,
+    #deleteShowtimesByDateModal #confirmDeleteByDateBtn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+.btn-create-showtime {
+    background: linear-gradient(135deg, #38b2ac, #319795);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(56, 178, 172, 0.3);
+
+}
+.btn-create-showtime:hover{
+    background: linear-gradient(135deg, #319795, #38b2ac);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 178, 172, 0.4);
+}
+

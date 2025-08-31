@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chi tiết phòng chiếu</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/admin/member/viewMember.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/crud-room/crud-room.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        .seat-grid {
+            display: grid !important;
+            gap: 10px;
+            margin-top: 20px;
+            min-width: fit-content;
+        }
+        .seat-container {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        .seat {
+            width: 50px;
+            height: 50px;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .seat-normal { background-color: #d4edda; }
+        .seat-vip { background-color: #e7b100; }
+        .seat-couple { background-color: #f10518; color: white; }
+        .seat-staircase { background-color: #0574dc; color: white; }
+        .seat-empty { background-color: #f8f9fa; border: 2px dashed #dee2e6; }
+        .row-label, .column-label {
+            font-weight: bold;
+            text-align: center;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+        }
+        .screen {
+            width: 80%;
+            height: 40px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-seat {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .sidebar-link {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0.75rem 1rem !important;
+            color: #212529 !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            border-radius: 0.5rem !important;
+            margin: 0.25rem 0 !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+        }
+
+        @media (max-width: 576px) {
+            .seat, .row-label, .column-label {
+                width: 30px;
+                height: 30px;
+                font-size: 10px;
+            }
+            .seat-grid {
+                gap: 5px;
+            }
+            .screen {
+                width: 100%;
+                font-size: 10px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-danger shadow-sm px-3">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand text-white fw-bold"><i class="bi bi-door-open me-2"></i>Chi tiết phòng chiếu</span>
+        </div>
+    </nav>
+</div>
+
+<div layout:fragment="content">
+    <div class="container-fluid py-4">
+        <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1000;">
+            <div th:if="${warning}" id="warningToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-warning text-dark">
+                    <strong class="me-auto">Cảnh báo</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <span th:text="${warning}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="user-table-wrapper p-3 p-md-4 rounded-4 shadow-lg animate-fade-in">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold mb-0">Thông tin phòng chiếu</h3>
+                <div class="d-flex gap-2">
+                    <a th:href="@{'/admin/cinema-room/edit/' + ${cinemaRoomDTO.roomId}}" class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i> Chỉnh sửa</a>
+                    <a th:href="@{/admin/cinema-room}" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Quay lại</a>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Tên phòng:</label>
+                    <input type="text" class="form-control" th:value="${cinemaRoomDTO.roomName != null ? cinemaRoomDTO.roomName : ''}" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Loại phòng:</label>
+                    <select class="form-select" disabled>
+                        <option th:selected="${cinemaRoomDTO.type == '2D'}">2D</option>
+                        <option th:selected="${cinemaRoomDTO.type == '3D'}">3D</option>
+                        <option th:selected="${cinemaRoomDTO.type == 'IMAX'}">IMAX</option>
+                        <option th:selected="${cinemaRoomDTO.type == '4DX'}">4DX</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Trạng thái:</label>
+                    <div class="d-flex gap-4">
+                        <div class="form-check">
+                            <input type="radio" id="statusInactive" name="status" value="0" th:checked="${cinemaRoomDTO.status == 0}" class="form-check-input" disabled/>
+                            <label for="statusInactive" class="form-check-label">Không hoạt động</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" id="statusActive" name="status" value="1" th:checked="${cinemaRoomDTO.status == 1}" class="form-check-input" disabled/>
+                            <label for="statusActive" class="form-check-label">Hoạt động</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Số lượng ghế:</label>
+                    <input type="number" class="form-control" th:value="${cinemaRoomDTO.seatQuantity != null ? cinemaRoomDTO.seatQuantity : 0}" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Số hàng ghế:</label>
+                    <input type="number" class="form-control" th:value="${cinemaRoomDTO.seatMap.rows != null ? cinemaRoomDTO.seatMap.rows : 0}" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Số cột ghế:</label>
+                    <input type="number" class="form-control" th:value="${cinemaRoomDTO.seatMap.cols != null ? cinemaRoomDTO.seatMap.cols : 0}" readonly>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <label class="form-label fw-bold">Sơ đồ ghế:</label>
+                    <div class="card p-3">
+                        <!-- Hướng dẫn xem -->
+                        <div class="instructions mb-3">
+                            <h5><i class="bi bi-info-circle me-2"></i>Hướng dẫn xem sơ đồ</h5>
+                            <ul>
+                                <li><strong>Màn hình:</strong> Nằm ở phía trên sơ đồ ghế</li>
+                                <li><strong>Mã ghế:</strong> Mỗi ghế hiển thị ký hiệu định danh (ví dụ: A1, B2)</li>
+                                <li><strong>Màu sắc:</strong> Phản ánh loại ghế (thường, VIP, đôi, cầu thang)</li>
+                                <li><strong>Chỉnh sửa:</strong> Nhấn nút "Chỉnh sửa" ở trên để thay đổi sơ đồ</li>
+                            </ul>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-seat seat-normal"></div>
+                                <span>Ghế thường</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-seat seat-vip"></div>
+                                <span>Ghế VIP</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-seat seat-couple"></div>
+                                <span>Ghế đôi</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-seat seat-staircase"></div>
+                                <span>Cầu thang</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-seat seat-empty"></div>
+                                <span>Trống</span>
+                            </div>
+                        </div>
+
+                        <div class="seat-container">
+                            <div class="screen">
+                                <i class="bi bi-display me-2"></i>MÀN HÌNH
+                            </div>
+
+                            <!-- Seat Grid -->
+                            <div class="seat-grid" th:style="'grid-template-columns: repeat(' + (${cinemaRoomDTO.seatMap.cols != null} ? ${cinemaRoomDTO.seatMap.cols + 1} : 1) + ', 50px);'">
+                                <!-- Ô trống ở góc trên trái -->
+                                <div class="row-label"></div>
+
+                                <!-- Nhãn cột (A, B, C, ...) -->
+                                <div th:each="col : ${#numbers.sequence(0, (cinemaRoomDTO.seatMap.cols != null ? cinemaRoomDTO.seatMap.cols : 0) - 1)}"
+                                     class="column-label"
+                                     th:text="${T(java.lang.Character).toString(65 + col)}"></div>
+
+                                <!-- Từng hàng ghế -->
+                                <th:block th:each="row : ${#numbers.sequence(0, (cinemaRoomDTO.seatMap.rows != null ? cinemaRoomDTO.seatMap.rows : 0) - 1)}">
+                                    <!-- Nhãn hàng (1, 2, 3, ...) -->
+                                    <div class="row-label" th:text="${row + 1}"></div>
+
+                                    <!-- Các ghế trong hàng -->
+                                    <div th:each="col : ${#numbers.sequence(0, (cinemaRoomDTO.seatMap.cols != null ? cinemaRoomDTO.seatMap.cols : 0) - 1)}"
+                                         th:with="seatTypes=${cinemaRoomDTO.seatMap.seatTypes != null ? cinemaRoomDTO.seatMap.seatTypes : {}},
+                                                  seatType=${seatTypes != null && seatTypes[row] != null && seatTypes[row][col] != null ? seatTypes[row][col] : 'normal'},
+                                                  staircaseCols=${cinemaRoomDTO.seatMap.staircaseColumns != null ? cinemaRoomDTO.seatMap.staircaseColumns : ''},
+                                                  colStr=${(col + 1).toString()},
+                                                  isStaircase=${staircaseCols != null && (#strings.contains(',' + staircaseCols + ',', ',' + colStr + ','))}">
+                                        <!-- Hiển thị ghế cầu thang -->
+                                        <div th:if="${isStaircase}"
+                                             class="seat seat-staircase"
+                                        ></div>
+                                        <!-- Hiển thị các loại ghế khác nếu không phải cầu thang -->
+                                        <div th:if="${!isStaircase}">
+                                            <div th:if="${#strings.equalsIgnoreCase(seatType, 'normal')}"
+                                                 class="seat seat-normal"
+                                                 th:text="${T(java.lang.Character).toString(65 + col) + (row + 1)}"></div>
+                                            <div th:if="${#strings.equalsIgnoreCase(seatType, 'vip')}"
+                                                 class="seat seat-vip"
+                                                 th:text="${T(java.lang.Character).toString(65 + col) + (row + 1)}"></div>
+                                            <div th:if="${#strings.equalsIgnoreCase(seatType, 'couple')}"
+                                                 class="seat seat-couple"
+                                                 th:text="${T(java.lang.Character).toString(65 + col) + (row + 1)}"></div>
+                                            <div th:if="${#strings.equalsIgnoreCase(seatType, 'empty')}"
+                                                 class="seat seat-empty"
+                                                 th:text="${T(java.lang.Character).toString(65 + col) + (row + 1)}"></div>
+                                            <div th:if="${!#strings.equalsIgnoreCase(seatType, 'normal') and
+                                                          !#strings.equalsIgnoreCase(seatType, 'vip') and
+                                                          !#strings.equalsIgnoreCase(seatType, 'couple') and
+                                                          !#strings.equalsIgnoreCase(seatType, 'empty')}"
+                                                 class="seat seat-normal"
+                                                 th:text="${T(java.lang.Character).toString(65 + col) + (row + 1)}"></div>
+                                        </div>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-4">
+                    <label class="form-label fw-bold">Giá ghế theo loại (VND):</label>
+                    <div class="row">
+                        <!-- Hiển thị giá ghế thường nếu có -->
+                        <div th:if="${cinemaRoomDTO.seatPrices['normal'] != null}" class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Ghế thường (Normal):</label>
+                            <input type="text" class="form-control"
+                                   th:value="${#numbers.formatInteger(cinemaRoomDTO.seatPrices.normal, 0, 'COMMA')} + ' VND'"
+                                   readonly>
+                        </div>
+
+                        <!-- Hiển thị giá ghế VIP nếu có -->
+                        <div th:if="${cinemaRoomDTO.seatPrices['vip'] != null}" class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Ghế VIP:</label>
+                            <input type="text" class="form-control"
+                                   th:value="${#numbers.formatInteger(cinemaRoomDTO.seatPrices.vip, 0, 'COMMA')} + ' VND'"
+                                   readonly>
+                        </div>
+
+                        <!-- Hiển thị giá ghế đôi nếu có -->
+                        <div th:if="${cinemaRoomDTO.seatPrices['couple'] != null}" class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Ghế đôi (Couple):</label>
+                            <input type="text" class="form-control"
+                                   th:value="${#numbers.formatInteger(cinemaRoomDTO.seatPrices.couple, 0, 'COMMA')} + ' VND'"
+                                   readonly>
+                        </div>
+
+                        <!-- Thông báo nếu không có giá nào -->
+                        <div th:if="${cinemaRoomDTO.seatPrices['normal'] == null && cinemaRoomDTO.seatPrices['vip'] == null && cinemaRoomDTO.seatPrices['couple'] == null}"
+                             class="col-12">
+                            <p class="text-muted fst-italic">Chưa có dữ liệu giá ghế</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        toastElList.forEach(function (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, {
+                delay: 5000,
+                autohide: true
+            });
+            toast.show();
+        });
+    });
+</script>
+</body>
+</html>

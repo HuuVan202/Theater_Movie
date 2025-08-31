@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="events">
+    <script th:inline="javascript">
+        var events = /*[[${events}]]*/ [];
+        document.dispatchEvent(new CustomEvent('eventsLoaded', { detail: events }));
+    </script>
+</th:block>
+</body>
+</html>

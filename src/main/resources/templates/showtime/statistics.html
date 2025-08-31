@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <title>Thống kê suất chiếu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        .stats-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .movie-stats-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .movie-stats-list li {
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .movie-stats-list li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .movie-stats-list li strong {
+            color: #007bff;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .stats-table th, .stats-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .stats-table th {
+            background-color: #007bff;
+            color: white;
+        }
+        .stats-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .form-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: 500;
+        }
+        .form-group select, .form-group input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        .form-group button {
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+        .no-data {
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Thống kê suất chiếu', 'bi-bar-chart')}"></div>
+</div>
+<div layout:fragment="content">
+    <div class="container stats-container">
+        <h2>Thống kê suất chiếu</h2>
+        <form th:action="@{/admin/showtime/statistics}" method="get" class="form-group">
+            <label for="statsViewType">Chế độ xem:</label>
+            <select name="statsViewType" id="statsViewType" onchange="toggleDateInputs()">
+                <option value="day" th:selected="${statsViewType == 'day'}">Ngày</option>
+                <option value="range" th:selected="${statsViewType == 'range'}">Khoảng ngày</option>
+                <option value="month" th:selected="${statsViewType == 'month'}">Tháng</option>
+                <option value="year" th:selected="${statsViewType == 'year'}">Năm</option>
+            </select>
+
+            <div id="dayInput" style="display: none;">
+                <label for="showDate">Chọn ngày:</label>
+                <input type="date" name="showDate" id="showDate" th:value="${selectedDate}" required/>
+            </div>
+            <div id="rangeInput" style="display: none;">
+                <label for="startDate">Từ ngày:</label>
+                <input type="date" name="startDate" id="startDate" th:value="${startDate}" required/></br>
+                <label for="endDate">Đến ngày:</label>
+                <input type="date" name="endDate" id="endDate" th:value="${endDate}" required/>
+            </div>
+            <div id="monthInput" style="display: none;">
+                <label for="month">Tháng:</label>
+                <select name="month" id="month">
+                    <option value="1">Tháng 1</option>
+                    <option value="2">Tháng 2</option>
+                    <option value="3">Tháng 3</option>
+                    <option value="4">Tháng 4</option>
+                    <option value="5">Tháng 5</option>
+                    <option value="6">Tháng 6</option>
+                    <option value="7">Tháng 7</option>
+                    <option value="8">Tháng 8</option>
+                    <option value="9">Tháng 9</option>
+                    <option value="10">Tháng 10</option>
+                    <option value="11">Tháng 11</option>
+                    <option value="12">Tháng 12</option>
+                </select>
+                <label for="monthYear">Năm:</label>
+                <select name="year" id="monthYear">
+                    <option th:each="year : ${#numbers.sequence(2020, 2030)}" th:value="${year}" th:text="${year}"></option>
+                </select>
+            </div>
+            <div id="yearInput" style="display: none;">
+                <label for="year">Năm:</label>
+                <select name="year" id="year">
+                    <option th:each="year : ${#numbers.sequence(2020, 2030)}" th:value="${year}" th:text="${year}"></option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Xem</button>
+        </form>
+
+        <div th:if="${error}" th:text="${error}" class="alert alert-danger"></div>
+        <div th:if="${success}" th:text="${success}" class="alert alert-success"></div>
+
+        <h3>Thống kê phim</h3>
+        <ul class="movie-stats-list">
+            <!-- Fix: use Thymeleaf literal substitution instead of mixed ${} + strings -->
+            <li th:each="movie : ${movieStats}"
+                th:text="|Phim ${movie.movie_name}: ${movie.showtime_count} suất|"></li>
+
+            <!-- Null-safe empty state -->
+            <li th:if="${#lists.isEmpty(movieStats)}" class="no-data">Không có dữ liệu</li>
+        </ul>
+
+
+        <h3>Thống kê phòng chiếu</h3>
+        <table class="stats-table">
+            <thead>
+            <tr>
+                <th>Phòng chiếu</th>
+                <th>Số phim</th>
+                <th>Chi tiết phim</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="stat : ${statistics}"
+                th:with="roomName=${stat.room_name}, movieCount=${stat.movie_count}, movies=${stat.movies}">
+                <td th:text="${roomName}"></td>
+                <td th:text="${movieCount}"></td>
+                <td>
+                    <ul>
+                        <li th:each="m : ${movies}"
+                            th:text="|${m.movie_name}: ${m.showtime_count} suất chiếu|"></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(statistics)}">
+                <td colspan="3" class="no-data">Không có dữ liệu</td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function formatDateLocal(d) {
+            // YYYY-MM-DD in local time (avoids UTC off-by-one)
+            return d.toLocaleDateString('en-CA');
+        }
+
+        function startOfISOWeek(d) {
+            const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const day = date.getDay() || 7; // Mon=1 ... Sun=7
+            if (day !== 1) date.setDate(date.getDate() - (day - 1));
+            return date;
+        }
+
+        function endOfISOWeek(d) {
+            const start = startOfISOWeek(d);
+            const end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            return end;
+        }
+
+        function setSection(viewType) {
+            const groups = ['day', 'range', 'month', 'year'];
+
+            groups.forEach(g => {
+                const block = document.getElementById(g + 'Input');
+                const controls = block.querySelectorAll('input, select');
+                const active = (g === viewType);
+
+                // show/hide section
+                block.style.display = active ? 'block' : 'none';
+
+                // enable only active section's controls; remove required on inactive
+                controls.forEach(el => {
+                    el.disabled = !active;
+                    if (active) {
+                        el.setAttribute('required', '');
+                    } else {
+                        el.removeAttribute('required');
+                    }
+                });
+            });
+
+            // set sensible defaults only if empty
+            const today = new Date();
+            if (viewType === 'day') {
+                const el = document.getElementById('showDate');
+                if (!el.value) el.value = formatDateLocal(today);
+            } else if (viewType === 'range') {
+                const s = startOfISOWeek(today);
+                const e = endOfISOWeek(today);
+                const startEl = document.getElementById('startDate');
+                const endEl = document.getElementById('endDate');
+                if (!startEl.value) startEl.value = formatDateLocal(s);
+                if (!endEl.value) endEl.value = formatDateLocal(e);
+            } else if (viewType === 'month') {
+                const m = document.getElementById('month');
+                const y = document.getElementById('monthYear');
+                if (!m.value) m.value = today.getMonth() + 1;
+                if (!y.value) y.value = today.getFullYear();
+            } else if (viewType === 'year') {
+                const y = document.getElementById('year');
+                if (!y.value) y.value = today.getFullYear();
+            }
+        }
+
+        function toggleDateInputs() {
+            const statsViewType = document.getElementById('statsViewType').value;
+            setSection(statsViewType);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // initialize on load
+            toggleDateInputs();
+
+            // re-run when view type changes
+            document.getElementById('statsViewType')
+                .addEventListener('change', toggleDateInputs);
+        });
+    </script>
+</div>
+</body>
+</html>

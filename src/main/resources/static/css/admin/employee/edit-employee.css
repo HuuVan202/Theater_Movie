@@ -1,0 +1,72 @@
+/* Phone input with prefix */
+.phone-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.phone-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    color: #495057;
+    z-index: 2;
+    pointer-events: none;
+    font-size: 14px;
+    border-right: 1px solid #dee2e6;
+}
+
+.phone-input input {
+    padding-left: 65px !important;
+}
+
+/* Salary input with thousand button */
+.salary-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.salary-input input {
+    padding-right: 70px !important;
+    flex: 1;
+}
+
+.thousand-btn {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.thousand-btn:hover {
+    background: linear-gradient(135deg, #218838, #1abc9c);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.thousand-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+.body{
+    background-color: #0083ff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

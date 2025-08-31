@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch Sử Chat Hỗ Trợ - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container py-5">
+    <h1 class="text-center fw-bold mb-4">
+        <i class="fas fa-history me-2"></i>Lịch Sử Chat Hỗ Trợ
+    </h1>
+    <div class="row g-4">
+        <!-- Sidebar - Danh sách khách hàng -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">
+                        <i class="fas fa-users me-2"></i>Danh Sách Hội Thoại Đã Kết Thúc
+                        <span class="badge bg-warning text-dark ms-2" th:text="${#lists.size(inactiveDialogues)}">0</span>
+                    </h5>
+                    <div class="customer-list">
+                        <div th:if="${inactiveDialogues.isEmpty()}" class="empty-state">
+                            <i class="fas fa-comments"></i>
+                            <p>Chưa có lịch sử hội thoại</p>
+                            <small>Các hội thoại đã kết thúc sẽ hiển thị ở đây</small>
+                        </div>
+                        <div th:unless="${inactiveDialogues.isEmpty()}" th:each="dialogue, stat : ${inactiveDialogues}">
+                            <div class="customer-list-item" th:classappend="${dialogue.dialogueId == selectedDialogue?.dialogueId} ? 'active' : ''">
+                                <div class="customer-info">
+                                    <div class="customer-avatar" th:text="${stat.count}">1</div>
+                                    <div class="customer-details">
+                                        <p class="customer-name" th:text="${dialogue.customerName ?: 'Khách hàng #' + (dialogue.user1Id == account.accountId ? dialogue.user2Id : dialogue.user1Id)}">Unknown User</p>
+                                        <p class="customer-status">
+                                            <i class="fas fa-circle text-danger me-1"></i>Đã kết thúc
+                                        </p>
+                                        <p class="customer-time" th:text="${#dates.format(dialogue.createdAt, 'HH:mm - dd/MM')}">Vừa xong</p>
+                                    </div>
+                                </div>
+                                <a th:href="@{/chat/history(dialogueId=${dialogue.dialogueId})}" class="stretched-link"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <!-- Chat Header -->
+                    <div class="chat-header">
+                        <h5 class="card-title fw-bold mb-0">
+                            <span th:if="${selectedDialogue != null}">
+                                <i class="fas fa-comment-dots me-2"></i>Chat với
+                                <span class="text-warning" th:text="${selectedDialogue.customerName ?: 'Khách hàng #' + (selectedDialogue.user1Id == account.accountId ? selectedDialogue.user2Id : selectedDialogue.user1Id)}">Unknown User</span>
+                            </span>
+                            <span th:unless="${selectedDialogue != null}">
+                                <i class="fas fa-comment-alt me-2"></i>Chọn một cuộc hội thoại
+                            </span>
+                        </h5>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chatMessages" class="chat-messages flex-grow-1 mb-3">
+                        <div th:if="${selectedDialogue == null}" class="welcome-screen">
+                            <div class="welcome-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h4>Chào mừng đến với Lịch Sử Chat</h4>
+                            <p class="mb-4">Vui lòng chọn một cuộc hội thoại để xem lịch sử tin nhắn.</p>
+                        </div>
+                        <div th:if="${selectedDialogue}">
+                            <input type="hidden" id="dialogueId" th:value="${selectedDialogue.dialogueId}">
+                            <input type="hidden" id="accountId" th:value="${account.accountId}">
+                            <div th:each="chat : ${chats}" class="message"
+                                 th:classappend="${chat.senderId == account.accountId} ? 'user-message' : 'support-message'">
+                                <div th:if="${chat.messageContent.startsWith('IMAGE:')}" class="image-container">
+                                    <img th:src="${#strings.substring(chat.messageContent, 6)}"
+                                         class="chat-image"
+                                         th:onclick="'openImageModal(\'' + ${#strings.substring(chat.messageContent, 6)} + '\')'">
+                                </div>
+                                <div th:unless="${chat.messageContent.startsWith('IMAGE:')}" th:text="${chat.messageContent}"></div>
+                                <div class="message-time" th:text="${#dates.format(chat.sentAt, 'HH:mm')}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="image-modal">
+    <span class="image-modal-close">&times;</span>
+    <div class="image-modal-content">
+        <img id="modalImage" src="" alt="Image">
+        <div class="image-modal-info">
+            <p>Click để đóng hoặc nhấn ESC</p>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@6.1.2/bundles/stomp.umd.min.js"></script>
+<script src="/js/chat.js"></script>
+<script>
+    const accountId = /*[[${account.accountId}]]*/ 0;
+    const dialogueId = /*[[${selectedDialogue?.dialogueId}]]*/ null;
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    function openImageModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = imageSrc;
+        document.body.style.overflow = 'hidden';
+    }
+
+    document.querySelector('.image-modal-close')?.addEventListener('click', function() {
+        document.getElementById('imageModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    document.getElementById('imageModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.getElementById('imageModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<div th:fragment="movieCard(movie, actionLink, actionText, actionColor)"
+     class="card h-150 movie-card border-0 shadow-lg rounded-3 cursor-pointer position-relative overflow-hidden"
+     th:onclick="'window.location.href=\'detail/' + ${movie.movieId} + '\''"
+     style="background: rgba(26, 31, 46, 0.8); backdrop-filter: blur(10px); transition: all 0.3s ease; border: 2px solid transparent;"
+     onmouseover="this.style.transform='translateY(-8px) scale(1.03)'; this.style.boxShadow='0 0 40px rgba(249, 168, 37, 0.4)'; this.style.borderColor='#f9a825';"
+     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.3)'; this.style.borderColor='transparent';">
+
+<!-- Only render fire ring if movie.featured == 1 -->
+    <!-- Glow effect overlay -->
+    <div class="position-absolute top-0 start-0 w-100 h-100"
+         style="background: linear-gradient(135deg, rgba(249, 168, 37, 0.05) 0%, transparent 50%); pointer-events: none; z-index: 1;"></div>
+
+    <!-- Movie Image Container -->
+    <div class="ratio ratio-2x3" style="position: relative; width: 100%; height: 380px; overflow: hidden;">
+        <img th:src="${movie.smallImageUrl != null && !#strings.isEmpty(movie.smallImageUrl) ? movie.smallImageUrl : movie.largeImageUrl}"
+             th:alt="${movie.movieNameVn} ?: 'Movie Poster'"
+             class="w-100 h-100"
+             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center;"
+             loading="lazy">
+    </div>
+
+    <!-- Movie Content -->
+    <div class="card-body text-white position-relative" style="background: rgba(26, 31, 46, 0.95); z-index: 2;">
+        <!-- Movie Title with glow effect -->
+        <h5 class="card-title fw-bold text-truncate mb-2"
+            th:text="${movie.movieNameVn != null and !#strings.isEmpty(movie.movieNameVn)} ? ${movie.movieNameVn} : 'N/A'"
+            style="color: #fff; transition: all 0.3s ease; text-shadow: 0 0 5px rgba(249, 168, 37, 0.3);"
+            onmouseover="this.style.color='#f9a825'; this.style.transform='translateY(-2px)';"
+            onmouseout="this.style.color='#fff'; this.style.transform='translateY(0)';"></h5>
+
+        <!-- Genre with golden accent -->
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+            <div class="badge genre-badge text-truncate me-2">
+                <i class="bi bi-tags-fill me-1"></i>
+                <span th:if="${movie.genres != null and !#lists.isEmpty(movie.genres)}">
+                    <span th:each="genre, iterStat : ${movie.genres}">
+                        <span th:text="${#messages.msgOrNull('genre.' + genre) ?: genre} + (${iterStat.last} ? '' : ', ')"></span>
+                    </span>
+                </span>
+                <span th:unless="${movie.genres != null and !#lists.isEmpty(movie.genres)}"
+                      th:text="#{not_categorized}">Chưa phân loại
+                </span>
+            </div>
+            <span class="film-rating text-nowrap">
+                <i class="bi bi-star-fill me-1"></i>
+                <span th:text="${movie.ageRating?.ratingCode ?: 'N/A'}"></span>
+            </span>
+        </div>
+
+
+
+        <!-- Duration with icon -->
+        <div th:if="${movie.duration != null}" class="mb-2 d-flex align-items-center">
+            <i class="bi bi-clock-fill me-2" style="color: #f9a825; font-size: 0.9rem;"></i>
+            <span class="small" style="color: #bfc9d9;">
+                    <span th:text="${movie.duration} + ' ' + #{duration_min}"></span>
+                </span>
+        </div>
+
+        <!-- Release Date with icon -->
+        <div th:if="${movie.fromDate != null}" class="mb-3 d-flex align-items-center">
+            <i class="bi bi-calendar-event-fill me-2" style="color: #f9a825; font-size: 0.9rem;"></i>
+            <span class="small" style="color: #bfc9d9;">
+                    <span th:text="${#temporals.format(movie.fromDate, 'dd/MM/yyyy')}"></span>
+                </span>
+        </div>
+
+        <a href="#" class="btn btn-danger px-4 py-2 fw-bold shadow"
+           style="font-size: 1.1rem;"
+           data-bs-toggle="modal"
+           data-bs-target="#bookingModal"
+           th:if="${movie != null}"
+           th:attr="data-movie-id=${movie.movieId}, data-movie-name=${movie.movieNameVn ?: 'N/A'}"
+           onclick="event.stopPropagation(); document.getElementById('bookingModal').setAttribute('data-current-movie-id', this.getAttribute('data-movie-id'));">
+            <span class="bi bi-ticket-perforated" th:text="#{buy_ticket_now}"></span>
+        </a>
+
+    </div>
+
+    <!-- Festival sparkle effects (optional decorative elements) -->
+    <div class="position-absolute"
+         style="top: 10px; right: 10px; width: 8px; height: 8px; background: #f9a825; border-radius: 50%; opacity: 0.6; animation: twinkle 2s ease-in-out infinite; z-index: 4;"></div>
+    <div class="position-absolute"
+         style="top: 20px; left: 15px; width: 6px; height: 6px; background: #fbbf24; border-radius: 50%; opacity: 0.4; animation: twinkle 3s ease-in-out infinite 1s; z-index: 4;"></div>
+</div>
+
+<!-- Enhanced CSS with image debugging -->
+<style>
+
+    @keyframes twinkle {
+        0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.8;
+            transform: scale(1.2);
+        }
+    }
+
+    .movie-card {
+        padding: 8px !important;
+        margin-bottom: 16px;
+    }
+
+    .movie-card .card-title {
+        font-size: 1rem;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .movie-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid transparent;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .movie-card:hover::before {
+        border-color: #f9a825;
+        box-shadow: 0 0 20px rgba(249, 168, 37, 0.3);
+    }
+
+    /* Ensure images display properly */
+    .movie-card img {
+        display: block !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
+    /* Debug styles - remove in production */
+    .movie-card img[src=""],
+    .movie-card img:not([src]) {
+        background: #ef4444 !important;
+        position: relative;
+    }
+
+    .movie-card img[src=""]:after,
+    .movie-card img:not([src]):after {
+        content: "No Image URL";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .genre-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, rgba(249, 168, 37, 0.1), rgba(249, 168, 37, 0.05));
+        border: 1.5px solid #f9a825;  /* dùng màu đậm, không trong suốt */
+        color: #f9a825 !important;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.25rem 0.5rem;
+        line-height: 1;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+
+    .genre-badge:hover {
+        border-color: #f59e0b;
+        background-color: rgba(249, 168, 37, 0.1);
+        box-shadow: 0 0 5px rgba(249, 168, 37, 0.3);
+    }
+
+    .film-rating {
+        color: #f9a825 !important;
+        font-weight: 600;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .movie-card {
+            margin-bottom: 1.5rem;
+        }
+
+        .movie-card .card-title {
+            font-size: 1rem;
+        }
+
+        .movie-card .btn {
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+    }
+</style>
+
+

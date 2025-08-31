@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: movie_theater
+    env: docker
+    plan: free
+    buildCommand: "./mvnw clean package -DskipTests=true"
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8080

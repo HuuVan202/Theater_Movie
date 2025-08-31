@@ -1,0 +1,1004 @@
+body.light-mode {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /*background: linear-gradient(to bottom, #f5f7fa, #ffffff);*/
+    background-color: #f9f6ef; /* màu kem nhẹ dịp lễ hội */
+    color: #212529;
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background-color 0.5s ease;
+}
+
+body:not(.dark-mode) .floating-lanterns {
+    display: none !important;
+}
+
+/* ========= HEADER ========= */
+body.light-mode .header {
+    background-color: #CFCFCF;
+    color: #1a1a1a;
+    border-bottom: 1px solid #cdd9ed;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .logo span {
+    color: #f9a825;
+}
+body.light-mode .logo:hover span {
+    color: #ffc107;
+}
+body.light-mode .logo img {
+    filter: none;
+}
+
+/* ========= NAVIGATION ========= */
+body.light-mode .main-nav .nav-link {
+    color: #2a2a2a;
+}
+body.light-mode .main-nav .nav-link:hover {
+    color: #f9a825;
+}
+body.light-mode .main-nav .nav-link::after {
+    background: #f9a825;
+}
+
+/* ========= BUTTONS ========= */
+body.light-mode .login-btn,
+body.light-mode .logout-btn {
+    background-color: #f9a825;
+    color: white;
+}
+body.light-mode .login-btn:hover,
+body.light-mode .logout-btn:hover {
+    background-color: #f9a825   ;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-decoration: none;
+}
+
+body.light-mode .lang-btn {
+    background: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #2a2a2a;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+body.light-mode .lang-btn:hover {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #CFCFCF;
+    color: #f9a825;
+    box-shadow: 0 2px 8px rgba(249, 168, 37, 0.15);
+}
+
+body.light-mode .lang-btn.active {
+    background: #f9a825;
+    border-color: #f9a825;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+body.light-mode .language-switcher select {
+    background: #CFCFCF !important;
+    color: #1a1a1a !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .language-switcher select:hover {
+    border-color: #f9a825 !important;
+    box-shadow: 0 0 10px rgba(249, 168, 37, 0.2) !important;
+    transform: translateY(-2px);
+}
+
+body.light-mode .language-switcher select:focus {
+    border-color: #f9a825 !important;
+    box-shadow: 0 0 12px rgba(249, 168, 37, 0.25) !important;
+}
+
+body.light-mode .language-switcher::after {
+    color: #f9a825 !important;
+}
+
+body.light-mode .language-switcher select option {
+    background: #CFCFCF !important;
+    color: #1a1a1a !important;
+}
+
+/* ========= USER FULLNAME ========= */
+body.light-mode .user-fullname {
+    color: #1a1a1a !important;
+}
+
+/* ========= USER DROPDOWN ========= */
+body.light-mode .user-dropdown .dropdown-menu {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+body.light-mode .dropdown-header {
+    background: #eaf4ff;
+    border-bottom: 1px solid #cce0f4;
+}
+body.light-mode .dropdown-header .user-name {
+    color: #1a1a1a;
+}
+body.light-mode .dropdown-header .user-email {
+    color: #555;
+}
+body.light-mode .user-dropdown .dropdown-item {
+    color: #212529;
+}
+body.light-mode .user-dropdown .dropdown-item:hover {
+    background-color: #f0f4ff;
+}
+body.light-mode .user-dropdown .dropdown-item i {
+    color: #212529;
+}
+body.light-mode .user-dropdown .dropdown-item:hover i {
+    color: #CD6600;
+}
+body.light-mode .user-dropdown .dropdown-item.logout {
+    color: #d32f2f;
+}
+body.light-mode .user-dropdown .dropdown-item.logout:hover {
+    background-color: #ffebee;
+    color: #b71c1c;
+}
+
+/* ========= FOOTER ========= */
+body.light-mode footer,
+body.light-mode .footer-bottom {
+    background-color: #CFCFCF;
+    color: #2a2a2a;
+    border-top: 1px solid #1C1C1C;
+}
+body.light-mode footer a {
+    color: #2a2a2a;
+}
+body.light-mode footer a:hover {
+    color: #CD6600;
+}
+body.light-mode .footer-logo span {
+    color: #2e7d32;
+}
+body.light-mode .footer-column h4 {
+    color: #1C1C1C;
+}
+
+body.light-mode .social-icons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+body.light-mode .social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(45deg, #f9a825, #f59e0b);
+    color: #fff;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(232, 148, 45, 0.3);
+}
+
+body.light-mode .social-icons a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(220, 38, 38, 0.9);
+    color: white !important;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+body.light-mode .social-icons a:hover::before {
+    opacity: 1;
+}
+
+body.light-mode .social-icons a i {
+    position: relative;
+    z-index: 1;
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+body.light-mode .social-icons a:hover i {
+    transform: scale(1.1);
+}
+
+body.light-mode .social-icons i{
+    color: white !important;
+}
+
+/* ========= Start FAQ & CATEGORY ========= */
+body.light-mode .faq-header {
+    background: linear-gradient(135deg, #fdf7e3 0%, #ffffff 100%);
+    color: #212529;
+}
+body.light-mode .faq-header::before {
+    background: linear-gradient(135deg, rgba(255, 213, 79, 0.08), rgba(255, 241, 118, 0.05));
+}
+body.light-mode .faq-header h1 {
+    color: #fbc02d;
+}
+body.light-mode .faq-header p {
+    color: #555;
+}
+
+body.light-mode .category-card {
+    background: #ffffff;
+    color: #212529;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+body.light-mode .category-card:hover {
+    border-color: #f9a825;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+body.light-mode .category-header {
+    background: #f9a825;
+    color: white;
+}
+
+/* ========= QUESTION / ANSWER ========= */
+body.light-mode .question-item {
+    border-bottom: 1px solid #dee2e6;
+}
+body.light-mode .question-button {
+    background-color: #ffffff;
+    color: #212529;
+}
+body.light-mode .question-button:hover,
+body.light-mode .question-button[aria-expanded="true"] {
+    background-color: #fff9c4;
+    color: #f9a825;
+}
+body.light-mode .question-icon {
+    color: #fbc02d;
+}
+body.light-mode .answer-content {
+    background-color: #fefefe;
+    color: #495057;
+    border-top: 1px solid #dee2e6;
+}
+
+/* ========= CONTACT ========= */
+body.light-mode .contact-section {
+    background: linear-gradient(135deg, #fffbe6 60%, #ffffff 100%);
+    border: 1px solid #fce8b2;
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    padding: 50px;
+    text-align: center;
+    margin: 60px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+body.light-mode .contact-section h3 {
+    color: #f9a825;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+body.light-mode .contact-section p {
+    color: #495057;
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+body.light-mode .contact-options {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+body.light-mode .contact-btn {
+    background: linear-gradient(135deg, #f9a825 0%, #f59e0b 100%);
+    color: white;
+    border: none;
+    padding: 25px 35px;
+    border-radius: 15px;
+    cursor: pointer;
+    min-width: 180px;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(249, 168, 37, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+body.light-mode .contact-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(249, 168, 37, 0.4);
+}
+
+body.light-mode .contact-btn i {
+    display: block;
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+    transition: transform 0.3s ease;
+}
+
+body.light-mode .contact-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* ========= MISC ========= */
+body.light-mode .hover-overlay {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #2a2a2a;
+}
+body.light-mode .scroll-btn {
+    background-color: #1a73e8;
+    color: white;
+}
+body.light-mode .swiper-pagination-bullet {
+    background: #999;
+    border-color: #1a73e8;
+}
+body.light-mode .swiper-pagination-bullet-active {
+    background: #1a73e8;
+    box-shadow: 0 0 0 8px rgba(26, 115, 232, 0.15);
+}
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode h5,
+body.light-mode h6,
+body.light-mode .card-title {
+    color: #1f2937 !important;
+}
+
+/* ========= RESPONSIVE MENU ========= */
+body.light-mode .hamburger-btn {
+    color: #1a1a1a;
+}
+body.light-mode .hamburger-btn:hover {
+    color: #1a73e8;
+}
+body.light-mode .main-nav {
+    background-color: #CFCFCF;
+}
+
+/* ========= CONTAINER ========= */
+body.light-mode .faq-container {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+body.light-mode .collapse {
+    background-color: #fefefe;
+}
+
+body.light-mode .dropdown-menu {
+    background-color: #ffffff;
+    color: #212529;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+body.light-mode .dropdown-item {
+    color: #212529;
+}
+body.light-mode .dropdown-item:hover {
+    background-color: #fff3cd;
+    color: #f59e0b;
+}
+
+body.light-mode .dropdown-divider {
+    border-top: 1px solid #dee2e6;
+}
+
+body.light-mode .user-avatar {
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+}
+
+body.light-mode .contact-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+body.light-mode .question-button[aria-expanded="true"] {
+    background-color: #fff3cd;
+    color: #f59e0b;
+}
+/* ========= End FAQ & CATEGORY ========= */
+
+/* ========= Start Refund & Policy ========= */
+body.light-mode .refund-policy-container {
+    max-width: 1200px;
+    margin-top: 70px;
+}
+
+/* Base card */
+body.light-mode .card {
+    background: linear-gradient(135deg, #fffde7 60%, #ffffff 100%);
+    border: 1px solid #fce8b2;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    color: #212529;
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+body.light-mode .card:hover {
+    box-shadow: 0 8px 32px rgba(249, 168, 37, 0.1);
+    transform: translateY(-2px) scale(1.01);
+}
+
+body.light-mode .card-title,
+body.light-mode .fw-bold {
+    color: #f9a825;
+    font-weight: bold;
+}
+
+body.light-mode .card-text,
+body.light-mode .text-muted,
+body.light-mode .refund-policy-container li,
+body.light-mode .refund-policy-container ul,
+body.light-mode .refund-policy-container .mb-2,
+body.light-mode .refund-policy-container .contact-box div:not(.fw-bold) {
+    color: #495057 !important;
+}
+
+/* Card types */
+body.light-mode .refund-allow-card {
+    border-left: 5px solid #22c55e;
+}
+body.light-mode .refund-deny-card {
+    border-left: 5px solid #ef4444;
+}
+
+body.light-mode .refund-process-card {
+    border-left: 5px solid #f9a825;
+    background: linear-gradient(135deg, #fff9e6 60%, #fffdfa 100%);
+}
+
+body.light-mode .refund-process-card .row > div,
+body.light-mode .refund-process-card .row > div > div,
+body.light-mode .refund-process-card .row > div > div.text-muted {
+    color: #495057 !important;
+}
+
+/* Step circle */
+body.light-mode .step-circle {
+    display: inline-block;
+    width: 38px;
+    height: 38px;
+    line-height: 38px;
+    border-radius: 50%;
+    background: #f9a825;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 8px rgba(249, 168, 37, 0.2);
+}
+
+/* Other cards */
+body.light-mode .refund-method-card {
+    border-left: 5px solid #f9a825;
+}
+
+body.light-mode .refund-special-card {
+    border-left: 5px solid #f59e0b;
+    background: linear-gradient(135deg, #fff3cd 60%, #fffbe6 100%);
+    color: #7c5a00;
+}
+body.light-mode .refund-special-card ul li b {
+    color: #7c5a00;
+}
+
+body.light-mode .refund-contact-card {
+    border-left: 5px solid #ef4444;
+    background: linear-gradient(135deg, #fff5f5 60%, #ffecec 100%);
+}
+
+/* Contact box */
+body.light-mode .contact-box {
+    background: rgba(249, 168, 37, 0.07);
+    border-radius: 12px;
+    padding: 18px 10px;
+    margin-bottom: 8px;
+    color: #212529;
+    box-shadow: 0 2px 8px rgba(249, 168, 37, 0.07);
+}
+body.light-mode .contact-box i {
+    color: #f9a825;
+    font-size: 1.5rem;
+}
+
+/* Titles and icons */
+body.light-mode .refund-title {
+    color: #f9a825;
+    font-size: 2.5rem;
+}
+body.light-mode .refund-desc {
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+body.light-mode .refund-section-title {
+    color: #f9a825;
+    font-size: 1.2rem;
+}
+body.light-mode .refund-section-title-warning {
+    color: #f59e0b;
+    font-size: 1.1rem;
+}
+body.light-mode .refund-section-title-danger {
+    color: #ef4444;
+    font-size: 1.2rem;
+}
+
+body.light-mode .refund-icon {
+    color: #f9a825;
+    font-size: 1.5rem;
+}
+body.light-mode .refund-icon-success {
+    color: #22c55e;
+    font-size: 1.5rem;
+}
+body.light-mode .refund-icon-danger {
+    color: #ef4444;
+    font-size: 1.5rem;
+}
+body.light-mode .refund-icon-warning {
+    color: #f59e0b;
+    font-size: 1.5rem;
+}
+/* ========= End Refund & Policy ========= */
+
+/* ========= Start Support ========= */
+body.light-mode .support-form-card-input {
+    margin-bottom: 12px;
+}
+
+body.light-mode .text-danger {
+    color: #dc2626 !important;
+    font-size: 0.9rem;
+}
+
+body.light-mode .alert-danger {
+    background-color: #fdecea;
+    color: #b91c1c;
+    border: 1px solid #f8d7da;
+    font-weight: 500;
+}
+
+body.light-mode .alert-success {
+    background-color: #ecfdf5;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    font-weight: 500;
+}
+
+body.light-mode .support-form-card .btn-danger {
+    color: white;
+}
+
+body.light-mode .text-center.mb-4 {
+    color: #696969 !important;
+}
+
+body.light-mode h1.text-center {
+    color: #f59e0b;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .btn-warning {
+    color: #7c4700 !important;
+}
+
+body.light-mode .text-muted {
+    color: #6c757d !important;
+}
+
+body.light-mode footer,
+body.light-mode .footer-container,
+body.light-mode .footer-column,
+body.light-mode .footer-column ul,
+body.light-mode .footer-column ul li,
+body.light-mode .footer-column ul li a {
+    color: #2a2a2a !important;
+}
+
+body.light-mode .footer-column ul li a:hover {
+    color: #388e3c !important;
+    text-decoration: underline;
+}
+
+body.light-mode .support-form-card label {
+    display: block;
+    color: #3e3e3e;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+/* ===== FORM INPUT FIX FOR SUPPORT PAGE IN LIGHT MODE ===== */
+body.light-mode input.form-control,
+body.light-mode select.form-select,
+body.light-mode textarea.form-control {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border: 1px solid #ced4da !important;
+    font-weight: 500;
+}
+
+body.light-mode input.form-control::placeholder,
+body.light-mode textarea.form-control::placeholder {
+    color: #6c757d;
+    font-weight: 400;
+}
+
+body.light-mode input.form-control:focus,
+body.light-mode textarea.form-control:focus,
+body.light-mode select.form-select:focus {
+    border-color: #f9a825; /* Màu vàng đặc trưng */
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(249, 168, 37, 0.25); /* Glow vàng nhẹ */
+}
+
+body.light-mode .form-select option {
+    background-color: #fff !important;
+    color: #212529;
+}
+/* ========= End Support ========= */
+
+/* ========= Start Terms ========= */
+body.light-mode #bg-canvas {
+    background-color: #f9f9f9;
+}
+
+body.light-mode .content,
+body.light-mode .widget,
+body.light-mode #quy-dinh-chung,
+body.light-mode #dieu-khoan-giao-dich,
+body.light-mode #quy-dinh-tai-rap-chieu-phim,
+body.light-mode #chinh-sach-bao-mat {
+    color: #212529;
+}
+
+body.light-mode .content h2,
+body.light-mode .widget h2,
+body.light-mode .section-title {
+    color: #f9a825; /* vàng dịu */
+}
+
+body.light-mode .content ol {
+    color: #333;
+}
+
+body.light-mode .content ol li a,
+body.light-mode .widget a {
+    color: #f9a825;
+    text-decoration: underline;
+}
+
+body.light-mode .content ol li a:hover,
+body.light-mode .widget a:hover {
+    color: #CD6600;
+}
+
+body.light-mode .widget p {
+    color: #444;
+}
+
+body.light-mode .content-row {
+    background: none;
+    color: #212529;
+}
+/* ========= End Terms ========= */
+
+/* ========= Start Error ========= */
+body.light-mode {
+    background: linear-gradient(to bottom, #f5f7fa, #ffffff);
+    color: #212529;
+}
+
+body.light-mode .error-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+    color: #212529;
+}
+
+body.light-mode .error-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #212529;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .error-title {
+    color: #f59e0b; /* vàng dịu */
+}
+
+body.light-mode .error-message {
+    color: #495057;
+    opacity: 1;
+}
+
+body.light-mode .error-code {
+    color: rgba(33, 37, 41, 0.6);
+}
+
+body.light-mode .btn-primary {
+    background-color: #f59e0b;
+    color: #000;
+}
+
+body.light-mode .btn-primary:hover {
+    background-color: #e67e22;
+}
+
+body.light-mode .btn-secondary {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .error-icon-wrapper {
+    background: rgba(255, 87, 34, 0.1);
+    border: 2px solid rgba(255, 87, 34, 0.3);
+}
+
+body.light-mode .error-icon {
+    color: #d32f2f;
+}
+
+body.light-mode .error-icon-wrapper::before {
+    background: radial-gradient(circle, rgba(255, 87, 34, 0.2) 0%, transparent 70%);
+}
+
+body.light-mode .error-icon-wrapper::after {
+    border: 1px solid rgba(255, 87, 34, 0.2);
+}
+
+body.light-mode .min-h-screen.pt-16 {
+    background: linear-gradient(to bottom, #fdfdfd, #f3f4f6);
+}
+/* ========= End Error ========= */
+
+/* ========= Start ShowingList & CommingList========= */
+/* Tiêu đề */
+body.light-mode h1,
+body.light-mode h2 {
+    color: #f59e0b;
+}
+
+/* Mô tả */
+body.light-mode p {
+    color: #4b5563;
+}
+
+/* Section form tìm kiếm */
+body.light-mode section {
+    background-color: transparent;
+}
+
+body.light-mode .border {
+    border-color: #d1d5db !important;
+}
+
+body.light-mode input,
+body.light-mode select {
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #111827;
+}
+
+body.light-mode input::placeholder {
+    color: #9ca3af;
+}
+
+body.light-mode select option {
+    color: #111827;
+}
+
+body.light-mode .fa-search {
+    color: #9ca3af;
+}
+
+/* Button tìm kiếm */
+body.light-mode button[type="submit"] {
+    background-color: #f87171;
+    color: #fff;
+}
+
+body.light-mode button[type="submit"]:hover {
+    background-color: #ef4444;
+}
+
+/* Button hiện tất cả */
+body.light-mode a.block {
+    background-color: #6b7280;
+    color: #fff;
+}
+
+body.light-mode a.block:hover {
+    background-color: #4b5563;
+}
+
+/* Thông báo khi không có phim */
+body.light-mode .text-#D9D6C3 {
+    color: #4b5563 !important;
+}
+
+body.light-mode .fa-search-minus,
+body.light-mode .fa-film {
+    color: #f59e0b;
+}
+
+/* Link tiêu đề phim đang chiếu, sắp chiếu */
+body.light-mode .movie-titles h2 a {
+    color: #f59e0b;
+}
+
+body.light-mode .movie-titles h2 a:hover {
+    color: #ef4444;
+}
+
+/* Light Mode Styles */
+body.light-mode .movie-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(6px);
+    color: #1a1a1a;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .movie-card .card-body {
+    background: transparent !important;
+    color: #1a1a1a !important;
+}
+
+body.light-mode .movie-card .card-title {
+    color: #1a1a1a !important;
+    text-shadow: none !important;
+}
+
+body.light-mode .movie-card .card-title:hover {
+    color: #f9a825 !important;
+}
+
+body.light-mode .movie-card .small {
+    color: #444 !important;
+}
+
+body.light-mode .badge {
+    background: rgba(249, 168, 37, 0.15) !important;
+    color: #b45309 !important;
+    border: 1px solid rgba(249, 168, 37, 0.3) !important;
+}
+
+body:not(.light-mode) .badge.genre-badge {
+    background: linear-gradient(135deg, rgba(249, 168, 37, 0.1), rgba(249, 168, 37, 0.05));
+    border: 1.5px solid #f9a825;
+    color: #f9a825 !important;
+}
+
+body:not(.light-mode) .film-rating{
+    color: #f9a825;
+}
+
+body.light-mode .film-rating{
+    color: #b45309 !important;
+}
+
+/* Button vẫn giữ màu đỏ nhưng cải thiện màu hover */
+body.light-mode .movie-card .btn-danger {
+    background-color: #dc2626;
+    color: white;
+}
+
+body.light-mode .movie-card .btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+/* Ô tìm kiếm */
+body.light-mode input#search {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    border: 1px solid #ccc !important;
+}
+
+body.light-mode input#search::placeholder {
+    color: #999 !important;
+}
+
+body.light-mode .form-select,
+body.light-mode select {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    border: 1px solid #ccc !important;
+}
+
+body.light-mode .movie-card:hover::before {
+    border-color: #f9a825;
+    box-shadow: 0 0 16px rgba(249, 168, 37, 0.25);
+}
+/* ========= End ShowingList & CommingList========= */
+
+/* ========= Start Auth========= */
+body.light-mode .auth-container {
+    background: #f9f9f9;
+    color: #1a1a1a;
+}
+
+body.light-mode .auth-container label,
+body.light-mode .auth-container input,
+body.light-mode .auth-container .form-options,
+body.light-mode .auth-container .register-prompt,
+body.light-mode .auth-container .or-divider {
+    color: #1a1a1a !important;
+}
+
+body.light-mode input[type="text"],
+body.light-mode input[type="password"] {
+    background-color: #fff !important;
+    border: 1px solid #ccc !important;
+    color: #1a1a1a !important;
+}
+
+body.light-mode input[type="text"]::placeholder,
+body.light-mode input[type="password"]::placeholder {
+    color: #888 !important;
+}
+
+body.light-mode .password-group button {
+    background: transparent;
+    border: none;
+    color: #1a1a1a;
+}
+
+body.light-mode .submit-btn {
+    background-color: #f9a825 !important;
+    color: #fff !important;
+    border: none;
+}
+
+body.light-mode .submit-btn:hover {
+    background-color: #f57f17 !important;
+}
+
+body.light-mode .register-prompt a {
+    color: #f57f17 !important;
+}
+
+body.light-mode .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+body.light-mode .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+body.light-mode .google-btn-styl
+/* ========= End Auth========= */

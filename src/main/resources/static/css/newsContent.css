@@ -1,0 +1,81 @@
+.news-hero-section {
+    position: relative;
+    z-index: 2;
+}
+
+/* News Section */
+.news-section {
+    position: relative;
+    z-index: 2;
+}
+
+/* Promotion Card Styling */
+.promotion-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.promotion-card-link:hover img {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1150px) {
+    .news-section > div[style*="grid"] {
+        grid-template-columns: repeat(3, 230px) !important;
+        max-width: 690px !important; /* 3 x 230px */
+        gap: 1rem !important;
+    }
+    img[height="200"][width="280"] {
+        width: 230px;
+        height: 164px; /* Proportional scaling */
+        padding-bottom: 10px;
+    }
+}
+
+@media (max-width: 750px) {
+    .news-section > div[style*="grid"] {
+        grid-template-columns: repeat(2, 340px) !important;
+        max-width: 680px !important; /* 2 x 340px */
+        gap: 1rem !important;
+    }
+    img[height="200"][width="280"] {
+        width: 340px;
+        height: 243px; /* Proportional scaling */
+    }
+}
+
+@media (max-width: 700px) {
+    .news-section > div[style*="grid"] {
+        grid-template-columns: repeat(1, 280px) !important;
+        max-width: 280px !important;
+        gap: 1rem !important;
+    }
+    img[height="200"][width="280"] {
+        width: 280px;
+        height: 200px;
+    }
+}
+
+.container.py-2 {
+    position: relative;
+    z-index: 2;
+    min-height: calc(100vh - 120px); /* Adjust based on header and footer height */
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+}
+
+.news-hero-section {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.news-section {
+    margin-top: 5rem;
+}

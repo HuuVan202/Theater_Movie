@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{privacy_title}">Chính Sách Bảo Mật</title>
+    <link rel="stylesheet" th:href="@{/css/privacy.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<main class="privacy-main container py-4">
+    <h1 class="privacy-title text-center mb-2"><i class="bi bi-lock-fill me-2"></i><span th:text="#{privacy_title}">Chính Sách Bảo Mật</span></h1>
+    <div class="privacy-desc text-center mb-2" th:text="#{privacy_desc}">MoonCinema cam kết bảo vệ thông tin cá nhân của bạn với các biện pháp bảo mật cao nhất.</div>
+    <div class="privacy-date text-center mb-4" th:text="#{privacy_last_update}">Cập nhật lần cuối: 15/09/2024</div>
+
+    <!-- Cam kết bảo mật -->
+    <div class="row g-3 mb-4 privacy-commit-row">
+        <div class="col-md-4">
+            <div class="privacy-commit-box text-center h-100">
+                <div class="privacy-commit-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                <div class="privacy-commit-title" th:text="#{privacy_commit_ssl}">Mã Hóa SSL</div>
+                <div class="privacy-commit-desc" th:text="#{privacy_commit_ssl_desc}">256-bit encryption</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="privacy-commit-box text-center h-100">
+                <div class="privacy-commit-icon"><i class="bi bi-journal-check"></i></div>
+                <div class="privacy-commit-title" th:text="#{privacy_commit_gdpr}">Tuân Thủ GDPR</div>
+                <div class="privacy-commit-desc" th:text="#{privacy_commit_gdpr_desc}">Chuẩn quốc tế</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="privacy-commit-box text-center h-100">
+                <div class="privacy-commit-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                <div class="privacy-commit-title" th:text="#{privacy_commit_fast}">Phản Ứng Nhanh</div>
+                <div class="privacy-commit-desc" th:text="#{privacy_commit_fast_desc}">24/7 xử lý sự cố</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin thu thập -->
+    <div class="privacy-section mb-4">
+        <div class="privacy-section-title mb-3">
+            <i class="bi bi-archive-fill me-2"></i><span th:text="#{privacy_info_title}">Thông Tin Chúng Tôi Thu Thập</span>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="privacy-info-box h-100">
+                    <div class="privacy-info-title"><i class="bi bi-person-vcard"></i> <span th:text="#{privacy_info_personal}">Thông Tin Cá Nhân</span></div>
+                    <ul>
+                        <li th:text="#{privacy_info_personal_items}">Họ tên, Email, Số điện thoại, Địa chỉ, Thông tin thanh toán</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="privacy-info-box h-100">
+                    <div class="privacy-info-title"><i class="bi bi-receipt"></i> <span th:text="#{privacy_info_transaction}">Dữ Liệu Giao Dịch</span></div>
+                    <ul>
+                        <li th:text="#{privacy_info_transaction_items}">Lịch sử đặt vé, Phương thức thanh toán, Địa chỉ IP, Thiết bị sử dụng</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="privacy-info-box h-100">
+                    <div class="privacy-info-title"><i class="bi bi-activity"></i> <span th:text="#{privacy_info_usage}">Hành Vi Sử Dụng</span></div>
+                    <ul>
+                        <li th:text="#{privacy_info_usage_items}">Địa điểm xem, Thời gian đặt, Tương tác trên website, Ý kiến cá nhân</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mục đích sử dụng dữ liệu -->
+    <div class="privacy-section mb-4">
+        <div class="privacy-section-title mb-3">
+            <i class="bi bi-bullseye me-2"></i><span th:text="#{privacy_purpose_title}">Mục Đích Sử Dụng Dữ Liệu</span>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="privacy-purpose-box h-100">
+                    <div class="privacy-purpose-title"><i class="bi bi-gear"></i> <span th:text="#{privacy_purpose_service}">Cung Cấp Dịch Vụ</span></div>
+                    <ul>
+                        <li th:text="#{privacy_purpose_service_items}">Xử lý đặt vé và thanh toán, Gửi xác nhận và thông báo, Hỗ trợ khách hàng, Quản lý tài khoản thành viên</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="privacy-purpose-box h-100">
+                    <div class="privacy-purpose-title"><i class="bi bi-stars"></i> <span th:text="#{privacy_purpose_experience}">Cải Thiện Trải Nghiệm</span></div>
+                    <ul>
+                        <li th:text="#{privacy_purpose_experience_items}">Đề xuất phim phù hợp, Cá nhân hóa nội dung, Phân tích hành vi người dùng, Phát triển tính năng mới</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biện pháp bảo mật -->
+    <div class="privacy-section mb-4">
+        <div class="privacy-section-title mb-3">
+            <i class="bi bi-shield-lock-fill me-2"></i><span th:text="#{privacy_security_title}">Biện Pháp Bảo Mật</span>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-2 col-6">
+                <div class="privacy-security-box text-center h-100">
+                    <div class="privacy-security-icon"><i class="bi bi-lock"></i></div>
+                    <div class="privacy-security-title" th:text="#{privacy_security_encrypt}">Mã Hóa Dữ Liệu</div>
+                    <div class="privacy-security-desc" th:text="#{privacy_security_encrypt_desc}">256-bit truyền tải</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-security-box text-center h-100">
+                    <div class="privacy-security-icon"><i class="bi bi-shield-check"></i></div>
+                    <div class="privacy-security-title" th:text="#{privacy_security_firewall}">Tường Lửa Bảo Mật</div>
+                    <div class="privacy-security-desc" th:text="#{privacy_security_firewall_desc}">Hệ thống bảo vệ 24/7</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-security-box text-center h-100">
+                    <div class="privacy-security-icon"><i class="bi bi-person-lock"></i></div>
+                    <div class="privacy-security-title" th:text="#{privacy_security_access}">Kiểm Soát Truy Cập</div>
+                    <div class="privacy-security-desc" th:text="#{privacy_security_access_desc}">Chỉ nhân viên được phép</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-security-box text-center h-100">
+                    <div class="privacy-security-icon"><i class="bi bi-calendar-check"></i></div>
+                    <div class="privacy-security-title" th:text="#{privacy_security_backup}">Sao Lưu Định Kỳ</div>
+                    <div class="privacy-security-desc" th:text="#{privacy_security_backup_desc}">Dữ liệu được sao lưu hàng ngày</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-security-box text-center h-100">
+                    <div class="privacy-security-icon"><i class="bi bi-eye"></i></div>
+                    <div class="privacy-security-title" th:text="#{privacy_security_monitor}">Giám Sát Liên Tục</div>
+                    <div class="privacy-security-desc" th:text="#{privacy_security_monitor_desc}">Hệ thống giám sát 24/7/365</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-security-box text-center h-100">
+                    <div class="privacy-security-icon"><i class="bi bi-arrow-repeat"></i></div>
+                    <div class="privacy-security-title" th:text="#{privacy_security_update}">Cập Nhật Bảo Mật</div>
+                    <div class="privacy-security-desc" th:text="#{privacy_security_update_desc}">Thường xuyên cập nhật</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quyền của bạn -->
+    <div class="privacy-section mb-4">
+        <div class="privacy-section-title mb-3">
+            <i class="bi bi-person-badge-fill me-2"></i><span th:text="#{privacy_rights_title}">Quyền Của Bạn</span>
+        </div>
+        <div class="row g-3 mb-2">
+            <div class="col-md-2 col-6">
+                <div class="privacy-right-box text-center h-100">
+                    <div class="privacy-right-icon"><i class="bi bi-eye"></i></div>
+                    <div class="privacy-right-title" th:text="#{privacy_rights_access}">Quyền Truy Cập</div>
+                    <div class="privacy-right-desc" th:text="#{privacy_rights_access_desc}">Xem và chỉnh sửa dữ liệu cá nhân</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-right-box text-center h-100">
+                    <div class="privacy-right-icon"><i class="bi bi-pencil-square"></i></div>
+                    <div class="privacy-right-title" th:text="#{privacy_rights_edit}">Quyền Chỉnh Sửa</div>
+                    <div class="privacy-right-desc" th:text="#{privacy_rights_edit_desc}">Cập nhật hoặc xóa thông tin không chính xác</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-right-box text-center h-100">
+                    <div class="privacy-right-icon"><i class="bi bi-arrow-left-right"></i></div>
+                    <div class="privacy-right-title" th:text="#{privacy_rights_transfer}">Quyền Di Chuyển</div>
+                    <div class="privacy-right-desc" th:text="#{privacy_rights_transfer_desc}">Yêu cầu xuất dữ liệu cá nhân sang dịch vụ khác</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-right-box text-center h-100">
+                    <div class="privacy-right-icon"><i class="bi bi-x-octagon"></i></div>
+                    <div class="privacy-right-title" th:text="#{privacy_rights_refuse}">Quyền Từ Chối</div>
+                    <div class="privacy-right-desc" th:text="#{privacy_rights_refuse_desc}">Từ chối nhận email marketing hoặc quảng cáo</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-right-box text-center h-100">
+                    <div class="privacy-right-icon"><i class="bi bi-exclamation-diamond"></i></div>
+                    <div class="privacy-right-title" th:text="#{privacy_rights_complaint}">Quyền Khiếu Nại</div>
+                    <div class="privacy-right-desc" th:text="#{privacy_rights_complaint_desc}">Gửi khiếu nại về việc xử lý dữ liệu cá nhân</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="privacy-right-box text-center h-100">
+                    <div class="privacy-right-icon"><i class="bi bi-shield-x"></i></div>
+                    <div class="privacy-right-title" th:text="#{privacy_rights_delete}">Quyền Xóa Dữ Liệu</div>
+                    <div class="privacy-right-desc" th:text="#{privacy_rights_delete_desc}">Yêu cầu xóa dữ liệu cá nhân</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chính sách cookie -->
+    <div class="privacy-section mb-4">
+        <div class="privacy-section-title mb-3">
+            <i class="bi bi-cookie me-2"></i><span th:text="#{privacy_cookie_title}">Chính Sách Cookie</span>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="privacy-cookie-box h-100">
+                    <div class="privacy-cookie-title"><i class="bi bi-cookie"></i> <span th:text="#{privacy_cookie_essential}">Cookie Cần Thiết</span></div>
+                    <ul>
+                        <li th:text="#{privacy_cookie_essential_items}">Duy trì phiên đăng nhập, Lưu giỏ hàng, Bảo mật tài khoản</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="privacy-cookie-box h-100">
+                    <div class="privacy-cookie-title"><i class="bi bi-graph-up"></i> <span th:text="#{privacy_cookie_analytics}">Cookie Phân Tích</span></div>
+                    <ul>
+                        <li th:text="#{privacy_cookie_analytics_items}">Thống kê lưu lượng truy cập, Phân tích hành vi người dùng, Cải thiện hiệu suất website</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liên hệ bảo mật -->
+    <div class="privacy-section mb-4">
+        <div class="privacy-contact-title text-center mb-3"><i class="bi bi-envelope-lock me-2"></i><span th:text="#{privacy_contact_title}">Liên Hệ Về Bảo Mật</span></div>
+        <div class="row g-3 justify-content-center">
+            <div class="col-md-4">
+                <div class="privacy-contact-box text-center h-100">
+                    <div class="privacy-contact-icon"><i class="bi bi-envelope-at"></i></div>
+                    <div class="privacy-contact-label" th:text="#{privacy_contact_email_label}">Email Bảo Mật</div>
+                    <div class="privacy-contact-value" th:text="#{privacy_contact_email_value}">privacy@mooncinema.vn</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="privacy-contact-box text-center h-100">
+                    <div class="privacy-contact-icon"><i class="bi bi-telephone"></i></div>
+                    <div class="privacy-contact-label" th:text="#{privacy_contact_hotline_label}">Hotline</div>
+                    <div class="privacy-contact-value" th:text="#{privacy_contact_hotline_value}">1900-xxxx (24/7)</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="privacy-contact-box text-center h-100">
+                    <div class="privacy-contact-icon"><i class="bi bi-shield-exclamation"></i></div>
+                    <div class="privacy-contact-label" th:text="#{privacy_contact_legal_label}">Phòng Pháp Chế</div>
+                    <div class="privacy-contact-value" th:text="#{privacy_contact_legal_value}">legal@mooncinema.vn</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

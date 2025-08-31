@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutEmployee}">
+
+<head>
+    <title>Cinema Employee</title>
+    <link rel="stylesheet" th:href="@{/css/employee/movie_showtime.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        /* Search Results Modal */
+        #searchResultsModal .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-color: #fff;
+        }
+
+        #searchResultsModal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 20px;
+        }
+
+        #searchResultsModal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        #searchResultsModal .btn-close {
+            filter: opacity(0.6);
+            transition: filter 0.3s;
+        }
+
+        #searchResultsModal .btn-close:hover {
+            filter: opacity(1);
+        }
+
+        /* Search Results Table */
+        #resultsTable {
+            margin-top: 15px;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        #resultsTable thead th {
+            background-color: #f1f3f5;
+            color: #343a40;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 12px 8px;
+            border-bottom: 2px solid #dee2e6;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        #resultsTable tbody td {
+            font-size: 0.85rem;
+            color: #495057;
+            padding: 12px 8px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+
+        /* Đảm bảo bảng có thể cuộn ngang trên màn hình nhỏ */
+        .modal-body {
+            overflow-x: auto;
+        }
+
+        /* No Results Message */
+        #noResultsMessage {
+            font-size: 1rem;
+            color: #495057;
+            background-color: #e9f7ff;
+            border: 1px solid #b8daff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #noResultsMessage::before {
+            content: "\f071";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: #007bff;
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Loading Spinner */
+        #loadingSpinner {
+            margin: 30px auto;
+        }
+
+        #loadingSpinner .spinner-border {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-width: 0.3em;
+            color: #007bff;
+        }
+
+        /* Modal Footer */
+        #searchResultsModal .modal-footer {
+            border-top: 1px solid #dee2e6;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+        }
+
+        #searchResultsModal .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #searchResultsModal .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            #resultsTable thead th,
+            #resultsTable tbody td {
+                font-size: 0.75rem;
+                padding: 8px 6px;
+                max-width: 80px;
+            }
+
+            #searchResultsModal .modal-dialog {
+                margin: 10px;
+            }
+
+            #searchResultsModal .modal-title {
+                font-size: 1.1rem;
+            }
+
+            #noResultsMessage {
+                font-size: 0.9rem;
+                padding: 15px;
+            }
+
+            #loadingSpinner .spinner-border {
+                width: 2rem;
+                height: 2rem;
+            }
+        }
+
+        .date-btn.active {
+            background-color: #007bff !important;
+            color: white !important;
+            border-color: #007bff !important;
+        }
+
+        .search-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-form-container {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 300px;
+        }
+
+        .search-form-container.active {
+            display: block;
+        }
+
+        .search-form-container input {
+            margin-bottom: 10px;
+        }
+
+        #loadingSpinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+        }
+    </style>
+</head>
+
+<!-- Ghi đè fragment tiêu đề -->
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Showtime', 'bi-calendar2-week')}"></div>
+</div>
+
+<!-- Ghi đè phần nội dung chính -->
+<div layout:fragment="content">
+    <div class="user-table-wrapper p-3 rounded-4 shadow animate-fade-in bg-white">
+        <div class="fixed-header position-relative">
+            <div class="container-fluid py-3">
+                <form method="get" action="/employee/showtime" id="dateForm">
+                    <div class="date-buttons">
+                        <h5 class="form-label fw-semibold mb-3">Chọn Ngày Chiếu:</h5>
+                        <div class="btn-group" role="group" th:each="i : ${#numbers.sequence(0, 14)}">
+                            <button type="button" class="btn btn-outline-primary me-2 mb-2 date-btn"
+                                    th:attr="data-date=${#temporals.format(minDate.plusDays(i), 'yyyy-MM-dd')}"
+                                    th:text="${#temporals.format(minDate.plusDays(i), 'dd-MM')}">
+                            </button>
+                        </div>
+                        <input type="hidden" name="showDate" th:value="${selectedDate}" />
+                    </div>
+                </form>
+                <!-- Search Button -->
+                <button class="search-button" id="searchButton">
+                    <i class="bi bi-search"></i>
+                </button>
+                <!-- Search Form -->
+                <div class="search-form-container" id="searchFormContainer">
+                    <form id="orderSearchForm" onsubmit="return document.getElementById('searchInput').value.trim() !== '';">
+                        <div class="mb-3">
+                            <label for="searchInput" class="form-label fw-semibold">Tìm kiếm đơn hàng</label>
+                            <input type="text" class="form-control" id="searchInput" name="query"
+                                   placeholder="Nhập tên, SĐT hoặc CCCD" required>
+                            <input type="hidden" name="showDate" th:value="${selectedDate}" />
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" id="cancelSearch">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid py-4">
+            <div class="movie-container">
+                <!-- No Showtimes Message -->
+                <div id="noShowtimesMessage" class="no-showtimes"
+                     th:if="${#lists.isEmpty(listShowtimeMovie)}">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>Không Có Suất Chiếu</h3>
+                    <p th:text="'Không có suất chiếu nào vào ngày ' + ${#temporals.format(selectedDate, 'dd-MM-yyyy')} + ' đã chọn. Vui lòng chọn một ngày khác.'"></p>
+                </div>
+
+                <!-- Movies Container -->
+                <div id="moviesContainer"
+                     class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4"
+                     th:if="${!#lists.isEmpty(listShowtimeMovie)}">
+                    <div class="col movie-card-container" th:each="movie : ${listShowtimeMovie}">
+                        <div class="card showtime-movie-card h-100">
+                            <img class="card-img-top movie-poster" th:src="${movie.largeImageUrl}" alt="Poster">
+                            <div class="card-body movie-info d-flex flex-column">
+                                <h5 class="card-title movie-title mb-2" th:text="${movie.movieName}">Tên phim</h5>
+
+                                <div class="movie-meta mb-2">
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-person-video2 me-1"></i>
+                                        <strong>Đạo diễn:</strong> <span th:text="${movie.director}">Đạo diễn</span>
+                                    </p>
+                                    <p class="actor-line text-muted mb-1">
+                                        <i class="bi bi-people-fill me-1"></i>
+                                        <strong>Diễn viên:</strong>
+                                        <span class="actor-text" th:text="${movie.actor}"></span>
+                                    </p>
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-clock me-1"></i>
+                                        <strong>Thời lượng:</strong> <span th:text="${movie.duration}">120</span> phút
+                                    </p>
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        <strong>Khởi chiếu:</strong>
+                                        <span th:text="${#temporals.format(movie.fromDate, 'dd/MM/yyyy')}">01/01/2025</span>
+                                    </p>
+                                    <p class="mb-2 text-muted">
+                                        <i class="bi bi-patch-check-fill me-1"></i>
+                                        <strong>Độ tuổi:</strong>
+                                        <span class="badge bg-warning text-dark" th:text="${movie.ratingCode}">PG-13</span>
+                                        <span th:text="${movie.movieAgeRating.description}" class="ms-1 small text-secondary">Mô tả độ tuổi</span>
+                                    </p>
+                                </div>
+
+                                <div class="mb-2">
+                                    <strong>Phiên bản:</strong>
+                                    <span th:each="version : ${movie.versions}" class="badge bg-info text-dark me-1"
+                                          th:text="${version.versionName}">2D</span>
+                                </div>
+
+                                <div class="showtimes-container mt-auto">
+                                    <hr class="my-2">
+                                    <div class="showtimes d-flex flex-wrap">
+                                        <button class="btn btn-sm btn-danger showtime-btn me-2 mb-1"
+                                                th:each="showtime : ${movie.showtimes}"
+                                                th:data-start="${showtime.scheduleTime}"
+                                                th:data-duration="${movie.duration}"
+                                                th:data-room="${showtime.roomName}"
+                                                th:data-movieid="${movie.movieId}"
+                                                th:data-showtimeid="${showtime.showtimeId}"
+                                                th:data-showdate="${showtime.showDate}"
+                                                th:text="${#temporals.format(showtime.scheduleTime, 'HH:mm')}">
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-1 small text-muted" th:if="${!#lists.isEmpty(movie.showtimes)}">
+                                        <i class="bi bi-door-open"></i>
+                                        <span th:text="'Phòng: ' + ${movie.showtimes.get(0).roomName}">Phòng A</span>
+                                        &nbsp;|&nbsp;
+                                        <i class="bi bi-calendar-check"></i>
+                                        <span th:text="${#temporals.format(movie.showtimes.get(0).showDate, 'dd/MM/yyyy')}">Ngày</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results Modal -->
+        <div class="modal fade" id="searchResultsModal" tabindex="-1" aria-labelledby="searchResultsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchResultsModalLabel">Kết quả tìm kiếm đơn hàng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="noResultsMessage" class="alert alert-info d-none">
+                            Không tìm thấy đơn hàng nào khớp với truy vấn.
+                        </div>
+                        <table class="table table-striped d-none" id="resultsTable">
+                            <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên khách hàng</th>
+                                <th>SĐT</th>
+                                <th>Tên phim</th>
+                                <th>Phiên bản</th>
+                                <th>Thời gian chiếu</th>
+                                <th>Phòng</th>
+                            </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                            <!-- Rows will be added dynamically -->
+                            </tbody>
+                        </table>
+                        <div id="loadingSpinner" class="d-none text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Đang tải...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchButton = document.getElementById('searchButton');
+            const searchFormContainer = document.getElementById('searchFormContainer');
+            const cancelSearchButton = document.getElementById('cancelSearch');
+            const orderSearchForm = document.getElementById('orderSearchForm');
+            const searchResultsModal = new bootstrap.Modal(document.getElementById('searchResultsModal'));
+            const resultsTable = document.getElementById('resultsTable');
+            const resultsTableBody = document.getElementById('resultsTableBody');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            // Dữ liệu allBookings từ controller
+            const allBookings = /*[[${allBookings}]]*/ [];
+
+            searchButton.addEventListener('click', () => {
+                searchFormContainer.classList.toggle('active');
+            });
+
+            cancelSearchButton.addEventListener('click', () => {
+                searchFormContainer.classList.remove('active');
+                document.getElementById('searchInput').value = '';
+            });
+
+            orderSearchForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const query = document.getElementById('searchInput').value.trim().toLowerCase();
+                const formData = new FormData(orderSearchForm);
+                const params = new URLSearchParams(formData).toString();
+                let filteredBookings = [];
+
+                loadingSpinner.classList.remove('d-none'); // Hiển thị spinner
+
+                // Tìm kiếm phía client nếu allBookings có dữ liệu
+                if (allBookings.length > 0 && query) {
+                    filteredBookings = allBookings.filter(item =>
+                        (item.booking.fullName && item.booking.fullName.toLowerCase().includes(query)) ||
+                        (item.booking.phoneNumber && item.booking.phoneNumber === query) ||
+                        (item.booking.identityCard && item.booking.identityCard === query) ||
+                        (item.booking.email && item.booking.email.toLowerCase().includes(query))
+                    );
+                    displayResults(filteredBookings);
+                    loadingSpinner.classList.add('d-none');
+                } else {
+                    try {
+                        const response = await fetch(`/employee/orderSearch?${params}`, {
+                            method: 'GET',
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (!response.ok) {
+                            throw new Error('Lỗi mạng khi lấy dữ liệu');
+                        }
+                        filteredBookings = await response.json();
+                        displayResults(filteredBookings);
+                        loadingSpinner.classList.add('d-none');
+                    } catch (error) {
+                        console.error('Lỗi khi lấy kết quả tìm kiếm:', error);
+                        alert('Đã xảy ra lỗi khi tìm kiếm đơn hàng.');
+                        loadingSpinner.classList.add('d-none');
+                    }
+                }
+            });
+
+            function displayResults(bookings) {
+                resultsTableBody.innerHTML = '';
+                noResultsMessage.classList.add('d-none');
+                resultsTable.classList.add('d-none');
+
+                if (bookings.length === 0) {
+                    noResultsMessage.classList.remove('d-none');
+                } else {
+                    bookings.forEach((item, index) => {
+                        const booking = item.booking || {};
+                        const bookingInfo = Array.isArray(item.bookingInfo) && item.bookingInfo.length > 0
+                            ? item.bookingInfo[0]
+                            : {};
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                <td>${index + 1}</td> <!-- Thêm STT, bắt đầu từ 1 -->
+                <td>${booking.fullName ?? 'N/A'}</td>
+                <td>${booking.phoneNumber ?? 'N/A'}</td>
+                <td>${bookingInfo.movieName ?? 'N/A'}</td>
+                <td>${bookingInfo.versionName ?? 'N/A'}</td>
+                <td>${bookingInfo.scheduleTime
+                            ? bookingInfo.scheduleTime.toString().substring(0, 5)
+                            : 'N/A'}</td>
+                <td>${bookingInfo.roomName ?? 'N/A'}</td>
+            `;
+                        resultsTableBody.appendChild(row);
+                    });
+                    resultsTable.classList.remove('d-none');
+                }
+
+                searchFormContainer.classList.remove('active');
+                searchResultsModal.show();
+            }
+
+            // Date button handling
+            const dateButtons = document.querySelectorAll('.date-btn');
+            const dateForm = document.getElementById('dateForm');
+            const dateInput = dateForm.querySelector('input[name="showDate"]');
+            const selectedDate = dateInput.value;
+
+            dateButtons.forEach(button => {
+                if (button.dataset.date === selectedDate) {
+                    button.classList.add('active');
+                }
+
+                button.addEventListener('click', function () {
+                    dateButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    dateInput.value = this.dataset.date;
+                    dateForm.submit();
+                });
+            });
+
+            // Showtime button handling
+            const buttons = document.querySelectorAll(".showtime-btn");
+
+            buttons.forEach(btn => {
+                const start = btn.dataset.start;
+                const duration = parseInt(btn.dataset.duration);
+                const movieId = btn.dataset.movieid;
+                const showtimeId = btn.dataset.showtimeid;
+                const showDate = btn.dataset.showdate;
+
+                if (start && !isNaN(duration)) {
+                    const [h, m] = start.split(":").map(Number);
+                    const startDate = new Date();
+                    startDate.setHours(h, m, 0, 0);
+
+                    const endDate = new Date(startDate.getTime() + duration * 60000);
+                    const endHour = String(endDate.getHours()).padStart(2, '0');
+                    const endMinute = String(endDate.getMinutes()).padStart(2, '0');
+                    const endTime = `${endHour}:${endMinute}`;
+                    btn.textContent = `${start} - ${endTime}`;
+                }
+
+                btn.addEventListener('click', function () {
+                    const url = `/employee/seatSelection?movieId=${movieId}&showtimeId=${showtimeId}&showDate=${showDate}`;
+                    window.location.href = url;
+                });
+            });
+
+            // Handle no showtimes display
+            window.addEventListener('load', function () {
+                const moviesContainer = document.getElementById('moviesContainer');
+                const noShowtimesMessage = document.getElementById('noShowtimesMessage');
+
+                if (moviesContainer.children.length === 0) {
+                    const selectedDate = document.querySelector('input[name="showDate"]').value;
+                    const [year, month, day] = selectedDate.split('-');
+                    const formattedDate = `${day}-${month}-${year}`;
+                    noShowtimesMessage.querySelector('p').textContent = `Không có suất chiếu nào vào ngày ${formattedDate} đã chọn. Vui lòng chọn một ngày khác.`;
+                    noShowtimesMessage.classList.remove('d-none');
+                    noShowtimesMessage.classList.add('d-block');
+                    moviesContainer.classList.add('d-none');
+                } else {
+                    noShowtimesMessage.classList.add('d-none');
+                    moviesContainer.classList.remove('d-none');
+                }
+            });
+        });
+    </script>
+</div>
+</html>

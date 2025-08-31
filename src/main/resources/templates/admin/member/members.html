@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="Danh sách Khách hàng - Admin">Danh sách Khách hàng - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin/member/viewMember.css}" href="/css/viewMember.css">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        /* Custom CSS for success message animation */
+        .success-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 350px;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Success/Error Alert -->
+<div th:if="${successMessage}" class="alert alert-success alert-dismissible success-alert" role="alert" id="successAlert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible success-alert" role="alert" id="errorAlert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<!-- Header/Navbar -->
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-danger shadow-sm px-3">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand text-white fw-bold"><i class="bi bi-people me-2"></i>Danh sách thành viên</span>
+        </div>
+    </nav>
+</div>
+<!-- Main Content -->
+<div layout:fragment="content">
+    <div class="container-fluid py-4">
+        <div class="user-table-wrapper p-3 p-md-4 rounded-4 shadow-lg animate-fade-in">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold mb-0">Danh sách thành viên</h3>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <form th:action="@{/admin/members}" method="get" class="d-flex gap-2">
+                        <input type="text" name="keyword" th:value="${keyword}" maxlength="28"
+                               placeholder="Tìm kiếm..." class="form-control form-control-sm" style="width: 200px;" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm" style="margin-right: 60px;">
+                            <i class="bi bi-search"></i> Tìm kiếm
+                        </button>
+
+                        <!--                        <a th:href="@{/admin/members/add}" class="btn btn-primary rounded-circle shadow add-employee-btn" title="Add employee">-->
+<!--                            <i class="bi bi-plus-lg fs-4"></i>-->
+<!--                        </a>-->
+                    </form>
+                </div>
+            </div>
+
+            <!-- Table when members exist -->
+            <div class="table-responsive" th:if="${not #lists.isEmpty(members)}">
+                <table class="table table-borderless align-middle mb-0 user-table">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>
+                            <a th:href="@{/admin/members(sortBy='account.fullName', direction=${sortBy == 'account.fullName' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Họ tên
+                                <i class="bi" th:classappend="${sortBy == 'account.fullName'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/members(sortBy='account.email', direction=${sortBy == 'account.email' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Email
+                                <i class="bi" th:classappend="${sortBy == 'account.email'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/members(sortBy='score', direction=${sortBy == 'score' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Điểm
+                                <i class="bi" th:classappend="${sortBy == 'score'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/members(sortBy='tier', direction=${sortBy == 'tier' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Cấp bậc
+                                <i class="bi" th:classappend="${sortBy == 'tier'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="memberMap : ${members}" class="user-row"
+                        th:onclick="'window.location.href=\'/admin/members/detail/' + ${memberMap.member.memberId} + '\';'"
+                        style="cursor: pointer;">
+                        <td><img th:src="${memberMap?.member?.avatarUrl} ?: 'http://res.cloudinary.com/dycfyoh8r/image/upload/v1755106434/avatars/avatar_default.jpg'"
+                                 alt="Avatar"
+                                 style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;"></td>
+                        <td th:text="${memberMap?.member?.fullName ?: 'N/A'}">Họ tên</td>
+                        <td th:text="${memberMap?.member?.email ?: 'N/A'}">email@domain.com</td>
+                        <td th:text="${memberMap?.member?.score ?: 0}">Điểm</td>
+                        <td>
+                            <span class="bg-opacity-10 text-primary" th:text="${memberMap?.member?.tier ?: 'N/A'}">Cấp bậc</span>
+                        </td>
+                        <td>
+                            <span th:class="'badge ' + (${memberMap?.status == 'Active'} ? 'bg-success' : (${memberMap?.status == 'Inactive'} ? 'bg-secondary' : 'bg-warning'))"
+                                  th:text="${memberMap?.status == 'Active' ? 'Đang hoạt động' : (memberMap?.status == 'Inactive' ? 'Bị khóa' : 'Chưa xác định')}">Trạng thái</span>
+                        </td>
+                        <td>
+                            <div>
+                                <!-- Lock button if Active -->
+                                <a th:if="${memberMap?.status == 'Active'}"
+                                   class="btn btn-warning btn-sm"
+                                   th:href="@{/admin/members/delete/{id}(id=${memberMap?.member?.memberId})}"
+                                   onclick="return confirm('Bạn có muốn khóa tài khoản nhân viên này?')">
+                                    <i class="bi bi-lock me-1"></i>Khóa
+                                </a>
+
+                                <!-- Unlock button if not Active -->
+                                <a th:if="${memberMap?.status != 'Active'}"
+                                   class="btn btn-success btn-sm"
+                                   th:href="@{/admin/members/unlock/{id}(id=${memberMap?.member?.memberId})}"
+                                   onclick="return confirm('Bạn có muốn mở khóa lại tài khoản nhân viên này?')">
+                                    <i class="bi bi-unlock me-1"></i>Mở khóa
+                                </a>
+                            </div>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- No data message -->
+            <div th:if="${#lists.isEmpty(members)}" class="text-center py-5">
+                <i class="bi bi-people display-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Không tìm thấy thành viên!</h4>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-end mt-3" th:if="${totalPages > 1}">
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/members(page=0, keyword=${keyword})}"
+                               th:unless="${currentPage == 0}">&laquo;</a>
+                            <span class="page-link" th:if="${currentPage == 0}">&laquo;</span>
+                        </li>
+
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/members(page=${currentPage - 1}, keyword=${keyword})}"
+                               th:unless="${currentPage == 0}">Trước</a>
+                            <span class="page-link" th:if="${currentPage == 0}">Trước</span>
+                        </li>
+
+                        <th:block th:with="startPage=${T(java.lang.Math).max(0, currentPage - 2)}, endPage=${T(java.lang.Math).min(totalPages - 1, currentPage + 2)}">
+                            <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}" th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:href="@{/admin/members(page=${i}, keyword=${keyword})}" th:text="${i + 1}"></a>
+                            </li>
+                        </th:block>
+
+                        <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/members(page=${currentPage + 1}, keyword=${keyword})}"
+                               th:unless="${currentPage + 1 == totalPages}">Kế</a>
+                            <span class="page-link" th:if="${currentPage + 1 == totalPages}">Kế</span>
+                        </li>
+
+                        <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/members(page=${totalPages - 1}, keyword=${keyword})}"
+                               th:unless="${currentPage + 1 == totalPages}">&raquo;</a>
+                            <span class="page-link" th:if="${currentPage + 1 == totalPages}">&raquo;</span>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Toast Thông báo thành công -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+        <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert"
+             aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span th:text="${successMessage}">Thành công!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toastEl = document.getElementById('successToast');
+            if (toastEl) {
+                const hasMessage = toastEl.querySelector('.toast-body span')?.textContent.trim() !== '';
+                if (hasMessage) {
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            }
+        });
+    </script>
+
+    <!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/member.js" th:src="@{/js/member.js}"></script>
+<script>
+    // Auto-hide success/error messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+
+        function hideAlert(alertElement) {
+            if (alertElement) {
+                setTimeout(() => {
+                    alertElement.classList.add('fade-out');
+                    setTimeout(() => {
+                        alertElement.remove();
+                    }, 500); // Wait for fade-out animation to complete
+                }, 5000); // 5 seconds
+            }
+        }
+
+        hideAlert(successAlert);
+        hideAlert(errorAlert);
+    });
+</script>
+</div>
+</body>
+</html>

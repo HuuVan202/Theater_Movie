@@ -1,0 +1,26 @@
+<div th:fragment="movieCardHome(movie, actionLink, actionText, actionColor, detailsLink)"
+     class="film-card">
+    <!-- fragments/movie-card-home.html -->
+    <div class="film-poster">
+        <img th:src="${movie.largeImageUrl}" th:alt="${movie.movieNameVn}">
+
+        <!-- Hot badge - chỉ hiển thị nếu phim hot -->
+        <div class="hot-badge">HOT</div>
+
+        <div class="film-overlay">
+            <div class="overlay-buttons">
+                <button class="bookmark-btn">
+                    <i class="bi bi-ticket-perforated-fill"></i>
+                </button>
+
+                <a th:href="@{'/detail/' + ${movie.movieId}}" class="play-btn">
+                    <i class="bi bi-info-circle-fill"></i>
+                </a>
+            </div>
+
+            <div class="film-info">
+                <h4 class="film-title" th:text="${movie.movieNameVn}">Movie Name</h4>
+            </div>
+        </div>
+    </div>
+</div>

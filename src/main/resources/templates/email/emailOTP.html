@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác thực OTP - MoonCinema</title>
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Container */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0b1020, #1a263a);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 0;
+        }
+
+        .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: #f9a825;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .header h1 {
+            color: #f9a825;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #bfc9d9;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* Content */
+        .content {
+            padding: 40px 30px;
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        /* OTP Code Display */
+        .otp-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border: 2px solid #f9a825;
+            border-radius: 10px;
+        }
+
+        .otp-label {
+            color: #7c4700;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .otp-code {
+            background-color: #ffffff;
+            color: #d32f2f;
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            padding: 20px 30px;
+            border-radius: 8px;
+            display: inline-block;
+            letter-spacing: 8px;
+            border: 2px solid #e2e8f0;
+            margin: 10px 0;
+        }
+
+        .otp-copy-text {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Expiry Warning */
+        .expiry-warning {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .expiry-warning .icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .expiry-warning h3 {
+            color: #991b1b;
+            font-size: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .expiry-warning p {
+            color: #7f1d1d;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Security Notice */
+        .security-notice {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .security-notice h3 {
+            color: #166534;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .security-notice h3::before {
+            content: "🛡️";
+            margin-right: 8px;
+        }
+
+        .security-notice ul {
+            color: #374151;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .security-notice li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        /* Steps */
+        .steps {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .steps h3 {
+            color: #92400e;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .steps h3::before {
+            content: "📝";
+            margin-right: 8px;
+        }
+
+        .steps ol {
+            color: #78350f;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .steps li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f8f9fa;
+            color: #6b7280;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: #f9a825;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            color: #d97706;
+            text-decoration: underline;
+        }
+
+        /* Social Links */
+        .social-links {
+            margin: 15px 0;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #9ca3af;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .social-links a:hover {
+            color: #f9a825;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .otp-code {
+                font-size: 28px;
+                letter-spacing: 4px;
+                padding: 15px 20px;
+            }
+
+            .otp-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🎬</div>
+            <h1>MoonCinema</h1>
+            <p>Trải nghiệm điện ảnh đỉnh cao</p>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="greeting">
+            <!--Xin chào <span th:text="${fullName ?: 'Khách hàng thân yêu'}">Khách hàng thân yêu</span>,-->
+            Xin chào <span>Khách hàng thân yêu</span>,
+        </div>
+
+        <div class="message">
+            Chúng tôi đã nhận được yêu cầu xác thực tài khoản MoonCinema của bạn.
+            Vui lòng sử dụng mã xác thực một lần (OTP) bên dưới để hoàn tất quá trình xác thực.
+        </div>
+
+        <!-- OTP Code Display -->
+        <div class="otp-container">
+            <div class="otp-label">🔐 Mã xác thực của bạn</div>
+<!--            <div class="otp-code" th:text="${otpCode}">123456</div>-->
+            <div class="otp-code">${otpCode}</div>
+            <div class="otp-copy-text">
+                Sao chép mã này và dán vào form xác thực
+            </div>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps">
+            <h3>Cách sử dụng mã này:</h3>
+            <ol>
+                <li>Quay lại trang xác thực MoonCinema</li>
+                <li>Nhập mã 6 chữ số được hiển thị ở trên</li>
+                <li>Nhấn "Xác thực" để hoàn tất quá trình</li>
+            </ol>
+        </div>
+
+        <!-- Expiry Warning -->
+        <div class="expiry-warning">
+            <div class="icon">⏰</div>
+            <h3>Quan trọng: Có thời hạn</h3>
+            <p>Mã xác thực này sẽ hết hạn sau <strong>5</strong> phút để đảm bảo bảo
+                mật.</p>
+        </div>
+
+        <!-- Security Notice -->
+        <div class="security-notice">
+            <h3>🛡️ Thông tin bảo mật</h3>
+            <ul>
+                <li><strong>Không chia sẻ mã này</strong> với bất kỳ ai khác</li>
+                <li>Nhân viên MoonCinema sẽ không bao giờ yêu cầu mã OTP của bạn</li>
+                <li>Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email này</li>
+                <li>Liên hệ ngay với bộ phận hỗ trợ nếu nghi ngờ có truy cập trái phép</li>
+            </ul>
+        </div>
+
+        <div class="message">
+            Nếu bạn không yêu cầu mã xác thực này, bạn có thể bỏ qua email này một cách an toàn.
+            Không có thay đổi nào sẽ được thực hiện với tài khoản của bạn.
+        </div>
+
+        <div class="message">
+            <strong>Cần hỗ trợ?</strong> Liên hệ đội ngũ hỗ trợ của chúng tôi tại
+            <a href="mailto:support@mooncinema.com" style="color: #f9a825; font-weight: 600;">support@mooncinema.com</a>
+            hoặc truy cập <a href="/support" style="color: #f9a825; font-weight: 600;">trung tâm hỗ trợ</a> của chúng
+            tôi.
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>
+            <strong>MoonCinema</strong><br>
+            Trải nghiệm điện ảnh đỉnh cao
+        </p>
+        <p>
+            <a href="/terms">Điều khoản dịch vụ</a> |
+            <a href="/privacy">Chính sách bảo mật</a> |
+            <a href="/support">Hỗ trợ</a>
+        </p>
+        <div class="social-links">
+            <a href="#" title="Facebook">📘</a>
+            <a href="#" title="Twitter">🐦</a>
+            <a href="#" title="Instagram">📷</a>
+            <a href="#" title="YouTube">📹</a>
+        </div>
+        <p>
+            Email này được gửi tới <span th:text="${email}">user@example.com</span><br>
+            <a href="/unsubscribe">Hủy đăng ký</a> nhận email xác thực
+        </p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutAdmin}">
+
+<head>
+    <title>Quản lý Danh Sách Phim</title>
+    <link rel="stylesheet" th:href="@{/css/admin/movie/createMovie.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+</head>
+
+<body>
+
+<!-- Ghi đè fragment header -->
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Thêm Phim Mới', 'bi-film')}"></div>
+</div>
+
+<div layout:fragment="content">
+    <div class="user-table-wrapper p-3 rounded-4 shadow animate-fade-in bg-white">
+        <!-- Notifications -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${warningMessage}" class="alert alert-warning alert-dismissible fade show" role="alert">
+            <span th:text="${warningMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{/admin/createMovie}" th:object="${movie}" method="post" enctype="multipart/form-data" class="movie-form" id="movieForm" novalidate>
+            <!-- Form columns container -->
+            <div class="form-columns">
+                <!-- Cột 1: Thông tin cơ bản -->
+                <div class="form-column">
+                    <div class="form-section no-border">
+                        <h2 class="section-title">Thông tin cơ bản</h2>
+
+                        <div class="form-group">
+                            <label th:for="*{movieNameVn}" class="form-label">Tên phim (VN):</label>
+                            <input type="text" th:field="*{movieNameVn}" class="form-control" id="movieNameVn" maxlength="100" required th:classappend="${#fields.hasErrors('movieNameVn')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('movieNameVn')}" th:errors="*{movieNameVn}" class="text-danger"></span>
+                            <div class="invalid-feedback">Tên phim tiếng Việt phải dưới 100 ký tự.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{movieNameEn}" class="form-label">Tên phim (EN):</label>
+                            <input type="text" th:field="*{movieNameEn}" class="form-control" id="movieNameEn" maxlength="100" required th:classappend="${#fields.hasErrors('movieNameEn')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('movieNameEn')}" th:errors="*{movieNameEn}" class="text-danger"></span>
+                            <div class="invalid-feedback">Tên phim tiếng Anh phải dưới 100 ký tự.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{movieName}" class="form-label">Tên Phim:</label>
+                            <input type="text" th:field="*{movieName}" class="form-control" id="movieName" maxlength="100" required th:classappend="${#fields.hasErrors('movieName')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('movieName')}" th:errors="*{movieName}" class="text-danger"></span>
+                            <div class="invalid-feedback">Tên phim phải dưới 100 ký tự.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{director}" class="form-label">Đạo diễn:</label>
+                            <input type="text" th:field="*{director}" class="form-control" id="director" maxlength="100" required th:classappend="${#fields.hasErrors('director')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('director')}" th:errors="*{director}" class="text-danger"></span>
+                            <div class="invalid-feedback">Tên đạo diễn phải dưới 100 ký tự.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{actor}" class="form-label">Diễn viên:</label>
+                            <input type="text" th:field="*{actor}" class="form-control" id="actor" maxlength="200" required th:classappend="${#fields.hasErrors('actor')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('actor')}" th:errors="*{actor}" class="text-danger"></span>
+                            <div class="invalid-feedback">Danh sách diễn viên phải dưới 200 ký tự.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{content}" class="form-label">Nội dung:</label>
+                            <textarea th:field="*{content}" class="form-control" id="content" rows="4" maxlength="500" required th:classappend="${#fields.hasErrors('content')} ? 'is-invalid'"></textarea>
+                            <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger"></span>
+                            <div class="invalid-feedback">Nội dung phải dưới 500 ký tự.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{duration}" class="form-label">Thời lượng (phút):</label>
+                            <input type="number" th:field="*{duration}" class="form-control" id="duration" min="1" max="999" required th:classappend="${#fields.hasErrors('duration')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}" class="text-danger"></span>
+                            <div class="invalid-feedback">Thời lượng phải từ 1 đến 999 phút.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{productionCompany}" class="form-label">Hãng sản xuất:</label>
+                            <input type="text" th:field="*{productionCompany}" class="form-control" id="productionCompany" maxlength="100" required th:classappend="${#fields.hasErrors('productionCompany')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('productionCompany')}" th:errors="*{productionCompany}" class="text-danger"></span>
+                            <div class="invalid-feedback">Hãng sản xuất phải dưới 100 ký tự.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{fromDate}" class="form-label">Ngày công chiếu:</label>
+                            <input type="date" th:field="*{fromDate}" class="form-control" id="fromDate" required th:classappend="${#fields.hasErrors('fromDate')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('fromDate')}" th:errors="*{fromDate}" class="text-danger"></span>
+                            <div class="invalid-feedback">Ngày công chiếu là bắt buộc.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:for="*{toDate}" class="form-label">Ngày kết thúc chiếu:</label>
+                            <input type="date" th:field="*{toDate}" class="form-control" id="toDate" th:classappend="${#fields.hasErrors('toDate')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('toDate')}" th:errors="*{toDate}" class="text-danger"></span>
+                            <div class="invalid-feedback">Ngày kết thúc phải sau ngày công chiếu.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột 2: Thông tin chiếu -->
+                <div class="form-column">
+                    <div class="form-section no-border">
+                        <h2 class="section-title">Thông tin chiếu</h2>
+
+                        <!-- Ảnh nhỏ -->
+                        <div class="form-group">
+                            <label for="smallImageFile" class="form-label">Ảnh nhỏ (tối đa 2MB):</label>
+                            <input type="file" name="smallImageFile" class="form-control" id="smallImageFile" accept="image/jpeg,image/png" aria-describedby="smallImageFileFeedback" th:classappend="${#fields.hasErrors('smallImageUrl')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('smallImageUrl')}" th:errors="*{smallImageUrl}" class="text-danger"></span>
+                            <div class="invalid-feedback">Ảnh nhỏ phải là file JPG hoặc PNG và dưới 2MB.</div>
+                            <small class="form-text text-muted">Chọn file ảnh JPG hoặc PNG, tối đa 2MB.</small>
+                            <div id="smallImageFileFeedback" class="form-text"></div>
+                            <img id="smallImagePreview" class="img-thumbnail d-none mt-2" style="max-width: 100px;" alt="Small image preview" />
+                        </div>
+
+                        <!-- Ảnh lớn -->
+                        <div class="form-group">
+                            <label for="largeImageFile" class="form-label">Ảnh lớn (tối đa 2MB):</label>
+                            <input type="file" name="largeImageFile" class="form-control" id="largeImageFile" accept="image/jpeg,image/png" aria-describedby="largeImageFileFeedback" th:classappend="${#fields.hasErrors('largeImageUrl')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('largeImageUrl')}" th:errors="*{largeImageUrl}" class="text-danger"></span>
+                            <div class="invalid-feedback">Ảnh lớn phải là file JPG hoặc PNG và dưới 2MB.</div>
+                            <small class="form-text text-muted">Chọn file ảnh JPG hoặc PNG, tối đa 2MB.</small>
+                            <div id="largeImageFileFeedback" class="form-text"></div>
+                            <img id="largeImagePreview" class="img-thumbnail d-none mt-2" style="max-width: 100px;" alt="Large image preview" />
+                        </div>
+
+                        <!-- Trailer -->
+                        <div class="form-group">
+                            <label class="form-label">Trailer URL:</label>
+                            <input type="url" th:field="*{trailerUrl}" class="form-control" id="trailerUrl" pattern="https?://.+" th:classappend="${#fields.hasErrors('trailerUrl')} ? 'is-invalid'" />
+                            <span th:if="${#fields.hasErrors('trailerUrl')}" th:errors="*{trailerUrl}" class="text-danger"></span>
+                            <div class="invalid-feedback">URL phải bắt đầu bằng http:// hoặc https://.</div>
+                        </div>
+
+                        <!-- Giới hạn độ tuổi -->
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Giới hạn độ tuổi:</label>
+                            <div class="custom-radio-group" th:each="rating : ${ageRatings}">
+                                <input type="radio" th:field="*{ageRating}" th:value="${rating.ratingCode}" th:id="'rating-' + ${rating.ratingCode}" name="ageRating" required class="form-check-input" th:classappend="${#fields.hasErrors('ageRating')} ? 'is-invalid'" />
+                                <label class="form-check-label ms-2" th:for="'rating-' + ${rating.ratingCode}" th:text="${rating.ratingName}"></label>
+                            </div>
+                            <span id="ageRatingError" th:if="${#fields.hasErrors('ageRating')}" th:errors="*{ageRating}" class="text-danger"></span>
+                            <div class="invalid-feedback">Vui lòng chọn một giới hạn độ tuổi.</div>
+                        </div>
+
+                        <!-- Thể loại -->
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Thể loại:</label>
+                            <div class="grid-check-group">
+                                <label th:each="type : ${types}" class="form-check-label">
+                                    <input type="checkbox" th:field="*{genres}" th:value="${type.typeId}" th:id="'genre-' + ${type.typeId}" name="genres" class="form-check-input me-2" th:classappend="${#fields.hasErrors('genres')} ? 'is-invalid'" />
+                                    <span th:text="${type.typeName}"></span>
+                                </label>
+                            </div>
+                            <span id="genresError" th:if="${#fields.hasErrors('genres')}" th:errors="*{genres}" class="text-danger"></span>
+                            <div class="invalid-feedback">Vui lòng chọn ít nhất một thể loại.</div>
+                        </div>
+
+                        <!-- Phiên bản -->
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Phiên bản:</label>
+                            <div class="grid-check-group">
+                                <label th:each="version : ${versions}" class="form-check-label">
+                                    <input type="checkbox" th:field="*{versions}" th:value="${version.versionId}" th:id="'version-' + ${version.versionId}" name="versions" class="form-check-input me-2" th:classappend="${#fields.hasErrors('versions')} ? 'is-invalid'" />
+                                    <span th:text="${version.versionName}"></span>
+                                </label>
+                            </div>
+                            <span id="versionsError" th:if="${#fields.hasErrors('versions')}" th:errors="*{versions}" class="text-danger"></span>
+                            <div class="invalid-feedback">Vui lòng chọn ít nhất một phiên bản.</div>
+                        </div>
+
+                        <!-- Mức độ ưu tiên -->
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Mức độ ưu tiên:</label>
+                            <div class="grid-check-group">
+                                <label class="form-check-label me-3">
+                                    <input type="radio" th:field="*{featured}" value="1" class="form-check-input me-2"
+                                           th:classappend="${#fields.hasErrors('featured')} ? 'is-invalid'"
+                                           th:checked="${movie.featured == null or movie.featured == 1}">
+                                    1 - Thấp nhất
+                                </label>
+                                <label class="form-check-label me-3">
+                                    <input type="radio" th:field="*{featured}" value="2" class="form-check-input me-2"
+                                           th:classappend="${#fields.hasErrors('featured')} ? 'is-invalid'"
+                                           th:checked="${movie.featured == 2}">
+                                    2
+                                </label>
+                                <label class="form-check-label me-3">
+                                    <input type="radio" th:field="*{featured}" value="3" class="form-check-input me-2"
+                                           th:classappend="${#fields.hasErrors('featured')} ? 'is-invalid'"
+                                           th:checked="${movie.featured == 3}">
+                                    3 - Trung bình
+                                </label>
+                                <label class="form-check-label me-3">
+                                    <input type="radio" th:field="*{featured}" value="4" class="form-check-input me-2"
+                                           th:classappend="${#fields.hasErrors('featured')} ? 'is-invalid'"
+                                           th:checked="${movie.featured == 4}">
+                                    4
+                                </label>
+                                <label class="form-check-label me-3">
+                                    <input type="radio" th:field="*{featured}" value="5" class="form-check-input me-2"
+                                           th:classappend="${#fields.hasErrors('featured')} ? 'is-invalid'"
+                                           th:checked="${movie.featured == 5}">
+                                    5 - Cao nhất
+                                </label>
+
+                                <label class="form-check-label me-3">
+                                    <input type="radio" th:field="*{featured}" value="" class="form-check-input me-2"
+                                           th:classappend="${#fields.hasErrors('featured')} ? 'is-invalid'"
+                                           th:checked="${movie.featured == null}">
+                                    Không ưu tiên
+                                </label>
+                            </div>
+                            <span id="featuredError" th:if="${#fields.hasErrors('featured')}" th:errors="*{featured}" class="text-danger"></span>
+                            <div class="invalid-feedback" id="featuredErrorFeedback">Vui lòng chọn mức độ ưu tiên.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nút thao tác -->
+            <div class="form-act">
+                <button type="submit" class="btn btn-primary" id="submitButton">
+                    <i class="fa fa-save"></i> Tạo Phim
+                </button>
+                <a th:href="@{/admin/listMovie}" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        const form = document.getElementById('movieForm');
+        const submitButton = document.getElementById('submitButton');
+        const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
+        let isSmallImageValid = true; // Track validity of smallImageFile
+        let isLargeImageValid = true; // Track validity of largeImageFile
+
+        // Function to validate checkbox/radio groups
+        function validateCheckGroup(groupName, errorElementId) {
+            const inputs = document.getElementsByName(groupName);
+            const errorElement = document.getElementById(errorElementId);
+            let isChecked = false;
+            for (const input of inputs) {
+                if (input.checked) {
+                    isChecked = true;
+                    break;
+                }
+            }
+            if (!isChecked) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = `Vui lòng chọn ít nhất một ${groupName === 'ageRating' ? 'giới hạn độ tuổi' : groupName === 'genres' ? 'thể loại' : groupName === 'versions' ? 'phiên bản' : 'mức độ ưu tiên'}.`;
+                inputs.forEach(input => input.classList.add('is-invalid'));
+                return false;
+            } else {
+                errorElement.style.display = 'none';
+                inputs.forEach(input => input.classList.remove('is-invalid'));
+                return true;
+            }
+        }
+
+        // Function to validate and preview file inputs
+        function validateFileInput(input, feedbackElementId, previewElementId) {
+            const feedbackElement = document.getElementById(feedbackElementId);
+            const previewElement = document.getElementById(previewElementId);
+            feedbackElement.classList.remove('text-success', 'text-danger');
+            previewElement.classList.add('d-none');
+            let isValid = true;
+
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                if (file.size > maxFileSize) {
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                    feedbackElement.classList.add('text-danger');
+                    feedbackElement.textContent = 'Kích thước file vượt quá 2MB.';
+                    isValid = false;
+                } else if (!file.type.match('image/(jpeg|png)')) {
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                    feedbackElement.classList.add('text-danger');
+                    feedbackElement.textContent = 'File phải là hình ảnh JPG hoặc PNG.';
+                    isValid = false;
+                } else {
+                    input.classList.add('is-valid');
+                    input.classList.remove('is-invalid');
+                    feedbackElement.classList.add('text-success');
+                    feedbackElement.textContent = `File hợp lệ: ${file.name}`;
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewElement.src = e.target.result;
+                        previewElement.classList.remove('d-none');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                input.classList.remove('is-valid', 'is-invalid');
+                feedbackElement.textContent = '';
+            }
+
+            // Update validity flags
+            if (input.id === 'smallImageFile') {
+                isSmallImageValid = isValid;
+            } else {
+                isLargeImageValid = isValid;
+            }
+            updateSubmitButton();
+            return isValid;
+        }
+
+        // Function to validate toDate >= fromDate
+        function validateDates() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const toDateInput = document.getElementById('toDate');
+            const toDateError = document.querySelector('#toDate + .invalid-feedback');
+            let isValid = true;
+
+            if (toDate && fromDate && new Date(toDate) < new Date(fromDate)) {
+                toDateInput.classList.add('is-invalid');
+                toDateInput.classList.remove('is-valid');
+                toDateError.style.display = 'block';
+                isValid = false;
+            } else {
+                toDateInput.classList.remove('is-invalid');
+                toDateError.style.display = 'none';
+                if (toDate) toDateInput.classList.add('is-valid');
+            }
+            return isValid;
+        }
+
+        // Update submit button state
+        function updateSubmitButton() {
+            const isFormValid = form.checkValidity() &&
+                validateCheckGroup('ageRating', 'ageRatingError') &&
+                validateCheckGroup('genres', 'genresError') &&
+                validateCheckGroup('versions', 'versionsError') &&
+                validateCheckGroup('featured', 'featuredErrorFeedback') &&
+                validateDates() &&
+                isSmallImageValid &&
+                isLargeImageValid;
+            submitButton.disabled = !isFormValid;
+        }
+
+        // Attach onchange listeners to file inputs
+        document.getElementById('smallImageFile').addEventListener('change', () =>
+            validateFileInput(document.getElementById('smallImageFile'), 'smallImageFileFeedback', 'smallImagePreview'));
+        document.getElementById('largeImageFile').addEventListener('change', () =>
+            validateFileInput(document.getElementById('largeImageFile'), 'largeImageFileFeedback', 'largeImagePreview'));
+
+        // Real-time validation for inputs
+        form.querySelectorAll('input:not([type=file]), textarea').forEach(input => {
+            input.addEventListener('input', () => {
+                if (input.id === 'fromDate' || input.id === 'toDate') {
+                    validateDates();
+                } else if (input.checkValidity()) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                }
+                updateSubmitButton();
+            });
+        });
+
+        // Form submission handler
+        form.addEventListener('submit', function (event) {
+            let isValid = form.checkValidity();
+
+            // Validate radio & checkbox groups
+            isValid = validateCheckGroup('ageRating', 'ageRatingError') && isValid;
+            isValid = validateCheckGroup('genres', 'genresError') && isValid;
+            isValid = validateCheckGroup('versions', 'versionsError') && isValid;
+            // isValid = validateCheckGroup('featured', 'featuredErrorFeedback') && isValid;
+
+            // Validate toDate
+            isValid = validateDates() && isValid;
+
+            // Validate file inputs
+            const smallImageFile = document.getElementById('smallImageFile');
+            const largeImageFile = document.getElementById('largeImageFile');
+            if (smallImageFile.files.length > 0) {
+                isValid = validateFileInput(smallImageFile, 'smallImageFileFeedback', 'smallImagePreview') && isValid;
+            }
+            if (largeImageFile.files.length > 0) {
+                isValid = validateFileInput(largeImageFile, 'largeImageFileFeedback', 'largeImagePreview') && isValid;
+            }
+
+            if (!isValid || !isSmallImageValid || !isLargeImageValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+                form.querySelectorAll('input, textarea').forEach(input => {
+                    if (!input.checkValidity()) {
+                        input.classList.add('is-invalid');
+                    }
+                });
+            }
+        }, false);
+
+        // Initialize form validation on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set default featured value if none is selected
+            const featuredInputs = document.getElementsByName('featured');
+            let isFeaturedChecked = false;
+            for (const input of featuredInputs) {
+                if (input.checked) {
+                    isFeaturedChecked = true;
+                    break;
+                }
+            }
+            if (!isFeaturedChecked) {
+                const defaultFeatured = document.querySelector('input[name="featured"][value="1"]');
+                if (defaultFeatured) {
+                    defaultFeatured.checked = true;
+                    defaultFeatured.classList.add('is-valid');
+                }
+            }
+            updateSubmitButton();
+        });
+    })();
+</script>
+
+</body>
+</html>

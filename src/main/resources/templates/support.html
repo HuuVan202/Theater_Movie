@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{support_title}">Customer Support</title>
+    <link rel="stylesheet" th:href="@{/css/support.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container py-5">
+    <h1 class="text-center fw-bold mb-2" style="color: #f9a825; font-size: 2.5rem;" th:text="#{support_title}">Customer Support</h1>
+    <p class="text-center mb-4" style="color: #bfc9d9; font-size: 1.2rem;" th:text="#{support_desc}">We are ready to assist you 24/7. Contact us through any channel below.</p>
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="mb-2" style="font-size:2rem;"><i class="bi bi-telephone-fill"></i></div>
+                    <h5 class="card-title" th:text="#{support_hotline_title}">24/7 Hotline</h5>
+                    <p class="card-text" th:text="#{support_hotline_desc}">Call us anytime for immediate assistance</p>
+                    <div class="fw-bold" style="color:#f9a825;" th:text="#{support_hotline_number}">1900-xxxx</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="mb-2" style="font-size:2rem;"><i class="bi bi-envelope-fill"></i></div>
+                    <h5 class="card-title" th:text="#{support_email_title}">Support Email</h5>
+                    <p class="card-text" th:text="#{support_email_desc}">Send an email and our team will respond as soon as possible</p>
+                    <div class="fw-bold" style="color:#f9a825;" >mooncinema@gmail.com</div>
+                    <div class="text-muted" style="font-size:0.9rem;" th:text="#{support_email_response}">Response within 2h</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm ">
+                <a th:href="@{/chat}" class="card-body text-decoration-none">
+                    <div class="mb-2" style="font-size:2rem;"><i class="bi bi-chat-dots-fill"></i></div>
+                    <h5 class="card-title" th:text="#{support_chat_title}">Chat</h5>
+                    <p class="card-text" th:text="#{support_chat_desc}">Chat online with our support staff</p>
+                    <div class="fw-bold" style="color:#f9a825;" th:text="#{support_chat_where}">On website</div>
+                    <div class="text-muted" style="font-size:0.9rem;" th:text="#{support_chat_hours}">8:00 - 23:00</div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="mb-2" style="font-size:2rem;"><i class="bi bi-headset"></i></div>
+                    <h5 class="card-title" th:text="#{support_theater_title}">In-Theater Support</h5>
+                    <p class="card-text" th:text="#{support_theater_desc}">Get assistance directly at our customer service counter</p>
+                    <div class="fw-bold" style="color:#f9a825;" th:text="#{support_theater_where}">All MoonCinema theaters</div>
+                    <div class="text-muted" style="font-size:0.9rem;" th:text="#{support_theater_hours}">During operating hours</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 support-form-card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3" style="color:#f9a825;" th:text="#{support_form_title}">Send Support Request</h5>
+                    <div id="generalError" class="alert alert-danger d-none" role="alert"></div>
+                    <div id="successMessage" class="alert alert-success d-none" role="alert"></div>
+                    <form id="supportForm" th:action="@{/support/submit}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <div class="row mb-2">
+                            <div class="col support-form-card-input">
+                                <span th:text="#{support_form_name}">Full Name</span>
+                                <label>
+                                    <input type="text" class="form-control" id="fullName" name="fullName" th:placeholder="#{support_form_name}">
+                                    <div class="text-danger" id="fullNameError"></div>
+                                </label>
+                            </div>
+                            <div class="col support-form-card-input">
+                                <span th:text="#{support_form_phone}">Phone Number</span>
+                                <label>
+                                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="01234...">
+                                    <div class="text-danger" id="phoneNumberError"></div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-2 support-form-card-input">
+                            <span th:text="#{support_form_email}">Email</span>
+                            <label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com">
+                                <div class="text-danger" id="emailError"></div>
+                            </label>
+                        </div>
+                        <div class="mb-2 support-form-card-input">
+                            <span th:text="#{support_form_topic}">Topic</span>
+                            <select aria-label="Support Topic" class="form-select" id="supportTopic" name="supportTopic">
+                                <option selected disabled th:text="#{support_form_topic_select}">Select topic</option>
+                                <option th:text="#{support_form_topic_booking}">Booking</option>
+                                <option th:text="#{support_form_topic_promotion}">Promotions</option>
+                                <option th:text="#{support_form_topic_other}">Other</option>
+                            </select>
+                            <div class="text-danger" id="supportTopicError"></div>
+                        </div>
+                        <div class="mb-2 support-form-card-input">
+                            <span th:text="#{support_form_subject}">Subject</span>
+                            <label>
+                                <input type="text" class="form-control" id="subject" name="subject" th:placeholder="#{support_form_subject}">
+                                <div class="text-danger" id="subjectError"></div>
+                            </label>
+                        </div>
+                        <div class="mb-3 support-form-card-input">
+                            <span th:text="#{support_form_description}">Description</span>
+                            <label>
+                                <textarea class="form-control" id="description" name="description" rows="3" th:placeholder="#{support_form_description_placeholder}"></textarea>
+                                <div class="text-danger" id="descriptionError"></div>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 fw-bold" id="submitButton" th:text="#{support_form_submit}">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3" style="color:#f9a825;" th:text="#{support_faq_title}">Frequently Asked Questions</h5>
+                    <div class="mb-2">
+                        <div><b th:text="#{support_faq_booking}">How do I book tickets?</b></div>
+                        <div class="text-muted" style="font-size:0.95rem;" th:text="#{support_faq_booking_answer}">
+                            Visit website → Choose movie → Select showtime → Select seats → Complete payment
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div><b th:text="#{support_faq_cancel}">Can I cancel tickets?</b></div>
+                        <div class="text-muted" style="font-size:0.95rem;" th:text="#{support_faq_cancel_answer}">
+                            You can cancel up to 2 hours before showtime with a 10,000 VND fee
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div><b th:text="#{support_faq_forgot}">Forgot booking code or ticket?</b></div>
+                        <div class="text-muted" style="font-size:0.95rem;" th:text="#{support_faq_forgot_answer}">
+                            Click 'Forgot Code' on the website to follow instructions via email
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div><b th:text="#{support_faq_email}">Did not receive ticket via email?</b></div>
+                        <div class="text-muted" style="font-size:0.95rem;" th:text="#{support_faq_email_answer}">
+                            Check your spam folder or contact our hotline with your order ID
+                        </div>
+                    </div>
+                    <a th:href="@{/faq}" class="btn btn-warning w-100 fw-bold mt-2" style="color:#7c4700;" th:text="#{support_faq_link}">View All FAQs</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3" style="color:#f9a825;" th:text="#{support_office_title}">Head Office</h5>
+                    <div class="mb-2">
+                        <div class="fw-bold" th:text="#{support_office_address_label}">Address</div>
+                        <div class="text-muted" th:utext="#{support_office_address}">123 Nguyen Hue Street, District 1<br>Ho Chi Minh City</div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="fw-bold" th:text="#{support_office_hours_label}">Hours</div>
+                        <div class="text-muted" th:text="#{support_office_hours}">Mon - Sun, 8:00 - 22:00</div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="fw-bold" th:text="#{support_office_commitment_label}">Commitment</div>
+                        <div class="text-muted" th:utext="#{support_office_commitment}">Response within 2 hours<br>4.8/5 stars customer rating<br>Support: Vietnamese & English</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="/js/support.js"></script>
+</body>
+
+</html>

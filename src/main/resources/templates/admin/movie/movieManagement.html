@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <title>Quản lý Danh Sách Phim</title>
+    <!-- Thêm jQuery và jQuery UI Autocomplete -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <!-- Thêm Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        em {
+            background-color: yellow;
+            font-style: normal;
+        }
+        .ui-autocomplete {
+            max-height: 150px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 200px !important;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 5px 10px rgba(0,0,0,.2);
+            background-color: #fff;
+            z-index: 1000;
+        }
+        .ui-menu-item {
+            padding: 3px 20px;
+            font-size: 14px;
+            line-height: 20px;
+        }
+        .ui-menu-item:hover,
+        .ui-state-active {
+            background-color: #f0f0f0;
+            border: none;
+            margin: 0;
+        }
+        .select2-container .select2-selection--multiple {
+            min-height: 32px;
+            font-size: 14px;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<!-- Ghi đè fragment header -->
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Danh Sách Phim', 'bi-film')}"></div>
+</div>
+
+<!-- Ghi đè fragment content -->
+<div layout:fragment="content">
+    <div class="user-table-wrapper p-3 rounded-4 shadow animate-fade-in bg-white" style="overflow-x: auto; max-width: 100%;">
+        <!-- Notifications -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${warningMessage}" class="alert alert-warning alert-dismissible fade show" role="alert">
+            <span th:text="${warningMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold mb-0">Danh sách phim</h3>
+            <div>
+                <form th:action="@{/admin/listMovie}" method="get" class="d-flex gap-2">
+                    <input type="text" name="keyword" id="searchInput" th:value="${keyword}" maxlength="28"
+                           placeholder="Tìm kiếm..." class="form-control form-control-sm" style="width: 200px;" />
+                    <select name="genres" multiple class="form-control form-control-sm" id="genresSelect" style="width: 200px;">
+                        <option th:each="genre : ${allGenres}"
+                                th:value="${genre.typeName.toLowerCase()}"
+                        th:selected="${#lists.contains(genre, genre.typeName.toLowerCase())}"
+                        th:text="${genre.typeName}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-search"></i> Tìm kiếm
+                    </button>
+                </form>
+            </div>
+            <a th:href="@{/admin/createMovie}" class="btn btn-primary rounded-circle shadow add-employee-btn" title="Add New Movie">
+                <i class="bi bi-plus-lg fs-4"></i>
+            </a>
+        </div>
+
+        <!-- Bảng phim nếu có dữ liệu -->
+        <div class="table-responsive" style="overflow-x: auto;" th:if="${not #lists.isEmpty(movies)}">
+            <table class="table table-hover align-middle table-sm">
+                <thead class="table-light">
+                <tr>
+                    <th>STT</th>
+                    <th>Tên phim (VN)</th>
+                    <th>Tên phim (TA)</th>
+                    <th>Thể loại</th>
+                    <th>Ưu tiên</th>
+                    <th>Ngày bắt đầu</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="movie : ${movies}">
+                    <td th:text="${movie.movieId}"></td>
+                    <td>
+                        <span th:if="${movie.highlights != null and movie.highlights['movieNameVn'] != null}"
+                              th:utext="${movie.highlights['movieNameVn'][0]}"></span>
+                        <span th:unless="${movie.highlights != null and movie.highlights['movieNameVn'] != null}"
+                              th:text="${movie.movieNameVn}"></span>
+                    </td>
+                    <td>
+                        <span th:if="${movie.highlights != null and movie.highlights['movieNameEn'] != null}"
+                              th:utext="${movie.highlights['movieNameEn'][0]}"></span>
+                        <span th:unless="${movie.highlights != null and movie.highlights['movieNameEn'] != null}"
+                              th:text="${movie.movieNameEn}"></span>
+                    </td>
+                    <td>
+                         <span th:if="${movie.highlights != null and movie.highlights['genres'] != null}"
+                                th:utext="${movie.highlights['genres'][0]}"></span>
+                        <span th:unless="${movie.highlights != null and movie.highlights['genres'] != null}"
+                              th:text="${movie.genres != null ? #strings.listJoin(movie.genres, ', ') : ''}"></span>
+                    </td>
+<!--                    <td>-->
+<!--                        <span th:if="${movie.highlights != null and movie.highlights['content'] != null}"-->
+<!--                              th:utext="${movie.highlights['content'][0]}"></span>-->
+<!--                        <span th:unless="${movie.highlights != null and movie.highlights['content'] != null}"-->
+<!--                              th:text="${movie.content}"></span>-->
+                     <!-- Thêm tiêu đề cho cột trong <thead> -->
+                    <td
+                         th:text="${movie.getFeatured() != null} ? ${movie.getFeatured()} : '0'">
+                    </td>
+<!--                    </td>-->
+                    <td th:text="${#temporals.format(movie.fromDate, 'dd/MM/yyyy')}"></td>
+                    <td class="text-end">
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm border dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/admin/detailMovie/{id}(id=${movie.movieId})}">
+                                        <i class="bi bi-info-circle me-1"></i> Chi tiết
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/admin/editMovie/{id}(id=${movie.movieId})}">
+                                        <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
+                                    </a>
+                                </li>
+                                <li>
+                                    <form th:action="@{/admin/deleteMovie/{id}(id=${movie.movieId})}" method="post"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa phim này không?')">
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-trash me-1"></i> Xóa
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Không có dữ liệu -->
+        <div th:if="${#lists.isEmpty(movies)}" class="text-center py-5">
+            <i class="bi bi-film display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">Không tìm thấy phim nào!</h4>
+        </div>
+
+        <!-- Phân trang -->
+        <div class="d-flex justify-content-end mt-3" th:if="${totalPages > 1}">
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/listMovie(page=0, keyword=${keyword}, genres=${genres})}">&laquo;</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/listMovie(page=${currentPage - 1}, keyword=${keyword}, genres=${genres})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/listMovie(page=${i}, keyword=${keyword}, genres=${genres})}" th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/listMovie(page=${currentPage + 1}, keyword=${keyword}, genres=${genres})}">Tiếp</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/listMovie(page=${totalPages - 1}, keyword=${keyword}, genres=${genres})}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Script cho autocomplete và Select2 -->
+        <script>
+            $(document).ready(function() {
+                console.log('Initializing jQuery UI Autocomplete for #searchInput');
+                $('#searchInput').autocomplete({
+                    source: function(request, response) {
+                        console.log('Fetching suggestions for query: ' + request.term);
+                        $.ajax({
+                            url: '/admin/suggestMovies',
+                            data: { keyword: request.term },
+                            dataType: 'json',
+                            success: function(data) {
+                                console.log('Suggestions received: ', data);
+                                response(data);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching suggestions: ', error, xhr.status, xhr.responseText);
+                                response([]);
+                            }
+                        });
+                    },
+                    minLength: 2,
+                    delay: 300
+                });
+
+                $('#genresSelect').select2({
+                    placeholder: "Chọn thể loại",
+                    allowClear: true,
+                    width: '200px'
+                });
+            });
+        </script>
+    </div>
+</div>
+</body>
+</html>

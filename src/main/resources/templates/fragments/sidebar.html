@@ -1,0 +1,32 @@
+<!-- fragments/sidebar.html -->
+<div th:fragment="sidebar">
+  <nav id="sidebar" class="bg-white border-end sidebar-custom">
+    <div class="sidebar-header p-3 border-bottom">
+      <h5 class="mb-0 fw-bold text-danger"> <img th:src="@{/img/logo.png}" style="width: 28px; height:28px" alt="MoonCinema">Cinema Admin</h5>
+    </div>
+    <ul class="list-unstyled components p-3 mb-0">
+      <li class="mb-2"><a th:href="@{/admin/stats/all}" class="nav-link sidebar-link"><i class="bi bi-bar-chart-line me-2"></i>Trang Chủ</a></li>
+      <li class="mb-2"><a th:href="@{/admin/employees}" class="nav-link sidebar-link"><i class="bi bi-person-badge me-2"></i>Nhân Viên</a></li>
+      <li class="mb-2"><a th:href="@{/admin/members}" class="nav-link sidebar-link"><i class="bi bi-people me-2"></i>Khách hàng</a></li>
+      <li class="mb-2"><a th:href="@{/admin/listMovie}" class="nav-link sidebar-link"><i class="bi bi-film me-2"></i>Phim</a></li>
+      <li class="mb-2"><a th:href="@{/admin/showtime}" class="nav-link sidebar-link"><i class="bi bi-calendar2-week me-2"></i>Lịch chiếu</a></li>
+      <li class="mb-2"><a th:href="@{/admin/cinema-room}" class="nav-link sidebar-link"><i class="bi bi-door-open me-2"></i>Phòng chiếu</a></li>
+      <li class="mb-2"><a th:href="@{/admin/promotions/list}" class="nav-link sidebar-link"><i class="bi bi-gift me-2"></i>Khuyến mãi</a></li>
+      <li class="mb-2"><a th:href="@{/admin/bookingList}" class="nav-link sidebar-link"><i class="bi bi-ticket-perforated me-2"></i>Đặt vé</a></li>
+    </ul>
+    <div class="sidebar-footer p-3 border-top mt-auto">
+      <div class="mb-2 small"><i class="bi bi-person-circle me-2"></i>Admin</div>
+      <form method="post" class="small">
+        <button type="submit" class="logout-btn" style="background: none; border: none; color: inherit; cursor: pointer;">
+          <i class="bi bi-house me-2"></i><a href="/home" style="text-decoration: none; color: inherit">Home</a>
+        </button>
+      </form>
+      <form id="adminLogoutForm" method="post" th:action="@{/admin/logout}" class="small">
+        <input type="hidden" th:name="${_csrf != null} ? ${_csrf.parameterName} : ''" th:value="${_csrf != null} ? ${_csrf.token} : ''"/>
+        <button type="submit" class="logout-btn" style="background: none; border: none; color: inherit; cursor: pointer;">
+          <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+        </button>
+      </form>
+    </div>
+  </nav>
+</div>

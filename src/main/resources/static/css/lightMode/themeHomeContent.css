@@ -1,0 +1,375 @@
+/* ========= HEADER ========= */
+    body.light-mode .header {
+        background-color: #CFCFCF;
+        color: #1a1a1a;
+        border-bottom: 1px solid #cdd9ed;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+body.light-mode .logo span {
+    color: #f9a825;
+}
+body.light-mode .logo:hover span {
+    color: #ffc107;
+}
+body.light-mode .logo img {
+    filter: none;
+}
+
+/* ========= NAVIGATION ========= */
+body.light-mode .main-nav .nav-link {
+    color: #2a2a2a;
+}
+body.light-mode .main-nav .nav-link:hover {
+    color: #f9a825;
+}
+body.light-mode .main-nav .nav-link::after {
+    background: #f9a825;
+}
+
+/* ========= BUTTONS ========= */
+body.light-mode .login-btn,
+body.light-mode .logout-btn {
+    background-color: #f9a825;
+    color: white;
+}
+body.light-mode .login-btn:hover,
+body.light-mode .logout-btn:hover {
+    background-color: #f9a825   ;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-decoration: none;
+}
+
+body.light-mode .lang-btn {
+    background: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #2a2a2a;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+body.light-mode .lang-btn:hover {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #CFCFCF;
+    color: #f9a825;
+    box-shadow: 0 2px 8px rgba(249, 168, 37, 0.15);
+}
+
+body.light-mode .lang-btn.active {
+    background: #f9a825;
+    border-color: #f9a825;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+body.light-mode .language-switcher select {
+    background: #CFCFCF !important;
+    color: #1a1a1a !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .language-switcher select:hover {
+    border-color: #f9a825 !important;
+    box-shadow: 0 0 10px rgba(249, 168, 37, 0.2) !important;
+    transform: translateY(-2px);
+}
+
+body.light-mode .language-switcher select:focus {
+    border-color: #f9a825 !important;
+    box-shadow: 0 0 12px rgba(249, 168, 37, 0.25) !important;
+}
+
+body.light-mode .language-switcher::after {
+    color: #f9a825 !important;
+}
+
+body.light-mode .language-switcher select option {
+    background: #CFCFCF !important;
+    color: #1a1a1a !important;
+}
+
+/* ========= USER FULLNAME ========= */
+body.light-mode .user-fullname {
+    color: #1a1a1a !important;
+}
+
+/* ========= USER DROPDOWN ========= */
+body.light-mode .user-dropdown .dropdown-menu {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+body.light-mode .dropdown-header {
+    background: #eaf4ff;
+    border-bottom: 1px solid #cce0f4;
+}
+body.light-mode .dropdown-header .user-name {
+    color: #1a1a1a;
+}
+body.light-mode .dropdown-header .user-email {
+    color: #555;
+}
+body.light-mode .user-dropdown .dropdown-item {
+    color: #212529;
+}
+body.light-mode .user-dropdown .dropdown-item:hover {
+    background-color: #f0f4ff;
+}
+body.light-mode .user-dropdown .dropdown-item i {
+    color: #212529;
+}
+body.light-mode .user-dropdown .dropdown-item:hover i {
+    color: #CD6600;
+}
+body.light-mode .user-dropdown .dropdown-item.logout {
+    color: #d32f2f;
+}
+body.light-mode .user-dropdown .dropdown-item.logout:hover {
+    background-color: #ffebee;
+    color: #b71c1c;
+}
+
+/* ========= FOOTER ========= */
+body.light-mode footer,
+body.light-mode .footer-bottom {
+    background-color: #CFCFCF;
+    color: #2a2a2a;
+    border-top: 1px solid #1C1C1C;
+}
+body.light-mode footer a {
+    color: #2a2a2a;
+}
+body.light-mode footer a:hover {
+    color: #CD6600;
+}
+body.light-mode .footer-logo span {
+    color: #2e7d32;
+}
+body.light-mode .footer-column h4 {
+    color: #1C1C1C;
+}
+
+body.light-mode .social-icons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+body.light-mode .social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(45deg, #f9a825, #f59e0b);
+    color: #fff;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(232, 148, 45, 0.3);
+}
+
+body.light-mode .social-icons a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(220, 38, 38, 0.9);
+    color: white !important;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+body.light-mode .social-icons a:hover::before {
+    opacity: 1;
+}
+
+body.light-mode .social-icons a i {
+    position: relative;
+    z-index: 1;
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+body.light-mode .social-icons a:hover i {
+    transform: scale(1.1);
+}
+
+body.light-mode .social-icons i{
+    color: white !important;
+}
+
+/* ========= Start HomePage ========= */
+body.light-mode .moon-background,
+body.light-mode .floating-lanterns,
+body.light-mode .stars,
+body.light-mode .night-overlay,
+body.light-mode .night-clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+body:not(.dark-mode) .floating-lanterns {
+    display: none !important;
+}
+body.light-mode .moon-background {
+    background-color: #f9f6ef; /* màu kem nhẹ dịp lễ hội */
+    transition: background 0.8s ease;
+}
+
+body.light-mode .night-overlay {
+    background: none; /* Xoá lớp phủ tối */
+}
+
+body.light-mode .night-clouds .cloud {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .stars {
+    display: none;
+}
+
+.moon-background,
+.moon,
+.cloud {
+    transition: all 0.8s ease;
+}
+
+body.light-mode .top-hero-section .lead,
+body.light-mode .top-hero-section .mb-4 {
+    color: #696969 !important;
+}
+
+body.light-mode .horizontal-scroll-container-wrapper {
+    background-color: #CFCFCF; /* Màu nền nhẹ, dịu hơn trắng tinh */
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+body.light-mode .light-mode-discount-card {
+    background: linear-gradient(135deg, #fff3cd 60%, #fffbe6 100%);
+    color: #7c5a00;
+    border-left: 5px solid #f59e0b;
+    border-width: 0 0 0 5px;
+    box-shadow: 0 2px 8px rgba(249, 168, 37, 0.1);
+}
+
+body.light-mode .light-mode-discount-card .fw-bold {
+    color: #7c5a00;
+}
+
+body.light-mode .light-mode-discount-card div:last-child {
+    color: #7c5a00;
+    opacity: 0.85;
+}
+
+body.light-mode .alert.alert-dark {
+    background: linear-gradient(135deg, #fff3cd 60%, #fffbe6 100%) !important;
+    color: #7c5a00 !important;
+    border-color: #f59e0b !important;
+}
+
+body.light-mode .alert.alert-dark .fw-bold {
+    color: #7c5a00 !important;
+}
+
+body.light-mode .alert.alert-dark div:last-child {
+    color: #7c5a00 !important;
+    opacity: 0.85;
+}
+
+body.light-mode .container{
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+    background-color: #E8E8E8;
+    min-width: 100%;
+}
+
+body.light-mode .text-muted{
+    color: #696969 !important;
+}
+
+body.light-mode #featured-movies > .horizontal-scroll-container-wrapper{
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #D7D7D7; /* nền sáng dịu */
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .special-promotions .swiper.special-promotions-swiper {
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #D7D7D7; /* nền sáng dịu */
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+/* Container từng slide */
+body.light-mode .special-promotions-swiper .swiper-slide {
+    padding: 0 12px;
+    box-sizing: border-box;
+}
+
+body.light-mode .special-promotions-swiper {
+    padding: 12px 0;
+}
+
+/* Đảm bảo ảnh promo hiển thị đúng */
+body.light-mode .special-promotions-swiper .swiper-image {
+    width: 100%;
+    height: 350px;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Khung promo card full khung */
+body.light-mode .special-promotions-swiper .swiper-image.card {
+    width: 100% !important;
+    height: 360px !important;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #fff;
+    margin: 0 auto;
+    padding: 0; /* ❗ Xóa padding để ảnh không bị co lại */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    display: block; /* Không cần flex nếu ảnh full */
+}
+
+/* Ảnh promo chiếm toàn bộ khung */
+body.light-mode .special-promotions-swiper .swiper-image_top {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    display: block;
+    border-radius: 16px; /* Bo tròn theo khung nếu muốn */
+}
+
+/* ========= End HomePage ========= */

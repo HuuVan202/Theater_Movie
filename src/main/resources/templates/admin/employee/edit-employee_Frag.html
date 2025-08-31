@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chỉnh Sửa Nhân Viên</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" th:href="@{/css/admin/employee/add-employees.css}">
+  <link rel="stylesheet" th:href="@{/css/layout/layoutAM.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+  <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+  <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+  <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+</head>
+<body>
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Chỉnh sửa nhân viên', 'bi bi-person-badge me-2')}"></div>
+</div>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            </div>
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Success/Error Alert -->
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible success-alert" role="alert"
+                     id="successAlert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible success-alert" role="alert"
+                     id="errorAlert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <!-- Page Wrapper and Form -->
+                <div class="page-wrapper">
+                    <div class="container">
+                      <form th:action="@{/admin/employees/edit/{id}(id=${employee.employeeId})}"
+                            method="post"
+                            class="employee-form"
+                            onsubmit="return validateForm()"
+                            enctype="multipart/form-data">
+                        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+                        <div th:if="${#fields.hasErrors('account.email')}" class="error-message"
+                             th:errors="*{account.email}">
+                        </div>
+
+                        <div class="form-columns">
+                          <!-- Cột 1: Thông Tin Tài Khoản & Cá Nhân -->
+                          <div class="form-column">
+                            <div class="form-section no-border">
+                              <h2 class="section-title">Thông Tin Tài Khoản & Cá Nhân</h2>
+                              <div class="form-group">
+                                <label for="username">Tên Đăng Nhập</label>
+                                <div class="input-container">
+                                  <input type="text" id="username" th:field="*{accountDTO.username}"
+                                         readonly>
+                                  <i class="bi bi-check-circle check-icon"></i>
+                                </div>
+                                <div id="usernameFeedback" class="feedback"></div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="password">Mật Khẩu Mới (nếu muốn đổi)</label>
+                                <div class="input-container has-toggle">
+                                  <input type="password" id="password" th:field="*{accountDTO.password}"
+                                         placeholder="Nhập mật khẩu mới"
+                                         onblur="checkField('password')"
+                                         oninput="clearValidation('password')">
+                                  <span class="check-icon"><i class="fas fa-check"></i></span>
+                                  <button type="button" class="password-toggle"
+                                          onclick="togglePassword('password')"
+                                          title="Hiển/Ẩn mật khẩu">
+                                    <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                  </button>
+                                </div>
+                                <div id="passwordFeedback" class="feedback"></div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="confirmPassword">Xác Nhận Mật Khẩu</label>
+                                <div class="input-container">
+                                  <input type="password" id="confirmPassword" name="confirmPassword"
+                                         placeholder="Nhập lại mật khẩu"
+                                         onblur="checkField('confirmPassword')"
+                                         oninput="clearValidation('confirmPassword')"/>
+                                  <span class="check-icon"><i class="fas fa-check"></i></span>
+                                </div>
+                                <div id="confirmPasswordFeedback" class="feedback"></div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="email">Email</label>
+                                <div class="input-container">
+                                  <input type="email" id="email" th:field="*{accountDTO.email}"
+                                         placeholder="example@gmail.com"
+                                         onblur="checkField('email')"
+                                         oninput="clearValidation('email')"/>
+                                  <span class="check-icon"><i class="fas fa-check"></i></span>
+                                </div>
+                                <div id="emailFeedback" class="feedback"></div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="fullName">Họ và Tên:</label>
+                                <div class="input-container">
+                                  <input type="text" id="fullName" th:field="*{account.fullName}" required
+                                         onblur="checkField('fullName')"
+                                         oninput="clearValidation('fullName')"
+                                         placeholder="Nhập họ tên"/>
+                                </div>
+                              </div>
+
+                              <div class="form-row">
+                                <div class="form-group half">
+                                  <label for="dateOfBirth">Ngày Sinh</label>
+                                  <div class="input-container">
+                                    <input type="date" id="dateOfBirth" name="dateOfBirth"
+                                           th:value="${accountDTO.dateOfBirth != null ? #temporals.format(accountDTO.dateOfBirth, 'yyyy-MM-dd') : ''}"
+                                           required
+                                           onchange="handleDateChange('dateOfBirth')"
+                                           oninput="clearDateValidation('dateOfBirth')"/>
+                                    <i class="bi bi-check-circle check-icon"></i>
+                                  </div>
+                                  <div id="dateOfBirthFeedback" class="feedback"></div>
+                                </div>
+
+                                <div class="form-group half">
+                                  <label>Giới Tính</label>
+                                  <div class="radio-group">
+                                    <label class="radio-label">
+                                      <input type="radio" id="male" th:field="*{accountDTO.gender}"
+                                             value="M" required>
+                                      <span class="radio-text">Nam</span>
+                                    </label>
+                                    <label class="radio-label">
+                                      <input type="radio" id="female" th:field="*{accountDTO.gender}"
+                                             value="F">
+                                      <span class="radio-text">Nữ</span>
+                                    </label>
+                                  </div>
+                                  <div id="genderFeedback" class="feedback"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Cột 2: Thông Tin Liên Hệ & Công Việc -->
+                          <div class="form-column">
+                            <div class="form-section no-border">
+                              <h2 class="section-title">Thông Tin Liên Hệ & Công Việc</h2>
+
+                              <div class="form-group">
+                                <label for="phoneNumber">Số Điện Thoại</label>
+                                <div class="input-container phone-input">
+                                  <span class="phone-prefix">+84</span>
+                                  <input type="text" id="phoneNumber" th:field="*{accountDTO.phoneNumber}"
+                                         required
+                                         onblur="checkField('phoneNumber')"
+                                         oninput="clearValidation('phoneNumber')"
+                                         placeholder="Nhập số điện thoại"/>
+                                  <span class="check-icon"><i class="fas fa-check"></i></span>
+                                </div>
+                                <div id="phoneNumberFeedback" class="feedback"></div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="address">Địa Chỉ</label>
+                                <div class="input-container">
+                                  <input type="text" id="address" th:field="*{accountDTO.address}"
+                                         required
+                                         placeholder="102 Lã Xuân Oai, Tăng Nhơn Phú A, Thủ Đức, thành phố Hồ Chí Minh"/>
+                                  <!--                                            <span class="check-icon"><i class="fas fa-check"></i></span>-->
+                                </div>
+                                <div id="addressFeedback" class="feedback"></div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="identityCard">CCCD</label>
+                                <div class="input-container">
+                                  <input type="text" id="identityCard" th:field="*{accountDTO.identityCard}"
+                                         required
+                                         onblur="checkField('identityCard')"
+                                         oninput="clearValidation('identityCard')"
+                                         placeholder="Nhập số CCCD"/>
+                                  <span class="check-icon"><i class="fas fa-check"></i></span>
+                                </div>
+                                <div id="identityCardFeedback" class="feedback"></div>
+                              </div>
+                              <div class="form-group">
+                                <label for="avatar">Hình Ảnh:</label>
+                                <div class="input-container">
+                                  <input type="file" id="avatar" name="avatarFile"
+                                         accept="image/*" onchange="previewImage(this)" />
+                                  <button type="button" onclick="removeAvatar()" class="btn btn-sm btn-danger" style="margin-left: 10px; margin-top: 10px">
+                                    Xóa ảnh
+                                  </button>
+                                </div>
+
+                                <div class="image-preview" id="imagePreview">
+                                  <img id="previewImg"
+                                       th:src="@{${employee.account.avatarUrl != null ? employee.account.avatarUrl : 'http://res.cloudinary.com/dycfyoh8r/image/upload/v1755106434/avatars/avatar_default.jpg'}}"
+                                       alt="Preview"
+                                       style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-top: 10px;" />
+                                </div>
+                                <!-- Dùng cờ ẩn để controller biết có xóa ảnh không -->
+                                <input type="hidden" id="useDefaultAvatar" name="useDefaultAvatar" value="false" />
+                              </div>
+
+
+                              <div class="form-row">
+                                <div class="form-group half">
+                                  <label for="hireDate">Ngày Tuyển Dụng</label>
+                                  <div class="input-container">
+                                    <input type="date" id="hireDate" name="hireDate"
+                                           th:value="${employee.hireDate != null ? #temporals.format(employee.hireDate, 'yyyy-MM-dd') : ''}"
+                                           required
+                                           onchange="handleDateChange('hireDate')"
+                                           oninput="clearDateValidation('hireDate')"/>
+
+                                  </div>
+                                  <div id="hireDateFeedback" class="feedback"></div>
+                                </div>
+
+                                <div class="form-group half">
+                                  <label for="position">Chức Vụ</label>
+                                  <div class="input-container">
+                                    <input type="text" id="position" th:field="*{employee.position}"
+                                           required
+                                           placeholder="Nhập chức vụ"/>
+                                    <!--                                                <span class="check-icon"><i class="fas fa-check"></i></span>-->
+                                  </div>
+                                  <div id="positionFeedback" class="feedback"></div>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label for="status">Trạng Thái</label>
+                                <div class="input-container">
+                                  <select id="status" th:field="*{accountDTO.status}" required>
+                                    <option value="1">Đang làm việc</option>
+                                    <option value="0">Đã nghỉ việc</option>
+                                  </select>
+                                  <i class="bi bi-check-circle check-icon"></i>
+                                </div>
+                                <div id="statusFeedback" class="feedback"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-actions">
+                          <button type="submit" class="btn-primary">
+                            <i class="fas fa-user-plus"></i>Lưu Thay Đổi
+                          </button>
+                          <a th:href="@{/admin/employees?page=0}" class="btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay Lại Danh Sách
+                          </a>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+  // Khởi tạo các biến toàn cục từ Thymeleaf
+  window.existingUsernames = new Set(/*[[${existingUsernames}]]*/[]);
+  window.existingEmails = new Set(/*[[${existingEmails}]]*/[]);
+  window.existingIdentityCards = new Set(/*[[${existingIdentityCards}]]*/[]);
+  window.existingPhoneNumbers = new Set(/*[[${existingPhoneNumbers}]]*/[]);
+  console.log('Existing usernames Set (from HTML):', window.existingUsernames);
+</script>
+<script th:src="@{/js/edit-employee.js}"></script>
+
+<script>
+  // Auto-hide success/error messages after 5 seconds
+  document.addEventListener('DOMContentLoaded', function () {
+    const successAlert = document.getElementById('successAlert');
+    const errorAlert = document.getElementById('errorAlert');
+
+    function hideAlert(alertElement) {
+      if (alertElement) {
+        setTimeout(() => {
+          alertElement.classList.add('fade-out');
+          setTimeout(() => {
+            alertElement.remove();
+          }, 500); // Wait for fade-out animation to complete
+        }, 5000); // 5 seconds
+      }
+    }
+
+    hideAlert(successAlert);
+    hideAlert(errorAlert);
+  });
+</script>
+<script>
+  function previewImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('previewImg');
+    document.getElementById('useDefaultAvatar').value = "false"; // không xài default
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeAvatar() {
+    document.getElementById('avatar').value = ""; // xoá file
+    document.getElementById('previewImg').src = "http://res.cloudinary.com/dycfyoh8r/image/upload/v1755106434/avatars/avatar_default.jpg";
+    document.getElementById('useDefaultAvatar').value = "true"; // bật cờ dùng ảnh mặc định
+  }
+</script>
+</body>
+</html>

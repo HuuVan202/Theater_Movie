@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="Quản lý Nhân viên - Admin">Quản lý Nhân viên - Admin</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Custom CSS for animation & style -->
+    <link rel="stylesheet" th:href="@{/css/admin/employee/employees.css}" href="/css/employees.css">
+    <link rel="stylesheet" th:href="@{/css/layout/layoutAM.css}" >
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        /* Custom CSS for success message animation */
+        .success-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 350px;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Custom dropdown styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            right: 0;
+            z-index: 1000;
+            display: none;
+            min-width: 10rem;
+            padding: 0.5rem 0;
+            margin: 0;
+            font-size: 1rem;
+            color: #212529;
+            text-align: left;
+            list-style: none;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 0.25rem;
+        }
+
+        .custom-dropdown-menu.show {
+            display: block;
+        }
+
+        .custom-dropdown-menu .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.25rem 1rem;
+            clear: both;
+            font-weight: 400;
+            color: #212529;
+            text-align: inherit;
+            text-decoration: none;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+        }
+
+        .custom-dropdown-menu .dropdown-item:hover,
+        .custom-dropdown-menu .dropdown-item:focus {
+            color: #1e2125;
+            background-color: #f8f9fa;
+        }
+
+        .custom-dropdown-menu .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .custom-dropdown-menu .text-success {
+            color: #198754 !important;
+        }
+
+        /* Loader styles */
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            vertical-align: text-bottom;
+            border-width: 2px;
+        }
+
+        /* Main loader styles */
+        #main-loader-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Loader animation exact match */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: animloader 1s linear infinite;
+        }
+
+        @keyframes animloader {
+            0% {
+                box-shadow: -72px 0 #FFF inset;
+            }
+            100% {
+                box-shadow: 48px 0 #FFF inset;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Success/Error Alert -->
+<div th:if="${successMessage}" class="alert alert-success alert-dismissible success-alert" role="alert" id="successAlert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible success-alert" role="alert" id="errorAlert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<!-- Header/Navbar -->
+<div layout:fragment="header">
+    <div th:replace="~{fragments/title_admin :: header('Danh sách nhân viên', 'bi bi-person-badge me-2')}"></div>
+</div>
+
+<!-- Main Content -->
+<div layout:fragment="content">
+    <div class="container-fluid py-4">
+        <div class="employee-table-wrapper p-3 p-md-4 rounded-4 shadow-lg bg-white animate-fade-in">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold mb-0">Danh sách nhân viên</h3>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Search form -->
+                    <form th:action="@{/admin/employees}" method="get" class="d-flex gap-2">
+                        <input type="text" name="keyword" th:value="${keyword}" maxlength="28"
+                               placeholder="Tìm kiếm..." class="form-control form-control-sm" style="width: 200px;" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-search"></i> Tìm kiếm
+                        </button>
+                    </form>
+                    <!--                        <button class="btn btn-light border"><i class="bi bi-funnel"></i></button>-->
+                    <a th:href="@{/admin/employees/add}" class="btn btn-primary rounded-circle shadow add-employee-btn action-btn" id="addEmployeeBtn" onclick="showLoader(this)" title="Add employee">
+                        <i class="bi bi-plus-lg fs-4"></i>
+                    </a>
+                    <!-- Export to Excel Button -->
+                    <a th:href="@{/admin/employees/export}" class="btn btn-success action-btn" id="exportBtn" onclick="showLoader(this)" title="Export to Excel">
+                        <i class="bi bi-file-earmark-excel me-2"></i>Export Excel
+                    </a>
+
+                    <!-- Import to Excel Button -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <i class="bi bi-upload me-2"></i>Import Excel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Import Excel Modal -->
+            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="importModalLabel"><i class="bi bi-upload me-2"></i>Nhập Excel</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="importForm" th:action="@{/admin/employees/import}" method="post" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="fileInput" class="form-label">Chọn tệp Excel:</label>
+                                    <input type="file" class="form-control" id="fileInput" name="file" accept=".xlsx,.xls" required>
+                                </div>
+                                <div id="modalErrorMessage" class="modal-error-message" th:text="${errorMessage}"></div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-upload me-2"></i>Tải lên
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table when employees exist -->
+            <div class="table-responsive" th:if="${not #lists.isEmpty(employees)}">
+                <table class="table table-borderless align-middle mb-0 employee-table">
+                    <thead>
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>
+                            <a th:href="@{/admin/employees(sortBy='account.fullName', direction=${sortBy == 'account.fullName' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Họ tên
+                                <i class="bi" th:classappend="${sortBy == 'account.fullName'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/employees(sortBy='account.email', direction=${sortBy == 'account.email' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Email
+                                <i class="bi" th:classappend="${sortBy == 'account.email'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/employees(sortBy='account.address', direction=${sortBy == 'account.address' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Địa chỉ
+                                <i class="bi" th:classappend="${sortBy == 'account.address'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/employees(sortBy='position', direction=${sortBy == 'position' and direction == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">
+                                Vị trí
+                                <i class="bi" th:classappend="${sortBy == 'position'} ? (direction == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : ''"></i>
+                            </a>
+                        </th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="employeeMap : ${employees}"
+                        class="employee-row"
+                        th:onclick="'window.location.href=\'/admin/employees/detail/' + ${employeeMap.employee.employeeId} + '\';'"
+                        style="cursor: pointer;">
+                        <td><img th:src="${employeeMap.employee.avatarUrl} ?: 'http://res.cloudinary.com/dycfyoh8r/image/upload/v1755106434/avatars/avatar_default.jpg'"
+                                 alt="Avatar"
+                                 style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;"></td>
+                        <td th:text="${employeeMap.employee.fullName}">Họ tên</td>
+                        <td th:text="${employeeMap.employee.email}">email@example.com</td>
+                        <td th:text="${employeeMap.employee.address}">Địa chỉ</td>
+                        <td th:text="${employeeMap.employee.position}">Vị trí</td>
+                        <td>
+                            <span th:class="'badge ' + (${employeeMap.status == 'Active'} ? 'bg-success' : (${employeeMap.status == 'Inactive'} ? 'bg-secondary' : 'bg-warning'))"
+                                  th:text="${employeeMap.status == 'Active' ? 'Đang làm' : 'Đã nghỉ'}">Trạng thái</span>
+                        </td>
+                        <td>
+                            <div class="custom-dropdown">
+                                <button class="btn btn-light btn-sm border custom-dropdown-toggle" type="button"
+                                        onclick="event.stopPropagation(); toggleDropdown(event);">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu custom-dropdown-menu" onclick="event.stopPropagation();">
+                                    <li><a class="dropdown-item" th:href="@{/admin/employees/edit/{id}(id=${employeeMap.employee.employeeId})}" onclick="event.stopPropagation();">
+                                        <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Conditional Delete/Unlock button -->
+                                    <li th:if="${employeeMap.status == 'Active'}">
+                                        <a class="dropdown-item text-danger"
+                                           th:href="@{/admin/employees/delete/{id}(id=${employeeMap.employee.employeeId})}"
+                                           onclick="event.stopPropagation(); return confirm('Bạn có muốn xóa tài khoản nhân viên này?')">
+                                            <i class="bi bi-trash me-2"></i>Xóa
+                                        </a>
+                                    </li>
+
+                                    <li th:if="${employeeMap.status != 'Active'}">
+                                        <a class="dropdown-item text-success"
+                                           th:href="@{/admin/employees/unlock/{id}(id=${employeeMap.employee.employeeId})}"
+                                           onclick="event.stopPropagation(); return confirm('Bạn có muốn mở khóa lại tài khoản nhân viên này?')">
+                                            <i class="bi bi-unlock me-2"></i>Mở khóa
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- No data message -->
+            <div th:if="${#lists.isEmpty(employees)}" class="text-center py-5">
+                <i class="bi bi-person-badge display-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Không tìm thấy nhân viên!</h4>
+                <p class="text-muted">Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn hoặc thêm một nhân viên mới.</p>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-end mt-3" th:if="${totalPages > 1}">
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/employees(page=0, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                                Đầu</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/employees(page=${currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                                Trước</a>
+                        </li>
+                        <li class="page-item active">
+                            <span class="page-link">
+                                Trang <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/employees(page=${currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                                Kế</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/employees(page=${totalPages - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                                Cuối</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Toast Thông báo thành công -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+        <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert"
+             aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span th:text="${successMessage}">Thành công!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    <!-- Main loader -->
+    <div id="main-loader-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
+        <span class="loader"></span>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toastEl = document.getElementById('successToast');
+            if (toastEl) {
+                const hasMessage = toastEl.querySelector('.toast-body span')?.textContent.trim() !== '';
+                if (hasMessage) {
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            }
+
+            // Form submission handlers for loader display
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    showMainLoader();
+                });
+            });
+        });
+
+        function showMainLoader() {
+            const loaderContainer = document.getElementById('main-loader-container');
+            if (loaderContainer) {
+                loaderContainer.style.display = 'flex';
+            }
+        }
+
+        function hideMainLoader() {
+            const loaderContainer = document.getElementById('main-loader-container');
+            if (loaderContainer) {
+                loaderContainer.style.display = 'none';
+            }
+        }
+    </script>
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/employees.js" th:src="@{/js/employees.js}"></script>
+
+    <script th:inline="javascript">
+        function toggleImportSection() {
+            const importSection = document.getElementById('importSection');
+            importSection.classList.toggle('d-none');
+        }
+
+        // Auto-hide success/error messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+
+            function hideAlert(alertElement) {
+                if (alertElement) {
+                    setTimeout(() => {
+                        alertElement.classList.add('fade-out');
+                        setTimeout(() => {
+                            alertElement.remove();
+                        }, 500); // Wait for fade-out animation to complete
+                    }, 5000); // 5 seconds
+                }
+            }
+
+            hideAlert(successAlert);
+            hideAlert(errorAlert);
+        });
+
+        document.querySelectorAll('.dropdown-menu, .dropdown-toggle').forEach(el => {
+            el.addEventListener('click', function (event) {
+                event.stopPropagation(); // Ngăn không cho sự kiện click "bubble" lên thẻ <tr>
+            });
+        });
+
+        // Enhanced dropdown handling for better click isolation
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('.employee-table');
+
+            if (table) {
+                table.addEventListener('click', function(event) {
+                    // Check if click target is inside a dropdown
+                    if (event.target.closest('.dropdown') && !event.target.closest('a[href]')) {
+                        event.stopPropagation();
+                    }
+                });
+
+                // Prevent links inside dropdowns from triggering the row click
+                const dropdownLinks = table.querySelectorAll('.dropdown a');
+                dropdownLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        // Don't prevent default for anchor tags - allow navigation
+                        e.stopPropagation();
+                    });
+                });
+            }
+        });
+
+        function toggleDropdown(event) {
+            const button = event.currentTarget;
+            const dropdownMenu = button.nextElementSibling;
+
+            // Hide all other dropdowns
+            document.querySelectorAll('.custom-dropdown-menu').forEach(menu => {
+                if (menu !== dropdownMenu) {
+                    menu.classList.remove('show');
+                }
+            });
+
+            // Toggle the clicked dropdown
+            dropdownMenu.classList.toggle('show');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInside = event.target.closest('.custom-dropdown');
+
+            if (!isClickInside) {
+                document.querySelectorAll('.custom-dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    </script>
+</div>
+<!-- Bootstrap JS Bundle -->
+
+
+</body>
+</html>

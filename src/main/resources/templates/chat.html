@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat với Hỗ Trợ</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1.9.0/index.js" type="module"></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container py-5">
+    <h1 class="text-center fw-bold mb-4">Hỗ Trợ</h1>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div id="chatMessages" class="chat-messages mb-3">
+                <input type="hidden" id="accountId" th:value="${account.accountId}">
+                <div th:if="${chats.isEmpty()}">
+                    <p class="text-center text-muted">Chưa có tin nhắn nào.</p>
+                </div>
+                <div th:unless="${chats.isEmpty()}">
+                    <div th:each="chat : ${chats}" class="message"
+                         th:classappend="${chat.senderId == account.accountId} ? 'user-message' : 'bot-message'">
+                        <div th:if="${chat.messageContent.startsWith('IMAGE:')}" class="image-container">
+                            <img th:src="${#strings.substring(chat.messageContent, 6)}"
+                                 class="chat-image"
+                                 th:onclick="'openImageModal(\'' + ${#strings.substring(chat.messageContent, 6)} + '\')'">
+                        </div>
+                        <p th:unless="${chat.messageContent.startsWith('IMAGE:')}" th:text="${chat.messageContent}"></p>
+                        <div class="message-time" th:text="${#dates.format(chat.sentAt, 'HH:mm')}"></div>
+                    </div>
+                </div>
+            </div>
+            <form id="chatForm" class="chat-input" th:if="${selectedDialogue}">
+                <div class="input-group">
+                    <input type="text" id="messageContent" class="form-control" placeholder="Nhập tin nhắn...">
+                    <button type="button" id="emojiBtn" class="btn btn-outline-secondary px-3" title="Chọn emoji">
+                        <i class="fas fa-smile" style="font-size: 18px; color: #f9a825;"></i>
+                    </button>
+                    <input type="file" id="fileInput" class="d-none" accept="image/*">
+                    <label class="btn btn-outline-secondary px-2" title="Đính kèm hình ảnh">
+                        <i class="fa fa-paperclip" style="font-size: 20px; color: #f9a825;"></i>
+                    </label>
+                    <input type="hidden" id="dialogueId" th:value="${selectedDialogue.dialogueId}">
+                    <button type="submit" class="btn btn-warning">Gửi</button>
+                </div>
+                <div id="emojiPickerContainer" style="display:none; position:absolute; z-index:1000;">
+                    <emoji-picker id="emojiPicker"></emoji-picker>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@6.1.2/bundles/stomp.umd.min.js"></script>
+<script src="/js/chat.js"></script>
+<script>
+    const accountId = /*[[${account.accountId}]]*/ 0;
+    const dialogueId = /*[[${selectedDialogue.dialogueId}]]*/ null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const emojiBtn = document.getElementById('emojiBtn');
+        const emojiPickerContainer = document.getElementById('emojiPickerContainer');
+        const emojiPicker = document.getElementById('emojiPicker');
+        const messageContent = document.getElementById('messageContent');
+        const fileInput = document.getElementById('fileInput');
+
+        // Toggle emoji picker
+        if (emojiBtn && emojiPickerContainer && emojiPicker && messageContent) {
+            emojiBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const isVisible = emojiPickerContainer.classList.contains('show');
+                if (isVisible) {
+                    emojiPickerContainer.classList.remove('show');
+                    emojiPickerContainer.style.display = 'none';
+                } else {
+                    // Position the picker relative to the input field
+                    const inputRect = messageContent.getBoundingClientRect();
+                    const pickerHeight = 300; // Approximate height of emoji picker
+                    const viewportHeight = window.innerHeight;
+                    const spaceBelow = viewportHeight - inputRect.bottom;
+                    const spaceAbove = inputRect.top;
+
+                    // Decide whether to show above or below the input
+                    let topPosition;
+                    if (spaceBelow >= pickerHeight || spaceBelow >= spaceAbove) {
+                        // Show below the input
+                        topPosition = inputRect.bottom + window.scrollY + 5;
+                    } else {
+                        // Show above the input
+                        topPosition = inputRect.top + window.scrollY - pickerHeight - 5;
+                    }
+
+                    emojiPickerContainer.style.left = `${inputRect.left + window.scrollX}px`;
+                    emojiPickerContainer.style.top = `${topPosition}px`;
+                    emojiPickerContainer.style.display = 'block';
+                    // Trigger reflow before adding 'show' class for animation
+                    emojiPickerContainer.offsetHeight;
+                    emojiPickerContainer.classList.add('show');
+                    messageContent.focus();
+                }
+            });
+
+            // Insert emoji into input
+            emojiPicker.addEventListener('emoji-click', function (event) {
+                messageContent.value += event.detail.unicode;
+                messageContent.focus();
+                emojiPickerContainer.classList.remove('show');
+                emojiPickerContainer.style.display = 'none';
+            });
+
+            // Close picker when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!emojiPickerContainer.contains(e.target) && !emojiBtn.contains(e.target)) {
+                    emojiPickerContainer.classList.remove('show');
+                    emojiPickerContainer.style.display = 'none';
+                }
+            });
+
+            // Optional: Close picker when input loses focus (mimics Win + .)
+            messageContent.addEventListener('blur', function () {
+                setTimeout(() => {
+                    if (!emojiPickerContainer.contains(document.activeElement)) {
+                        emojiPickerContainer.classList.remove('show');
+                        emojiPickerContainer.style.display = 'none';
+                    }
+                }, 100); // Delay to allow emoji click to register
+            });
+        }
+
+        // Handle file input (unchanged)
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
+                if (fileInput.files.length > 0) {
+                    console.log('Selected file:', fileInput.files[0].name);
+                    // Add logic for file handling (e.g., upload or preview)
+                }
+            });
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutAdmin}">
+
+<head>
+  <title>Chi Tiết Phim</title>
+  <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+  <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+  <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+  <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+</head>
+
+<body>
+
+<!-- Header fragment -->
+<div layout:fragment="header">
+  <div th:replace="~{fragments/title_admin :: header('Chi Tiết Phim', 'bi-film')}"></div>
+</div>
+
+<!-- Nội dung chính -->
+<div layout:fragment="content">
+  <div class="p-4 bg-white shadow rounded-4 animate-fade-in">
+    <!-- Notifications -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${warningMessage}" class="alert alert-warning alert-dismissible fade show" role="alert">
+      <span th:text="${warningMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Tiêu đề -->
+    <h3 class="fw-bold text-center mb-4" th:text="${movie.movieNameVn != null ? movie.movieNameVn : 'Chưa có dữ liệu'}">Tên phim</h3>
+
+    <!-- Ảnh poster lớn -->
+    <div class="text-center mb-4">
+      <img class="img-fluid rounded border"
+           style="max-width: 50%; height: auto; object-fit: contain;"
+           th:src="@{${movie.largeImageUrl != null ? movie.largeImageUrl : '/images/placeholder.png'}}"
+           alt="Poster phim">
+      <img class="img-fluid rounded border"
+           style="max-width: 50%; height: auto; object-fit: contain;"
+           th:src="@{${movie.smallImageUrl != null ? movie.smallImageUrl : '/images/placeholder.png'}}"
+           alt="Poster phim">
+    </div>
+
+    <!-- Thông tin phim chia làm 2 phần -->
+    <div class="row g-4">
+
+      <!-- Thông tin cơ bản -->
+      <div class="col-md-6">
+        <h5 class="fw-semibold mb-3">📝 Thông tin cơ bản</h5>
+        <table class="table table-bordered">
+          <tbody>
+          <tr><th>ID</th><td th:text="${movie.movieId != null ? movie.movieId : 'Chưa có dữ liệu'}"></td></tr>
+          <tr><th>Tên phim (EN)</th><td th:text="${movie.movieNameEn != null ? movie.movieNameEn : 'Chưa có dữ liệu'}"></td></tr>
+          <tr><th>Đạo diễn</th><td th:text="${movie.director != null ? movie.director : 'Chưa có dữ liệu'}"></td></tr>
+          <tr><th>Diễn viên</th><td th:text="${movie.actor != null ? movie.actor : 'Chưa có dữ liệu'}"></td></tr>
+          <tr><th>Thời lượng</th><td th:text="${movie.duration != null ? movie.duration + ' phút' : 'Chưa có dữ liệu'}"></td></tr>
+          <tr><th>Nội dung phim</th><td><div class="scrollable-content" th:text="${movie.content != null ? movie.content : 'Chưa có dữ liệu'}"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Thông tin chiếu -->
+      <div class="col-md-6">
+        <h5 class="fw-semibold mb-3">🎬 Thông tin chiếu</h5>
+        <table class="table table-bordered">
+          <tbody>
+          <tr>
+            <th>Ngày chiếu</th>
+            <td th:text="${movie.fromDate != null ? #temporals.format(movie.fromDate, 'dd/MM/yyyy') : 'Chưa có dữ liệu'}"></td>
+          </tr>
+          <tr>
+            <th>Ngày kết thúc chiếu</th>
+            <td th:text="${movie.toDate != null ? #temporals.format(movie.toDate, 'dd/MM/yyyy') : 'Chưa có dữ liệu'}"></td>
+          </tr>
+          <tr>
+            <th>Xếp loại tuổi</th>
+            <td th:text="${movie.getAgeRating() != null ? movie.getAgeRating().getRatingCode() + ' (' + movie.getAgeRating().getDescription() + ')' : 'Chưa có dữ liệu'}"></td>
+          </tr>
+          <tr>
+            <th>Thể loại</th>
+            <td class="d-flex flex-wrap">
+              <th:block th:if="${movie.getGenres() != null and !movie.getGenres().isEmpty()}">
+                <span th:each="name : ${movie.getGenres()}"
+                      class="badge bg-success me-1 mb-1"
+                      th:text="${name}">Thể loại</span>
+              </th:block>
+              <th:block th:unless="${movie.getGenres() != null and !movie.getGenres().isEmpty()}">
+                <span class="badge bg-secondary me-1 mb-1">Chưa có dữ liệu</span>
+              </th:block>
+            </td>
+          </tr>
+          <tr>
+            <th>Phiên bản</th>
+            <td class="d-flex flex-wrap">
+              <th:block th:if="${movie.getVersions() != null and !movie.getVersions().isEmpty()}">
+                <span th:each="name : ${movie.getVersions()}"
+                      class="badge bg-success me-1 mb-1"
+                      th:text="${name.getVersionName()}">Phiên bản</span>
+              </th:block>
+              <th:block th:unless="${movie.getVersions() != null and !movie.getVersions().isEmpty()}">
+                <span class="badge bg-secondary me-1 mb-1">Chưa có dữ liệu</span>
+              </th:block>
+            </td>
+          </tr>
+          <tr><th>Công ty sản xuất</th><td th:text="${movie.productionCompany != null ? movie.productionCompany : 'Chưa có dữ liệu'}"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Nút điều hướng -->
+    <div class="mt-4 d-flex justify-content-center gap-3">
+      <a th:href="@{/admin/editMovie/{id}(id=${movie.movieId})}" class="btn btn-warning btn-sm">
+        <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
+      </a>
+      <a th:href="@{/admin/listMovie}" class="btn btn-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+      </a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

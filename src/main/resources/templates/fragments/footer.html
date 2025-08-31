@@ -1,0 +1,79 @@
+<div th:fragment="footer">
+    <footer class="footer">
+        <div class="custom-banner">
+            <div class="star-container">
+                <span>★</span>
+            </div>
+            <span>Hoàng Sa và Trường Sa là của Việt Nam!</span>
+        </div>
+        <div class="footer-container">
+            <div class="footer-column">
+                <a th:href="@{/}">
+                    <h3 class="logo">
+                        <img th:src="@{/img/logo.png}" alt="MoonCinema">
+                        <span>MoonCinema</span>
+                    </h3>
+                </a>
+                <p th:text="#{cinema_experience}">Mang đến trải nghiệm điện ảnh tuyệt vời</p>
+                <p th:text="#{create_memories}">Tạo kỷ niệm đẹp cùng gia đình và bạn bè</p>
+                <p th:text="#{modern_cinema}">Rạp chiếu phim hiện đại nhất Việt Nam</p>
+            </div>
+
+            <div class="footer-column">
+                <h4 th:text="#{about_us}">Thông Tin</h4>
+                <ul>
+                    <li><a th:href="@{/nowShowing}" th:text="#{now_showing}">Phim Đang Chiếu</a></li>
+                    <li><a th:href="@{/comingSoon}" th:text="#{coming_soon}">Phim Sắp Chiếu</a></li>
+                    <li><a th:href="@{/news}" th:text="#{news}">Tin Tức & Khuyến Mãi</a></li>
+                    <li><a th:href="@{/showtime}" th:text="#{show_time}">Lịch chiếu</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4 th:text="#{support}">Hỗ Trợ</h4>
+                <ul>
+                    <li><a th:href="@{/faq}" th:text="#{faq}">Câu Hỏi Thường Gặp</a></li>
+                    <li><a th:href="@{/refund-policy}" th:text="#{refund_policy}">Chính Sách Hoàn Tiền</a></li>
+                    <li><a th:href="@{/support}" th:text="#{support}">Liên Hệ Hỗ Trợ</a></li>
+                    <li><a th:href="@{/booking-guide}" class="nav-link" data-i18n="booking_guide">Hướng Dẫn Đặt Vé</a></li>
+
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4 th:text="#{contact}">Liên Hệ</h4>
+                <div class="social-icons" style="margin-top: 15px;">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+                <p></p>
+
+                <p><i class="fas fa-phone"></i> Hotline: <span class="highlight">1900-xxxx</span></p>
+                <p><i class="fas fa-envelope"></i> Email: <a href="mailto:mooncinema@gmail.com">mooncinema@gmail.com</a></p>
+                <p><i class="far fa-clock"></i> <span th:text="#{work_hours}">Giờ làm việc: 8:00–23:00</span></p>
+            </div>
+
+            <div class="footer-column">
+                <h4 th:text="#{location}">Vị Trí</h4>
+                <div class="map-container" style="width: 100%; height: 200px; border-radius: 8px; overflow: hidden;">
+                    <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12805.274570702299!2d106.79618183236644!3d10.843006393133914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317527374c43baad%3A0xb8b244d75d12213e!2sFPT%20Software%20Tp.H%E1%BB%93%20Ch%C3%AD%20Minh!5e0!3m2!1sen!2s!4v1750915583573!5m2!1sen!2s"
+                            width="100%"
+                            height="100%"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p th:text="#{all_rights}">&copy; 2024 MoonCinema. All rights reserved.</p>
+            <a th:href="@{/terms}" th:text="#{terms}">Điều Khoản Sử Dụng</a> |
+            <a th:href="@{/privacy-policy}" th:text="#{privacy}">Chính Sách Bảo Mật</a>
+        </div>
+    </footer>
+</div>

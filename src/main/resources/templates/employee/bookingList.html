@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutEmployee}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đặt Vé</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary-color: #dc3545;
+            --primary-hover: #c82333;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --white: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            --border-radius: 0.375rem;
+            --border-radius-lg: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Sidebar Styles (assumed in layoutEmployee) */
+        .sidebar-custom {
+            min-height: 100vh;
+            width: 280px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+            border-right: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: var(--white);
+            padding: 1.5rem 1rem;
+            border-bottom: none;
+        }
+
+        .sidebar-header h5 {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--dark-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-link:hover {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar-link.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-footer .small {
+            color: var(--secondary-color);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sidebar-footer .small:hover {
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        #page-content-wrapper {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Fixed Header */
+        .fixed-header {
+            background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 998;
+            padding: 1rem 0;
+        }
+
+        .date-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .date-btn {
+            background: var(--white);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .date-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .date-btn.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        /* Content Area */
+        .content-container {
+            padding: 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-card {
+            background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Booking Cards */
+        .booking-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
+            color: var(--white);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #e0a800 100%);
+            color: var(--dark-color);
+        }
+
+        /* Search Input */
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+        }
+
+        .search-input {
+            padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            width: 320px;
+            font-size: 0.875rem;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+            outline: none;
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 1.5rem;
+        }
+
+        .modal-content h3 {
+            color: var(--dark-color);
+            font-weight: 700;
+        }
+
+        .modal-content label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .modal-content .btn-close {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        .modal-content .btn-close:hover {
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #a71e2a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            border: none;
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
+        .no-bookings {
+            text-align: center;
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .no-bookings i {
+            font-size: 4rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .no-bookings h3 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .no-bookings p {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar-custom {
+                margin-left: -280px;
+            }
+
+            #page-content-wrapper {
+                margin-left: 0;
+            }
+
+            .fixed-header {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content-container {
+                padding: 1rem;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .date-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .date-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+
+<!-- Header Fragment -->
+<div layout:fragment="header">
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-ticket-perforated me-2" style="font-size: 1.5rem;"></i>
+        <h2 class="mb-0">Quản Lý Đặt Vé</h2>
+    </div>
+</div>
+
+<!-- Content Fragment -->
+<div layout:fragment="content">
+    <div class="user-table-wrapper p-3 rounded-4 shadow animate-fade-in bg-white">
+        <!-- Fixed Header with Date Selector -->
+        <div class="fixed-header">
+            <div class="container-fluid py-3">
+                <form id="dateForm">
+                    <div class="date-buttons">
+                        <h5 class="form-label fw-semibold mb-3">Chọn Ngày Đặt Vé:</h5>
+                        <div class="btn-group" role="group" id="dateButtons"></div>
+                        <input type="hidden" name="showDate" id="showDateInput" value="2025-07-28">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid py-4">
+            <!-- Stats Cards -->
+            <div class="row row-cols-1 row-cols-md-4 g-4 mb-4" id="statsCards"></div>
+
+            <!-- Search Input -->
+            <div class="search-container">
+                <i data-lucide="search" class="w-5 h-5"></i>
+                <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Tìm kiếm theo ID, Số điện thoại, Tên phim..."
+                        class="search-input"
+                />
+            </div>
+
+            <!-- Bookings Container -->
+            <div class="booking-container">
+                <div id="noBookingsMessage" class="no-bookings d-none">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>Không Tìm Thấy Vé</h3>
+                    <p id="noBookingsText"></p>
+                </div>
+                <div id="bookingsContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Booking Details -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full d-none z-50" aria-hidden="true">
+        <div class="modal-content relative top-20 mx-auto p-5 w-11/12 md:w-3/4 lg:w-1/2">
+            <div class="mt-3">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3>Chi Tiết Đặt Vé</h3>
+                    <button id="closeModal" class="btn-close">&times;</button>
+                </div>
+                <div id="modalContent" class="space-y-4"></div>
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button id="closeModalBtn" class="btn-secondary">Đóng</button>
+                    <button id="confirmTransactionBtn" class="btn-primary">Xác Nhận Giao Dịch</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Mock data
+    const bookings = [
+        {
+            id: 'BK001',
+            identityCard: '079123456789',
+            phoneNumber: '0901234567',
+            movieTitle: 'Avengers: Endgame',
+            showtime: '2025-07-28 19:30',
+            seats: ['A5', 'A6'],
+            totalAmount: 200000,
+            bookingDate: '2025-07-25 14:30',
+            status: 'Confirmed',
+            customerName: 'Nguyen Van A',
+            cinema: 'CGV Landmark 81',
+            screen: 'Screen 3',
+        },
+        {
+            id: 'BK002',
+            identityCard: '079987654321',
+            phoneNumber: '0912345678',
+            movieTitle: 'Spider-Man: No Way Home',
+            showtime: '2025-07-28 21:00',
+            seats: ['B3', 'B4', 'B5'],
+            totalAmount: 300000,
+            bookingDate: '2025-07-26 10:15',
+            status: 'Confirmed',
+            customerName: 'Tran Thi B',
+            cinema: 'CGV Landmark 81',
+            screen: 'Screen 1',
+        },
+        {
+            id: 'BK003',
+            identityCard: '079555666777',
+            phoneNumber: '0923456789',
+            movieTitle: 'The Batman',
+            showtime: '2025-07-29 15:45',
+            seats: ['C1', 'C2'],
+            totalAmount: 180000,
+            bookingDate: '2025-07-27 16:45',
+            status: 'Pending',
+            customerName: 'Le Van C',
+            cinema: 'CGV Landmark 81',
+            screen: 'Screen 2',
+        },
+        {
+            id: 'BK004',
+            identityCard: '079111222333',
+            phoneNumber: '0934567890',
+            movieTitle: 'Doctor Strange 2',
+            showtime: '2025-07-29 18:15',
+            seats: ['D7', 'D8', 'D9', 'D10'],
+            totalAmount: 400000,
+            bookingDate: '2025-07-28 09:20',
+            status: 'Confirmed',
+            customerName: 'Pham Thi D',
+            cinema: 'CGV Landmark 81',
+            screen: 'Screen 4',
+        },
+    ];
+
+    let filteredBookings = [...bookings];
+    let selectedBooking = null;
+    let selectedDate = '2025-07-28'; // Default to current date (July 28, 2025)
+
+    // Formatters
+    const formatCurrency = (amount) =>
+        new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    const formatDateTime = (dateTime) => new Date(dateTime).toLocaleString('vi-VN');
+    const formatDate = (date) => {
+        const [year, month, day] = date.split('-');
+        return `${day}-${month}`;
+    };
+    const formatDateFull = (date) => {
+        const [year, month, day] = date.split('-');
+        return `${day}-${month}-${year}`;
+    };
+
+    // Generate Date Buttons
+    function generateDateButtons() {
+        const dateButtonsContainer = document.getElementById('dateButtons');
+        const today = new Date('2025-07-28');
+        let buttonsHTML = '';
+        for (let i = 0; i <= 14; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+            buttonsHTML += `
+        <button type="button" class="date-btn ${dateStr === selectedDate ? 'active' : ''}" data-date="${dateStr}">
+          ${formatDate(dateStr)}
+        </button>
+      `;
+        }
+        dateButtonsContainer.innerHTML = buttonsHTML;
+
+        // Add event listeners for date buttons
+        document.querySelectorAll('.date-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                selectedDate = this.dataset.date;
+                document.getElementById('showDateInput').value = selectedDate;
+                document.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                filterBookings();
+            });
+        });
+    }
+
+    // Filter Bookings by Date and Search Term
+    function filterBookings(searchTerm = '') {
+        filteredBookings = bookings.filter(booking => {
+            const bookingDate = new Date(booking.showtime).toISOString().split('T')[0];
+            return bookingDate === selectedDate && (
+                booking.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                booking.identityCard.includes(searchTerm) ||
+                booking.phoneNumber.includes(searchTerm) ||
+                booking.movieTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                booking.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+        renderBookingsContainer();
+        renderStatsCards();
+        updateNoBookingsMessage();
+    }
+
+    // Update No Bookings Message
+    function updateNoBookingsMessage() {
+        const noBookingsMessage = document.getElementById('noBookingsMessage');
+        const bookingsContainer = document.getElementById('bookingsContainer');
+        const noBookingsText = document.getElementById('noBookingsText');
+        if (filteredBookings.length === 0) {
+            noBookingsText.textContent = `Không có vé nào vào ngày ${formatDateFull(selectedDate)} đã chọn. Vui lòng chọn một ngày khác hoặc thử tìm kiếm khác.`;
+            noBookingsMessage.classList.remove('d-none');
+            noBookingsMessage.classList.add('d-block');
+            bookingsContainer.classList.add('d-none');
+        } else {
+            noBookingsMessage.classList.add('d-none');
+            bookingsContainer.classList.remove('d-none');
+        }
+    }
+
+    // Render Stats Cards
+    function renderStatsCards() {
+        const totalBookings = filteredBookings.length;
+        const confirmedBookings = filteredBookings.filter(b => b.status === 'Confirmed').length;
+        const pendingBookings = filteredBookings.filter(b => b.status === 'Pending').length;
+        const totalRevenue = filteredBookings.reduce((sum, b) => sum + b.totalAmount, 0);
+
+        document.getElementById('statsCards').innerHTML = `
+      <div class="col">
+        <div class="stats-card">
+          <div class="d-flex align-items-center">
+            <div class="p-2 rounded" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
+              <i data-lucide="credit-card" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-sm font-medium text-gray-600">Tổng Số Vé</p>
+              <p class="text-2xl font-bold text-gray-900">${totalBookings}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stats-card">
+          <div class="d-flex align-items-center">
+            <div class="p-2 rounded" style="background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);">
+              <i data-lucide="calendar" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-sm font-medium text-gray-600">Đã Xác Nhận</p>
+              <p class="text-2xl font-bold text-gray-900">${confirmedBookings}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stats-card">
+          <div class="d-flex align-items-center">
+            <div class="p-2 rounded" style="background: linear-gradient(135deg, var(--warning-color) 0%, #e0a800 100%);">
+              <i data-lucide="clock" class="w-6 h-6 text-dark"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-sm font-medium text-gray-600">Đang Chờ</p>
+              <p class="text-2xl font-bold text-gray-900">${pendingBookings}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stats-card">
+          <div class="d-flex align-items-center">
+            <div class="p-2 rounded" style="background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);">
+              <i data-lucide="film" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-sm font-medium text-gray-600">Tổng Doanh Thu</p>
+              <p class="text-2xl font-bold text-gray-900">${formatCurrency(totalRevenue)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+        lucide.createIcons();
+    }
+
+    // Render Bookings Container
+    function renderBookingsContainer() {
+        const container = document.getElementById('bookingsContainer');
+        container.innerHTML = filteredBookings.length
+            ? filteredBookings.map(booking => `
+          <div class="col">
+            <div class="card booking-card h-100">
+              <div class="card-body booking-info d-flex flex-column">
+                <h5 class="card-title mb-2">${booking.movieTitle}</h5>
+                <div class="booking-meta mb-2">
+                  <p class="mb-1 text-muted">
+                    <i class="bi bi-credit-card me-1"></i>
+                    <strong>Mã Đặt Vé:</strong> ${booking.id}
+                  </p>
+                  <p class="mb-1 text-muted">
+                    <i class="bi bi-person me-1"></i>
+                    <strong>Khách Hàng:</strong> ${booking.customerName}
+                  </p>
+                  <p class="mb-1 text-muted">
+                    <i class="bi bi-phone me-1"></i>
+                    <strong>Số Điện Thoại:</strong> ${booking.phoneNumber}
+                  </p>
+                  <p class="mb-1 text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    <strong>Thời Gian Chiếu:</strong> ${formatDateTime(booking.showtime)}
+                  </p>
+                  <p class="mb-1 text-muted">
+                    <i class="bi bi-geo-alt me-1"></i>
+                    <strong>Rạp:</strong> ${booking.cinema}
+                  </p>
+                  <p class="mb-1 text-muted">
+                    <i class="bi bi-ticket me-1"></i>
+                    <strong>Ghế:</strong> ${booking.seats.join(', ')}
+                  </p>
+                  <p class="mb-2 text-muted">
+                    <i class="bi bi-wallet me-1"></i>
+                    <strong>Tổng Tiền:</strong> ${formatCurrency(booking.totalAmount)}
+                  </p>
+                </div>
+                <div class="mb-2">
+                  <strong>Trạng Thái:</strong>
+                  <span class="status-badge ${booking.status === 'Confirmed' ? 'status-confirmed' : 'status-pending'}">
+                    ${booking.status}
+                  </span>
+                </div>
+                <div class="mt-auto">
+                  <hr class="my-2">
+                  <button class="btn btn-sm btn-primary w-100" onclick="showModal('${booking.id}')">
+                    <i data-lucide="eye" class="w-4 h-4 me-1"></i>
+                    Xác Nhận Đặt Vé
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('')
+            : '';
+        lucide.createIcons();
+    }
+
+    // Render Modal Content
+    function renderModalContent(booking) {
+        document.getElementById('modalContent').innerHTML = `
+      <div class="card bg-light p-4 rounded">
+        <h4 class="card-title mb-3">Thông Tin Khách Hàng</h4>
+        <div class="row">
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Tên Khách Hàng</label>
+            <p class="mt-1 text-sm">${booking.customerName}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">CMND/CCCD</label>
+            <p class="mt-1 text-sm">${booking.identityCard}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Số Điện Thoại</label>
+            <p class="mt-1 text-sm">${booking.phoneNumber}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Mã Đặt Vé</label>
+            <p class="mt-1 text-sm font-monospace">${booking.id}</p>
+          </div>
+        </div>
+      </div>
+      <div class="card p-4 rounded" style="background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);">
+        <h4 class="card-title mb-3">Thông Tin Phim</h4>
+        <div class="row">
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Tên Phim</label>
+            <p class="mt-1 text-sm font-weight-bold">${booking.movieTitle}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Rạp</label>
+            <p class="mt-1 text-sm">${booking.cinema}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Phòng Chiếu</label>
+            <p class="mt-1 text-sm">${booking.screen}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Thời Gian Chiếu</label>
+            <p class="mt-1 text-sm">${formatDateTime(booking.showtime)}</p>
+          </div>
+        </div>
+      </div>
+      <div class="card p-4 rounded" style="background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%); color: var(--white);">
+        <h4 class="card-title mb-3">Chi Tiết Đặt Vé</h4>
+        <div class="row">
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Ghế</label>
+            <p class="mt-1 text-sm">${booking.seats.join(', ')}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Ngày Đặt Vé</label>
+            <p class="mt-1 text-sm">${formatDateTime(booking.bookingDate)}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Trạng Thái</label>
+            <span class="status-badge ${booking.status === 'Confirmed' ? 'status-confirmed' : 'status-pending'} mt-1">
+              ${booking.status}
+            </span>
+          </div>
+          <div class="col-md-6">
+            <label class="d-block text-sm font-weight-bold">Tổng Tiền</label>
+            <p class="mt-1 text-sm font-weight-bold" style="color: #ffffff;">${formatCurrency(booking.totalAmount)}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    }
+
+    // Modal Handling
+    function showModal(bookingId) {
+        selectedBooking = bookings.find(b => b.id === bookingId);
+        if (selectedBooking) {
+            renderModalContent(selectedBooking);
+            document.getElementById('modal').classList.remove('d-none');
+            document.getElementById('modal').setAttribute('aria-hidden', 'false');
+            document.getElementById('closeModalBtn').focus();
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.add('d-none');
+        document.getElementById('modal').setAttribute('aria-hidden', 'true');
+        selectedBooking = null;
+    }
+
+    // Confirm Transaction
+    function confirmTransaction() {
+        if (selectedBooking) {
+            const index = bookings.findIndex(b => b.id === selectedBooking.id);
+            bookings[index].status = 'Confirmed';
+            filteredBookings = [...bookings];
+            filterBookings(document.getElementById('searchInput').value);
+            closeModal();
+        }
+    }
+
+    // Debounced Search
+    const handleSearch = _.debounce((term) => {
+        filterBookings(term);
+    }, 300);
+
+    // Event Listeners
+    document.getElementById('searchInput').addEventListener('input', (e) => handleSearch(e.target.value));
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('confirmTransactionBtn').addEventListener('click', confirmTransaction);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !document.getElementById('modal').classList.contains('d-none')) {
+            closeModal();
+        }
+    });
+
+    // Initial Render
+    generateDateButtons();
+    filterBookings();
+    lucide.createIcons();
+</script>
+</html>

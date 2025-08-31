@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layoutAdmin}">
+
+<head>
+    <title>Quản lý Phòng Chiếu - Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/admin/member/viewMember.css}" href="/css/admin/member/viewMember.css">
+    <style>
+        /* Toggle Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        .checkbox {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .checkbox:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        .checkbox:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        .checkbox:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .toast {
+            transition: opacity 0.3s ease-in-out;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .bg-success {
+            background-color: #198754 !important;
+        }
+
+        .bg-danger {
+            background-color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-danger shadow-sm px-3">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand text-white fw-bold"><i class="bi bi-door-open me-2"></i>Quản lý phòng chiếu</span>
+        </div>
+    </nav>
+</div>
+
+<div layout:fragment="content">
+    <div class="container-fluid py-4">
+        <!-- Toast Notifications -->
+        <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 11;">
+            <div th:if="${warning}" id="warningToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-warning text-dark">
+                    <strong class="me-auto">Cảnh báo</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <span th:text="${warning}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="user-table-wrapper p-3 p-md-4 rounded-4 shadow-lg animate-fade-in">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold mb-0">Danh sách phòng chiếu</h3>
+                <a th:href="@{/admin/cinema-room/create-seat-map}" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-circle"></i> Thêm phòng chiếu
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0 user-table">
+                    <thead class="table-light">
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên phòng</th>
+                        <th>Loại phòng</th>
+                        <th>Số lượng ghế</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="room, roomStat : ${cinemaRooms}" class="room-row">
+                        <td th:text="${roomStat.count}"></td>
+                        <td th:text="${room.roomName}" th:data-room-id="${room.roomId}"></td>
+                        <td th:text="${room.type}"></td>
+                        <td th:text="${activeSeatCounts != null ? (activeSeatCounts.get(room.roomId) ?: 0) : 0}"></td>
+                        <td>
+                            <span th:if="${room.status == 1}" class="badge bg-success">Đang hoạt động</span>
+                            <span th:unless="${room.status == 1}" class="badge bg-secondary">Không hoạt động</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a th:href="@{'/admin/cinema-room/view/' + ${room.roomId}}" class="btn btn-info btn-sm" title="Xem phòng">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a th:href="@{'/admin/cinema-room/edit/' + ${room.roomId}}" class="btn btn-primary btn-sm" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm switch" title="Thay đổi trạng thái"
+                                        th:attr="data-room-id=${room.roomId},
+            data-room-name=${room.roomName},
+            data-room-status=${room.status}">
+                                    <input type="checkbox" class="checkbox" th:id="'toggle-' + ${room.roomId}">
+                                    <label class="slider" th:for="'toggle-' + ${room.roomId}"></label>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(cinemaRooms)}">
+                        <td colspan="6" class="text-center py-4">
+                            <i class="bi bi-exclamation-circle display-6 text-muted d-block mb-2"></i>
+                            <p class="text-muted m-0">Không có phòng chiếu nào.</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:if="${totalPages > 1}" aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Button -->
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{'?page=' + ${currentPage - 1}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i} == ${currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{'?page=' + ${i}}" th:text="${i + 1}">1</a>
+                    </li>
+
+                    <!-- Next Button -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{'?page=' + ${currentPage + 1}}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- JavaScript within content fragment -->
+    <script>
+        // Set initial toggle states when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize warning toast
+            const toastEl = document.getElementById("warningToast");
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+
+            // Initialize toggle switches
+            var toggles = document.querySelectorAll('.switch');
+            toggles.forEach(function(toggle) {
+                var status = toggle.getAttribute('data-room-status');
+                var checkbox = toggle.querySelector('.checkbox');
+                // Set checkbox as checked if room is active (status == 1)
+                checkbox.checked = (status == 1);
+
+                // Add event listener to checkbox
+                checkbox.addEventListener('change', function(e) {
+                    // Prevent the default toggle behavior temporarily
+                    e.preventDefault();
+
+                    // Get room details
+                    var button = this.closest('.switch');
+                    var roomId = button.getAttribute('data-room-id');
+                    var roomName = button.getAttribute('data-room-name');
+                    var roomStatus = button.getAttribute('data-room-status');
+                    var newStatus = (roomStatus == 1) ? 0 : 1;
+                    var action = (newStatus == 1) ? 'kích hoạt' : 'vô hiệu hóa';
+
+                    // Check if room is currently being used in showtimes
+                    fetch(`/admin/cinema-room/check-used/${roomId}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.isUsed) {
+                                // If room is being used, show warning and prevent change
+                                showMessage('Phòng chiếu "' + roomName + '" đang được sử dụng trong lịch chiếu. Không thể thay đổi trạng thái.', 'warning');
+                                // Reset checkbox
+                                this.checked = (roomStatus == 1);
+                            } else {
+                                // If not, show confirmation and perform change
+                                if (confirm('Bạn có chắc chắn muốn ' + action + ' phòng "' + roomName + '"?')) {
+                                    updateRoomStatus(button, roomId, newStatus);
+                                } else {
+                                    // Reset the checkbox to its original state if user cancels
+                                    this.checked = (roomStatus == 1);
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error checking room usage:', error);
+                            showMessage('Đã xảy ra lỗi khi kiểm tra trạng thái phòng chiếu.', 'danger');
+                            // Reset checkbox
+                            this.checked = (roomStatus == 1);
+                        });
+                });
+            });
+        });
+
+        function updateRoomStatus(button, roomId, newStatus) {
+            var baseUrl = '/admin/cinema-room/';
+            var action = (newStatus == 1) ? 'activate' : 'deactivate';
+            var url = baseUrl + action + '/' + roomId;
+
+            // Show loading indicator
+            var row = button.closest('tr');
+            row.style.opacity = '0.7';
+
+            // Use fetch API for smoother update
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Update UI without page reload
+                        var checkbox = button.querySelector('.checkbox');
+                        checkbox.checked = (newStatus == 1);
+
+                        // Update data attribute
+                        button.setAttribute('data-room-status', newStatus);
+
+                        // Update the status badge
+                        var statusCell = row.querySelector('td:nth-child(5)');
+                        if (newStatus == 1) {
+                            statusCell.innerHTML = '<span class="badge bg-success">Đang hoạt động</span>';
+                        } else {
+                            statusCell.innerHTML = '<span class="badge bg-secondary">Không hoạt động</span>';
+                        }
+
+                        // Show success message
+                        showMessage(action == 'activate' ?
+                            'Phòng chiếu đã được kích hoạt thành công' :
+                            'Phòng chiếu đã được vô hiệu hóa thành công', 'success');
+                    } else {
+                        // Show error message
+                        showMessage('Không thể thay đổi trạng thái phòng chiếu', 'danger');
+                        // Reset checkbox
+                        var checkbox = button.querySelector('.checkbox');
+                        checkbox.checked = (newStatus === 0);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('Đã xảy ra lỗi khi cập nhật trạng thái', 'danger');
+                })
+                .finally(() => {
+                    // Remove loading state
+                    row.style.opacity = '1';
+                });
+        }
+
+        function showMessage(message, type) {
+            // Create a toast notification
+            var toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 p-3';
+            toast.style.zIndex = '5';
+
+            toast.innerHTML = `
+            <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-${type} text-white">
+                    <strong class="me-auto">Thông báo</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+            document.body.appendChild(toast);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+    </script>
+</div>
+</body>
+</html>

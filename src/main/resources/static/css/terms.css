@@ -1,0 +1,140 @@
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    color: #fff;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    max-width: 1200px;
+    width: 95%;
+    margin: 70px auto 2rem;
+    text-align: center;
+}
+
+.content h2 {
+    color: #FFD700;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+}
+
+.content ol {
+    color: #fff;
+    padding-left: 0;
+    list-style-position: inside;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.content ol li {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.content ol li a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.content ol li a:hover {
+    color: #ccc;
+}
+
+.widget {
+    color: #fff;
+    margin: 2rem auto;
+    max-width: 1200px;
+    width: 95%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.widget h2 {
+    color: #FFD700;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.widget p {
+    color: #fff;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.widget a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.widget a:hover {
+    color: #ccc;
+}
+
+#quy-dinh-chung, #dieu-khoan-giao-dich, #quy-dinh-tai-rap-chieu-phim, #chinh-sach-bao-mat {
+    margin: 3rem auto;
+    max-width: 1200px;
+    width: 95%;
+    position: relative;
+    z-index: 2;
+}
+
+/* .silk-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-color: #f5f5f5;
+}
+
+#silk-container {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+
+#silk-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+} */
+
+.content-row {
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    background-position: left top;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    position: relative;
+    z-index: 2;
+}
+
+.section-title {
+    text-align: center;
+    color: #FFD700;
+}
+

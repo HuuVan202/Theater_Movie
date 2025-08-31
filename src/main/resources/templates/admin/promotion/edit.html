@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chỉnh sửa Khuyến mãi - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/adminPromotion.css}" href="/css/adminPromotion.css">
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/favicon/apple-touch-icon.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon/favicon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon/favicon-16x16.png}">
+    <link rel="manifest" th:href="@{/favicon/site.webmanifest}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon/favicon.ico}">
+    <style>
+        .datetime-local {
+            cursor: pointer;
+        }
+        .datetime-local[disabled] {
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-danger shadow-sm px-2">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand text-white fw-bold"><i class="bi bi-gift me-2"></i>Chỉnh sửa khuyến mãi</span>
+        </div>
+    </nav>
+</div>
+<div layout:fragment="content">
+    <div class="container-fluid py-3">
+        <div class="user-table-wrapper p-3 rounded-4 shadow-lg animate-fade-in">
+            <h3 class="fw-bold mb-3">Chỉnh sửa khuyến mãi</h3>
+            <div th:if="${promotion.endTime != null and currentTime != null and (promotion.endTime.equals(currentTime) || promotion.endTime.isBefore(currentTime))}" class="alert alert-warning" role="alert">
+                Khuyến mãi đã kết thúc, một số trường không thể chỉnh sửa.
+            </div>
+            <form th:action="@{/admin/promotions/update}" th:object="${promotion}" method="post" enctype="multipart/form-data" class="row g-3" id="editPromotionForm">
+                <input type="hidden" th:field="*{promotionId}" />
+                <div class="col-md-6">
+                    <label class="form-label" for="titleInput">Tiêu đề</label>
+                    <input type="text" th:field="*{title}" class="form-control" id="titleInput" aria-describedby="titleError" />
+                    <div class="error-message" th:if="${#fields.hasErrors('title')}" th:errors="*{title}" id="titleError"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="detailInput">Chi tiết</label>
+                    <textarea th:field="*{detail}" class="form-control" id="detailInput" style="height: 80px" aria-describedby="detailError"></textarea>
+                    <div class="error-message" th:if="${#fields.hasErrors('detail')}" th:errors="*{detail}" id="detailError"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="movieSelect">Phim áp dụng</label>
+                    <select th:field="*{movieId}" class="form-select" id="movieSelect" aria-describedby="movieError">
+                        <option value="">Tất cả phim</option>
+                        <option th:each="movie : ${movies}" th:value="${movie.movieId}" th:text="${movie.movieName}"></option>
+                    </select>
+                    <div class="error-message" th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}" id="movieError"></div>
+                </div>
+                <div class="col-md-4">
+                    <div th:if="${promotion.discountLevel != null}" class="mb-2" id="discountLevelField">
+                        <label class="form-label" for="discountLevelInput">Giảm giá (%)</label>
+                        <input type="number" step="0.01" th:field="*{discountLevel}" class="form-control" id="discountLevelInput" aria-describedby="discountLevelError" />
+                        <div class="error-message" th:if="${#fields.hasErrors('discountLevel')}" th:errors="*{discountLevel}" id="discountLevelError"></div>
+                    </div>
+                    <div th:unless="${promotion.discountLevel != null}" class="mb-2" id="discountAmountField">
+                        <label class="form-label" for="discountAmountInput">Giảm giá cố định (VND)</label>
+                        <input type="number" step="0.01" th:field="*{discountAmount}" class="form-control" id="discountAmountInput" aria-describedby="discountAmountError" />
+                        <div class="error-message" th:if="${#fields.hasErrors('discountAmount')}" th:errors="*{discountAmount}" id="discountAmountError"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="minTicketsInput">Số vé tối thiểu</label>
+                    <input type="number" th:field="*{minTickets}" class="form-control" id="minTicketsInput" aria-describedby="minTicketsError" />
+                    <div class="error-message" th:if="${#fields.hasErrors('minTickets')}" th:errors="*{minTickets}" id="minTicketsError"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="maxTicketsInput">Số vé tối đa</label>
+                    <input type="number" th:field="*{maxTickets}" class="form-control" id="maxTicketsInput" aria-describedby="maxTicketsError" />
+                    <div class="error-message" th:if="${#fields.hasErrors('maxTickets')}" th:errors="*{maxTickets}" id="maxTicketsError"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="dayOfWeekSelect">Ngày áp dụng</label>
+                    <select th:field="*{dayOfWeek}" class="form-select" id="dayOfWeekSelect" aria-describedby="dayOfWeekError">
+                        <option value="">Tất cả các ngày</option>
+                        <option value="1">Thứ 2</option>
+                        <option value="2">Thứ 3</option>
+                        <option value="3">Thứ 4</option>
+                        <option value="4">Thứ 5</option>
+                        <option value="5">Thứ 6</option>
+                        <option value="6">Thứ 7</option>
+                        <option value="7">Chủ nhật</option>
+                    </select>
+                    <div class="error-message" th:if="${#fields.hasErrors('dayOfWeek')}" th:errors="*{dayOfWeek}" id="dayOfWeekError"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="ticketTypeSelect">Loại vé</label>
+                    <select th:field="*{ticketTypeId}" class="form-select" id="ticketTypeSelect" aria-describedby="ticketTypeError">
+                        <option value="">Tất cả loại vé</option>
+                        <option th:each="ticketType : ${ticketTypes}" th:value="${ticketType.ticketTypeId}" th:text="${ticketType.typeName}"></option>
+                    </select>
+                    <div class="error-message" th:if="${#fields.hasErrors('ticketTypeId')}" th:errors="*{ticketTypeId}" id="ticketTypeError"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="startTimeInput">Bắt đầu</label>
+                    <input type="datetime-local" id="startTimeInput" class="form-control datetime-local" step="60"
+                           th:value="${#temporals.format(promotion.startTime, 'yyyy-MM-dd''T''HH:mm')}"
+                           max="{{(new Date().getFullYear()+3)+'-12-31T23:59'}}" required
+                           th:disabled="${promotion.startTime != null and currentTime != null and promotion.endTime != null and (promotion.startTime.isBefore(currentTime) || promotion.startTime.equals(currentTime)) and (promotion.endTime.isAfter(currentTime) || promotion.endTime.equals(currentTime))}" />
+                    <input type="hidden" th:field="*{startTime}" id="startTimeFormatted" name="startTime"
+                           th:value="${#temporals.format(promotion.startTime, 'dd/MM/yyyy HH:mm')}" />
+                    <div th:if="${promotion.startTime != null and currentTime != null and promotion.endTime != null and (promotion.startTime.isBefore(currentTime) || promotion.startTime.equals(currentTime)) and (promotion.endTime.isAfter(currentTime) || promotion.endTime.equals(currentTime))}" class="alert alert-warning mt-2" role="alert">
+                        Không thể chỉnh sửa thời gian bắt đầu vì khuyến mãi đã kết thúc.
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}" id="startTimeError"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="endTimeInput">Kết thúc</label>
+                    <input type="datetime-local" id="endTimeInput" class="form-control datetime-local" step="60"
+                           th:value="${#temporals.format(promotion.endTime, 'yyyy-MM-dd''T''HH:mm')}"
+                           max="{{(new Date().getFullYear()+3)+'-12-31T23:59'}}" required />
+                    <input type="hidden" th:field="*{endTime}" id="endTimeFormatted" name="endTime" />
+                    <div class="error-message" th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}" id="endTimeError"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="maxUsageInput">Giới hạn sử dụng</label>
+                    <input type="number" th:field="*{maxUsage}" class="form-control" id="maxUsageInput" aria-describedby="maxUsageError" />
+                    <div class="error-message" th:if="${#fields.hasErrors('maxUsage')}" th:errors="*{maxUsage}" id="maxUsageError"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="imageUrlInput">Hình ảnh khuyến mãi</label>
+                    <div class="image-section mb-2">
+                        <div class="image-preview-wrapper">
+                            <img th:if="${promotion.imageUrl != null and not #strings.isEmpty(promotion.imageUrl)}" th:src="@{${promotion.imageUrl}}" id="imagePreview" alt="Hình ảnh hiện tại" class="img-fluid rounded shadow-sm" style="display: block;" />
+                        </div>
+                        <div class="image-inputs">
+                            <input type="text" th:field="*{imageUrl}" class="form-control mb-2" id="imageUrlInput" placeholder="Nhập URL ảnh (hoặc chọn file bên dưới)" aria-describedby="imageUrlError" oninput="handleImageInputChange()" />
+                            <input type="file" name="imageFile" id="imageFileInput" class="form-control" accept="image/*" onchange="handleImageFileChange()" />
+                        </div>
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" id="imageUrlError"></div>
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="form-check">
+<!--                        <input type="hidden" name="active" th:value="${promotion.active}" />-->
+                        <input class="form-check-input" type="checkbox" th:field="*{active}" id="activeCheck"
+                               th:checked="${promotion.active}" />
+                        <label class="form-check-label ms-2" for="activeCheck">Hoạt động</label>
+                    </div>
+                    <div th:if="${promotion.endTime != null and currentTime != null and (promotion.endTime.equals(currentTime) || promotion.endTime.isBefore(currentTime))}" class="alert alert-warning ms-3" role="alert">
+                        Khuyến mãi đã kết thúc, trạng thái hoạt động được đặt về không hoạt động.
+                    </div>
+                </div>
+                <div class="col-12 text-center mt-3">
+                    <button type="submit" class="btn btn-gradient btn-sm me-2" id="submitButton"><i class="bi bi-save"></i> Lưu thay đổi</button>
+                    <a th:href="@{/admin/promotions/list}" class="btn btn-secondary btn-sm">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/adminEditPromotion.js}" src="/js/adminEditPromotion.js"></script>
+<script>
+    function isValidDateTimeLocal(value) {
+        const date = new Date(value);
+        if (isNaN(date.getTime())) return false;
+        // Extract year, month, day from input
+        const [datePart] = value.split('T');
+        const [year, month, day] = datePart.split('-').map(Number);
+        // Check month/day validity
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+        // Months with 30 days
+        if ([4, 6, 9, 11].includes(month) && day > 30) return false;
+        // February
+        if (month === 2) {
+            const isLeap = (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0));
+            if (day > (isLeap ? 29 : 28)) return false;
+        }
+        return true;
+    }
+    ['startTimeInput', 'endTimeInput'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function(e) {
+            const value = e.target.value;
+            const year = Number(value.split('-')[0]);
+            const maxYear = new Date().getFullYear() + 3;
+            if (!isValidDateTimeLocal(value) || year > maxYear) {
+                e.target.setCustomValidity('Ngày/tháng không hợp lệ và số năm không vượt quá 3 năm so với hiện tại.');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+    });
+</script>
+</body>
+</html>
